@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -32,11 +33,22 @@ import edu.cmu.hcii.sugilite.model.block.SugiliteErrorHandlingForkBlock;
 import edu.cmu.hcii.sugilite.model.block.SugiliteOperationBlock;
 import edu.cmu.hcii.sugilite.model.block.SugiliteSpecialOperationBlock;
 import edu.cmu.hcii.sugilite.model.block.SugiliteStartingBlock;
+import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
 import edu.cmu.hcii.sugilite.ui.dialog.SugiliteProgressDialog;
 import edu.cmu.hcii.sugilite.ui.main.SugiliteMainActivity;
 
 import static edu.cmu.hcii.sugilite.Const.SQL_SCRIPT_DAO;
 import static edu.cmu.hcii.sugilite.recording.ReadableDescriptionGenerator.getConditionBlockDescription;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 
 public abstract class ScriptDetailActivity extends AppCompatActivity {
 
@@ -86,10 +98,30 @@ public abstract class ScriptDetailActivity extends AppCompatActivity {
                 operationStepList = (LinearLayout)findViewById(R.id.operation_list_view);
                 operationStepList.removeAllViews();
                 SugiliteBlock iterBlock = script;
+                String iterBlockString="";
+                System.out.println("scriptName is:"+ LocalScriptDetailActivity.getScript_name());
+                BufferedReader in=null;
+                try {
+                    in = new BufferedReader(new FileReader(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_xpath.txt")));
 
-
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
                 while(iterBlock != null){
-                    System.out.println("iterBlock: " + iterBlock);
+//                    System.out.println("iterBlock: " + iterBlock+"hahaha");
+                    String str;
+                    try {
+                        if (!(iterBlock instanceof SugiliteStartingBlock)) {
+                            if ((str=in.readLine())!=null){
+                                iterBlockString = iterBlockString + String.valueOf(iterBlock) + str+"\n";
+                            }
+                        }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+//                    iterBlockString = iterBlockString + String.valueOf(iterBlock) +"\n";
+
                     operationStepList.addView(getViewForBlock(iterBlock));
                     if (iterBlock instanceof SugiliteStartingBlock) {
                         iterBlock = ((SugiliteStartingBlock) iterBlock).getNextBlockToRun();
@@ -109,6 +141,28 @@ public abstract class ScriptDetailActivity extends AppCompatActivity {
                     else
                         new Exception("unsupported block type").printStackTrace();
                 }
+                System.out.println(iterBlockString);
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+//                System.out.println(Environment.getExternalStorageDirectory().getAbsolutePath());
+//                BufferedWriter bw=null;
+//                try {
+//                    bw=new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() +"/"+"File.txt")));
+//                    bw.write(iterBlockString);
+//                }catch (IOException e){
+//                    e.printStackTrace();
+//                }finally {
+//                    if (bw!=null){
+//                        try {
+//                            bw.close();
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
 
 
                 //add the end script line

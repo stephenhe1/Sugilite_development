@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -223,6 +224,11 @@ public class SugiliteMainActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
                                     sugiliteScriptDao.clear();
+                                    File rootFile=new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+                                    for (File file : rootFile.listFiles()){
+                                        if(file.getName().contains("_xpath.txt"))
+                                            file.delete();
+                                    }
                                     sugiliteData.logUsageData(ScriptUsageLogManager.CLEAR_ALL_SCRIPTS, "N/A");
                                     if (fragmentScriptListTab instanceof FragmentScriptListTab)
                                         ((FragmentScriptListTab) fragmentScriptListTab).setUpScriptList();

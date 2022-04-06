@@ -72,7 +72,10 @@ public class ObfuscatedScriptReconstructor {
 
         //generate the new block
         List<Pair<OntologyQuery, Double>> queryScoreList = SugiliteBlockBuildingHelper.newGenerateDefaultQueries(uiSnapshot, matchedNode);
-        SugiliteOperationBlock newBlock = blockBuildingHelper.getUnaryOperationBlockWithOntologyQueryFromQuery(queryScoreList.get(0).first, operation.getOperationType(), new SugiliteAvailableFeaturePack(matchedNode, uiSnapshot, null), SugiliteBlockBuildingHelper.getFirstNonTextQuery(queryScoreList));
+        System.out.println("queryScoreList in ObfuscatedScript: "+queryScoreList);
+        System.out.println("UISnapshot in ObfuscatedScript: "+uiSnapshot);
+
+        SugiliteOperationBlock newBlock = blockBuildingHelper.getUnaryOperationBlockWithOntologyQueryFromQuery(queryScoreList.get(0).first, operation.getOperationType(), new SugiliteAvailableFeaturePack(matchedNode, uiSnapshot, null), SugiliteBlockBuildingHelper.getFirstNonTextQuery(queryScoreList),SugiliteBlockBuildingHelper.getFirstViewIDQuery(queryScoreList));
 
         //replace the block
         replaceBlockInScript(scriptInProcess, blockToMatch, newBlock);

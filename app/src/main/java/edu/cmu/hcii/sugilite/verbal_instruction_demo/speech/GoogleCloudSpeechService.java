@@ -6,6 +6,7 @@ package edu.cmu.hcii.sugilite.verbal_instruction_demo.speech;
  * @time 8:45 PM
  */
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.app.Service;
 import android.content.Context;
@@ -14,6 +15,7 @@ import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -378,6 +380,7 @@ public class GoogleCloudSpeechService extends Service {
         }
     };
 
+    @TargetApi(Build.VERSION_CODES.CUPCAKE)
     private class AccessTokenTask extends AsyncTask<Void, Void, AccessToken> {
 
         @Override

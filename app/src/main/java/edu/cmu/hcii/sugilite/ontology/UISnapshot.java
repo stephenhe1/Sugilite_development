@@ -738,4 +738,6 @@ public class UISnapshot {
     public String getActivityName() {
         return activityName;
     }
+
+
 }

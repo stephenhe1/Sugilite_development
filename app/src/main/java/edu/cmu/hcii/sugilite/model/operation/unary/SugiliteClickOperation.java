@@ -12,6 +12,7 @@ import static edu.cmu.hcii.sugilite.source_parsing.SugiliteScriptExpression.addQ
 public class SugiliteClickOperation extends SugiliteUnaryOperation<OntologyQuery> {
     private OntologyQuery targetUIElementDataDescriptionQuery;
     private OntologyQuery alternativeTargetUIElementDataDescriptionQuery;
+    private OntologyQuery alternativeTargetUIElementDataDescriptionQuery2;
     public SugiliteClickOperation(){
         super();
         this.setOperationType(CLICK);
@@ -51,11 +52,22 @@ public class SugiliteClickOperation extends SugiliteUnaryOperation<OntologyQuery
 
     @Override
     public String toString() {
-        return "(" + "call click " + addQuoteToTokenIfNeeded(getParameter0().toString()) + ")";
+        return "(" + "call click " + addQuoteToTokenIfNeeded(getParameter0().toString()) +addQuoteToTokenIfNeeded(getAlternativeTargetUIElementDataDescriptionQuery().toString())+ addQuoteToTokenIfNeeded(getAlternativeTargetUIElementDataDescriptionQuery2().toString())+")";
     }
 
     @Override
     public String getPumiceUserReadableDecription() {
         return String.format("click on %s", targetUIElementDataDescriptionQuery);
+    }
+
+    public OntologyQuery getAlternativeTargetUIElementDataDescriptionQuery2() {
+        if(alternativeTargetUIElementDataDescriptionQuery2!=null) {
+            return alternativeTargetUIElementDataDescriptionQuery2;
+        }
+        return alternativeTargetUIElementDataDescriptionQuery;
+    }
+
+    public void setAlternativeTargetUIElementDataDescriptionQuery2(OntologyQuery alternativeTargetUIElementDataDescriptionQuery2) {
+        this.alternativeTargetUIElementDataDescriptionQuery2 = alternativeTargetUIElementDataDescriptionQuery2;
     }
 }

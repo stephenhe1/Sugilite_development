@@ -1,20 +1,33 @@
 package edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
+import android.os.Environment;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
+import org.apache.commons.collections.map.HashedMap;
+
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import edu.cmu.hcii.sugilite.Const;
 import edu.cmu.hcii.sugilite.model.Node;
@@ -27,6 +40,9 @@ import edu.cmu.hcii.sugilite.ontology.SugiliteEntity;
 import edu.cmu.hcii.sugilite.ontology.UISnapshot;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.recording.newrecording.SugiliteBlockBuildingHelper;
+import edu.cmu.hcii.sugilite.ui.AppCompatPreferenceActivity;
+import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
+import edu.cmu.hcii.sugilite.ui.main.FragmentScriptListTab;
 
 
 /**
@@ -38,7 +54,7 @@ import edu.cmu.hcii.sugilite.recording.newrecording.SugiliteBlockBuildingHelper;
 /**
  * dummy dialog -> will lead to either RecordingAmbiguousPopupDialog or SugiliteRecordingConfirmationDialog
  */
-public class OverlayClickedDialog {
+public class OverlayClickedDialog{
     private Context context;
     private SugiliteEntity<Node> node;
     private UISnapshot uiSnapshot;
@@ -54,6 +70,7 @@ public class OverlayClickedDialog {
     private SugiliteData sugiliteData;
     private boolean isLongClick;
     private File screenshot;
+
 
 
     public OverlayClickedDialog(Context context, SugiliteEntity<Node> node, UISnapshot uiSnapshot, File screenshot, float x, float y, FullScreenRecordingOverlayManager recordingOverlayManager, View overlay, SugiliteData sugiliteData, SharedPreferences sharedPreferences, TextToSpeech tts, boolean isLongClick) {
@@ -109,13 +126,172 @@ public class OverlayClickedDialog {
         dialog = builder.create();
     }
 
+    private List<Node> getParentalNode(Node nodeEntity){
+        List<Node> nodesList=new ArrayList<>();
+        while (nodeEntity!=null){
+            nodesList.add(nodeEntity);
+            nodeEntity=nodeEntity.getParent();
+        }
+        return nodesList;
+    }
+
+
+
+
+    public int getNodeIndex(Node nodeInfo) {
+        if  (null!=nodeInfo) {
+            if (null!=nodeInfo.getParent()) {
+                AccessibilityNodeInfo  parent = nodeInfo.getParentalNode();
+//                AccessibilityNodeInfo  parent = null;
+                int childCount = parent.getChildCount();
+                if (childCount > 1) {
+                    List<Rect> rects = new ArrayList<>();
+                    int invisibleNumber=0;
+                    for (int i = 0; i < childCount; i++) {
+                        Rect rect = new Rect();
+                        if(null!=parent.getChild(i)){
+                            try {
+                                if (parent.getChild(i).getClassName().toString().equals(nodeInfo.getClassName())) {
+                                    parent.getChild(i).getBoundsInScreen(rect);
+//                                    if ("com.google.android.apps.youtube.music:id/main_layout_wrapper".equals(parent.getViewIdResourceName())) {
+//                                        System.out.println("two_column_item_content: " + parent.getChildCount() + "," + parent.getChild(0).getViewIdResourceName() + "," + parent.getChild(1).getViewIdResourceName());
+//                                        System.out.println(rects);
+//                                    }
+                                    if("com.google.android.apps.youtube.music:id/waze_bar_container".equals(parent.getChild(i).getViewIdResourceName())){
+                                        invisibleNumber=1;
+                                    }
+                                    rects.add(rect);
+                                }
+                            }
+                            catch (NullPointerException e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                    String nodeRect=nodeInfo.getBoundsInScreen();
+                    int i = 0;
+                    int indexNode = 0;
+                    while (i < rects.size()) {
+                        if (nodeRect.equals(rects.get(i).flattenToString())) {
+                            indexNode = i;
+                            break;
+                        }
+                        i++;
+                    }
+                    return indexNode-invisibleNumber;
+
+                } else {
+                    return 0;
+                }
+            }
+            return 0;
+        }
+        return -1;
+    }
+
+    public void writeXPATH(String fileName,String XPATH){
+        BufferedWriter bw = null;
+        try {
+            bw = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + fileName+"_xpath.txt"),true));
+            bw.write(XPATH+"\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+//    public int getNodeIndex(Node nodeInfo) {
+//        if  (null!=nodeInfo) {
+//            if (null!=nodeInfo.getParent()) {
+////                AccessibilityNodeInfo  parent = nodeInfo.getParentalNode();
+//                Node  parent = nodeInfo.getParent();
+//                int childCount = parent.getChildNodes().size();
+//                if (childCount > 1) {
+//                    List<String> rects = new ArrayList<>();
+//                    int invisibleNumber=0;
+//                    for (int i = 0; i < childCount; i++) {
+//                        if(null!=parent.getChildNodes().get(i)){
+//                            try {
+//                                if (parent.getChildNodes().get(i).getClassName().equals(nodeInfo.getClassName())) {
+//                                    rects.add(parent.getChildNodes().get(i).getBoundsInScreen());
+//                                    if("com.google.android.apps.youtube.music:id/waze_bar_container".equals(parent.getChildNodes().get(i).getViewIdResourceName())){
+//                                        invisibleNumber=1;
+//                                    }
+//                                }
+//                            }
+//                            catch (NullPointerException e){
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                    String nodeRect=nodeInfo.getBoundsInScreen();
+//                    int i = 0;
+//                    int indexNode = 0;
+//                    while (i < rects.size()) {
+//                        if (nodeRect.equals(rects.get(i))) {
+//                            indexNode = i;
+//                            break;
+//                        }
+//                        i++;
+//                    }
+//                    return indexNode-invisibleNumber;
+//
+//                } else {
+//                    return 0;
+//                }
+//            }
+//            return 0;
+//        }
+//        return -1;
+//    }
+
+
+
     /**
      * handle when the operation is to be recorded
      */
     private void handleRecording() {
         List<Pair<OntologyQuery, Double>> queryScoreList = SugiliteBlockBuildingHelper.newGenerateDefaultQueries(uiSnapshot, node);
+        List<Node> nodesList=getParentalNode(node.getEntityValue());
+
+        String xpath="(HAS_XPATH /hierarchy";
+//        System.out.println("ParentalNode Info:");
+        Collections.reverse(nodesList);
+//        System.out.print("(HAS_XPATH ");
+//        System.out.print("/hierarchy");
+        for (Node simpleNode:nodesList){
+            int ownIndex=getNodeIndex(simpleNode);
+//            System.out.println(ownIndex);
+            if (ownIndex>0) {
+                xpath=xpath+"/"+simpleNode.getClassName() + "[" + (ownIndex+1) +"]";
+//                System.out.print("/"+simpleNode.getClassName() + "[" + (ownIndex+1) +"]");
+            }
+            else{
+                xpath=xpath+"/"+simpleNode.getClassName();
+//                System.out.print("/"+simpleNode.getClassName());
+            }
+        }
+        xpath=xpath+")";
+//        System.out.print(")");
+//        System.out.println();
+//        Intent i= getIntent();
+//        String scriptName=i.getStringExtra("scriptName");
+
+        System.out.println("scriptName is:"+ NewScriptDialog.getScript_name());
+        writeXPATH(NewScriptDialog.getScript_name(),xpath);
+
+
+
         if (queryScoreList.size() > 0) {
-            System.out.println("Query Score List: " + queryScoreList);
+            System.out.println("Query Score List in OverlayClickedDialog: " + queryScoreList);
+//            System.out.println("UISnapshot in OverlayClickedDialog: "+uiSnapshot.getNodeSugiliteEntityMap());
 
             //threshold for determine whether the results are ambiguous
             /*
@@ -134,7 +310,7 @@ public class OverlayClickedDialog {
             //TODO: 19/03/11 temporarily disable the ambiguous pop-up for PUMICE study
 
             //generate alternative query
-            SugiliteOperationBlock block = blockBuildingHelper.getUnaryOperationBlockWithOntologyQueryFromQuery(queryScoreList.get(0).first, isLongClick ? SugiliteOperation.LONG_CLICK : SugiliteOperation.CLICK, featurePack, SugiliteBlockBuildingHelper.getFirstNonTextQuery(queryScoreList));
+            SugiliteOperationBlock block = blockBuildingHelper.getUnaryOperationBlockWithOntologyQueryFromQuery(queryScoreList.get(0).first, isLongClick ? SugiliteOperation.LONG_CLICK : SugiliteOperation.CLICK, featurePack, SugiliteBlockBuildingHelper.getFirstNonTextQuery(queryScoreList),SugiliteBlockBuildingHelper.getFirstViewIDQuery(queryScoreList));
             block.setScreenshot(screenshot);
             showConfirmation(block, featurePack, queryScoreList);
         } else {

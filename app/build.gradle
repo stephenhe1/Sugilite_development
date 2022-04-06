@@ -8,6 +8,10 @@ ext {
     grpcVersion = '1.4.0'
 }
 
+task wrapper(type: Wrapper){
+    gradleVersion = '7.2'
+}
+
 android {
     compileSdkVersion 26//25
     buildToolsVersion '28.0.3'
@@ -44,6 +48,14 @@ android {
         into('build/')
         include('classes.jar')
         rename ('classes.jar', 'sugilite.jar')
+    }
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'x86_64', 'armeabi', 'armeabi-v7a', 'mips', 'mips64', 'arm64-v8a'
+            universalApk true
+        }
     }
 
     makeJar.dependsOn(build)

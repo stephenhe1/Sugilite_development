@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.LightingColorFilter;
 import android.speech.tts.TextToSpeech;
@@ -24,6 +25,7 @@ import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogManager;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogSimpleState;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogUtteranceFilter;
+import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.OverlayClickedDialog;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.VerbalInstructionIconManager;
 
 import static edu.cmu.hcii.sugilite.Const.MUL_ZEROS;
@@ -52,6 +54,7 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
     private SugiliteDialogSimpleState askingForScriptNameConfirmationState = new SugiliteDialogSimpleState("ASKING_FOR_SCRIPT_NAME_CONFIRMATION", this, true);
     private VerbalInstructionIconManager verbalInstructionIconManager;
     private View dialogView;
+    private static String script_name;
 
     private ImageButton mySpeakButton;
     private EditText scriptNameEditText;
@@ -100,6 +103,11 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String scriptName = scriptNameEditText.getText().toString();
+                        script_name=scriptName;
+//                        Intent intent=new Intent(context,OverlayClickedDialog.class);
+//                        intent.putExtra("scriptName",scriptName);
+//                        context.startActivity(intent);
+//                        Tabdetail.putExtra("Marker", marker.getTitle().toString());
                         PumiceDemonstrationUtil.initiateDemonstration(context, serviceStatusManager, sharedPreferences, scriptName, sugiliteData, null, sugiliteScriptDao, verbalInstructionIconManager);
 
                         //Toast.makeText(v.getContext(), "Changed script name to " + sharedPreferences.getString("scriptName", "NULL"), Toast.LENGTH_SHORT).show();
@@ -202,6 +210,7 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
         initPrompt();
     }
 
-
-
+    public static String getScript_name() {
+        return script_name;
+    }
 }

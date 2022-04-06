@@ -2,6 +2,7 @@ package edu.cmu.hcii.sugilite.ui.main;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.os.Environment;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -23,6 +24,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -71,6 +73,7 @@ public class FragmentScriptListTab extends Fragment {
     private SugiliteScriptSharingHTTPQueryManager sugiliteScriptSharingHTTPQueryManager;
     private SugiliteSharingScriptPreparer sugiliteSharingScriptPreparer;
     private TempUserAccountNameManager tempUserAccountNameManager;
+    private static String nameofScript;
 
 
     @Override
@@ -215,6 +218,10 @@ public class FragmentScriptListTab extends Fragment {
             if (item.getItemId() == ITEM_DELETE) {
                 if (info.targetView instanceof TextView && ((TextView) info.targetView).getText() != null) {
                     sugiliteScriptDao.delete(PumiceDemonstrationUtil.addScriptExtension(((TextView) info.targetView).getText().toString()));
+//                    System.out.println("The Script Name is :"+PumiceDemonstrationUtil.addScriptExtension(((TextView) info.targetView).getText().toString()));
+                    String scriptPrefix=PumiceDemonstrationUtil.addScriptExtension(((TextView) info.targetView).getText().toString());
+                    scriptPrefix=scriptPrefix.split("\\.")[0];
+                    boolean success = (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + scriptPrefix+"_xpath.txt")).delete();
                     PumiceDemonstrationUtil.showSugiliteAlertDialog(String.format("Successfully deleted the script \"%s\"!", ((TextView) info.targetView).getText().toString()));
                     setUpScriptList();
                 }

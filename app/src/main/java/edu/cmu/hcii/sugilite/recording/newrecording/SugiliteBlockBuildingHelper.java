@@ -85,6 +85,7 @@ public class SugiliteBlockBuildingHelper {
             SugiliteClickOperation sugiliteOperation = new SugiliteClickOperation();
             sugiliteOperation.setQuery(query);
             if (alternativeQuery != null) {
+                System.out.println("alternativeQuery in SugiliteBlockBuildingHelper: "+alternativeQuery);
                 sugiliteOperation.setAlternativeTargetUIElementDataDescriptionQuery(alternativeQuery);
             }
             SugiliteOperationBlock operationBlock = new SugiliteOperationBlock();
@@ -114,12 +115,59 @@ public class SugiliteBlockBuildingHelper {
         }
     }
 
+    public SugiliteOperationBlock getUnaryOperationBlockWithOntologyQueryFromQuery(OntologyQuery query, int opeartionType, SugiliteAvailableFeaturePack featurePack, OntologyQuery alternativeQuery, OntologyQuery alternativeQuery2){
+        if(opeartionType == SugiliteOperation.CLICK) {
+            SugiliteClickOperation sugiliteOperation = new SugiliteClickOperation();
+            sugiliteOperation.setQuery(query);
+            if (alternativeQuery != null) {
+                System.out.println("alternativeQuery in SugiliteBlockBuildingHelper: "+alternativeQuery);
+                sugiliteOperation.setAlternativeTargetUIElementDataDescriptionQuery(alternativeQuery);
+            }
+            if (alternativeQuery2 != null) {
+                sugiliteOperation.setAlternativeTargetUIElementDataDescriptionQuery2(alternativeQuery2);
+            }
+            SugiliteOperationBlock operationBlock = new SugiliteOperationBlock();
+            operationBlock.setOperation(sugiliteOperation);
+            operationBlock.setFeaturePack(featurePack);
+            operationBlock.setScreenshot(featurePack.screenshot);
+            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteOperation, query));
+            return operationBlock;
+        }
+
+        else if(opeartionType == SugiliteOperation.LONG_CLICK) {
+            SugiliteLongClickOperation sugiliteOperation = new SugiliteLongClickOperation();
+            sugiliteOperation.setQuery(query);
+            if (alternativeQuery != null) {
+                sugiliteOperation.setAlternativeTargetUIElementDataDescriptionQuery(alternativeQuery);
+            }
+            if (alternativeQuery2 != null) {
+                System.out.println("alternativeQuery2 for long clicked in SugiliteBlockBuildingHelper: "+alternativeQuery);
+                sugiliteOperation.setAlternativeTargetUIElementDataDescriptionQuery2(alternativeQuery2);
+            }
+            SugiliteOperationBlock operationBlock = new SugiliteOperationBlock();
+            operationBlock.setOperation(sugiliteOperation);
+            operationBlock.setFeaturePack(featurePack);
+            operationBlock.setScreenshot(featurePack.screenshot);
+            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteOperation, query));
+            return operationBlock;
+        }
+
+        else {
+            throw new RuntimeException("got an unsupported operation type: " + opeartionType);
+        }
+    }
+
+
+
+
+
+
     public SugiliteOperationBlock getBinaryOperationBlockWithOntologyQueryFromQuery(OntologyQuery query, int operationType, SugiliteAvailableFeaturePack featurePack, String arg0){
         if(operationType == SugiliteOperation.SET_TEXT) {
             SugiliteSetTextOperation sugiliteSetTextOperation = new SugiliteSetTextOperation();
             sugiliteSetTextOperation.setParameter0(arg0);
             sugiliteSetTextOperation.setQuery(query);
-
+            System.out.println("arg0: "+arg0);
             SugiliteOperationBlock operationBlock = new SugiliteOperationBlock();
             operationBlock.setOperation(sugiliteSetTextOperation);
             operationBlock.setFeaturePack(featurePack);
@@ -148,12 +196,29 @@ public class SugiliteBlockBuildingHelper {
     public static OntologyQuery getFirstNonTextQuery (List<Pair<OntologyQuery, Double>> list) {
         for (Pair<OntologyQuery, Double> queryScorePair :list) {
             OntologyQuery ontologyQuery = queryScorePair.first;
+
             if (!checkIfOntologyQueryContainsRelations(ontologyQuery, SugiliteRelation.HAS_TEXT, SugiliteRelation.HAS_CHILD_TEXT, SugiliteRelation.HAS_CONTENT_DESCRIPTION)) {
+                System.out.println("ontologyQuery at SugiliteBlockBuildingHelper: "+ontologyQuery);
                 return ontologyQuery;
             }
         }
         return null;
     }
+
+    public static OntologyQuery  getFirstViewIDQuery (List<Pair<OntologyQuery, Double>> list) {
+        for (Pair<OntologyQuery, Double> queryScorePair :list) {
+            OntologyQuery ontologyQuery = queryScorePair.first;
+
+            if (checkIfOntologyQueryContainsRelations(ontologyQuery, SugiliteRelation.HAS_VIEW_ID)) {
+//                System.out.println("ontologyQuery at SugiliteBlockBuildingHelper: "+ontologyQuery);
+                return ontologyQuery;
+            }
+        }
+        return list.get(0).first;
+    }
+
+
+
     public static boolean checkIfOntologyQueryContainsHashedQuery (OntologyQuery ontologyQuery) {
         if (ontologyQuery instanceof OntologyQueryWithSubQueries) {
             for (OntologyQuery subQuery : ((OntologyQueryWithSubQueries) ontologyQuery).getSubQueries()) {
