@@ -44,6 +44,7 @@ import edu.cmu.hcii.sugilite.pumice.dialog.PumiceDialogManager;
 import edu.cmu.hcii.sugilite.recording.RecordingPopUpDialog;
 import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.OverlayClickedDialog;
 import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
+import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
 import edu.cmu.hcii.sugilite.ui.dialog.VariableSetValueDialog;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.server_comm.SugiliteVerbalInstructionHTTPQueryManager;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.SugiliteAndroidAPIVoiceRecognitionListener;
@@ -184,6 +185,9 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                         try {
                             //delete the script
                             sugiliteScriptDao.delete(scriptName);
+                            (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_xpath.txt")).delete();
+                            (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".txt")).delete();
+                            Boolean success=(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".txt")).delete();
                             sugiliteData.logUsageData(ScriptUsageLogManager.REMOVE_SCRIPT, scriptName);
 
                         }
@@ -683,7 +687,9 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
                                     sugiliteScriptDao.delete(scriptName);
-                                    (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + LocalScriptDetailActivity.getScript_name()+"_xpath.txt")).delete();
+                                    (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_xpath.txt")).delete();
+                                    (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".txt")).delete();
+                                    Boolean success=(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".txt")).delete();
                                 }
                                 catch (Exception e){
                                     e.printStackTrace();

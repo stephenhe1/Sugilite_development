@@ -229,6 +229,16 @@ public class SugiliteMainActivity extends AppCompatActivity {
                                         if(file.getName().contains("_xpath.txt"))
                                             file.delete();
                                     }
+                                    File rootFile2=new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts");
+                                    for (File file : rootFile2.listFiles()){
+                                        if(file.getName().contains(".txt"))
+                                            file.delete();
+                                    }
+                                    File rootFile3=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/");
+                                    for (File file : rootFile3.listFiles()){
+                                        if(file.getName().contains(".txt"))
+                                            file.delete();
+                                    }
                                     sugiliteData.logUsageData(ScriptUsageLogManager.CLEAR_ALL_SCRIPTS, "N/A");
                                     if (fragmentScriptListTab instanceof FragmentScriptListTab)
                                         ((FragmentScriptListTab) fragmentScriptListTab).setUpScriptList();

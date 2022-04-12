@@ -153,10 +153,6 @@ public class OverlayClickedDialog{
                             try {
                                 if (parent.getChild(i).getClassName().toString().equals(nodeInfo.getClassName())) {
                                     parent.getChild(i).getBoundsInScreen(rect);
-//                                    if ("com.google.android.apps.youtube.music:id/main_layout_wrapper".equals(parent.getViewIdResourceName())) {
-//                                        System.out.println("two_column_item_content: " + parent.getChildCount() + "," + parent.getChild(0).getViewIdResourceName() + "," + parent.getChild(1).getViewIdResourceName());
-//                                        System.out.println(rects);
-//                                    }
                                     if("com.google.android.apps.youtube.music:id/waze_bar_container".equals(parent.getChild(i).getViewIdResourceName())){
                                         invisibleNumber=1;
                                     }
@@ -192,6 +188,7 @@ public class OverlayClickedDialog{
     public void writeXPATH(String fileName,String XPATH){
         BufferedWriter bw = null;
         try {
+            System.out.println("The saved file path is: "+Environment.getExternalStorageDirectory().getAbsolutePath());
             bw = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + fileName+"_xpath.txt"),true));
             bw.write(XPATH+"\n");
         } catch (IOException e) {
@@ -207,51 +204,6 @@ public class OverlayClickedDialog{
         }
     }
 
-//    public int getNodeIndex(Node nodeInfo) {
-//        if  (null!=nodeInfo) {
-//            if (null!=nodeInfo.getParent()) {
-////                AccessibilityNodeInfo  parent = nodeInfo.getParentalNode();
-//                Node  parent = nodeInfo.getParent();
-//                int childCount = parent.getChildNodes().size();
-//                if (childCount > 1) {
-//                    List<String> rects = new ArrayList<>();
-//                    int invisibleNumber=0;
-//                    for (int i = 0; i < childCount; i++) {
-//                        if(null!=parent.getChildNodes().get(i)){
-//                            try {
-//                                if (parent.getChildNodes().get(i).getClassName().equals(nodeInfo.getClassName())) {
-//                                    rects.add(parent.getChildNodes().get(i).getBoundsInScreen());
-//                                    if("com.google.android.apps.youtube.music:id/waze_bar_container".equals(parent.getChildNodes().get(i).getViewIdResourceName())){
-//                                        invisibleNumber=1;
-//                                    }
-//                                }
-//                            }
-//                            catch (NullPointerException e){
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
-//                    String nodeRect=nodeInfo.getBoundsInScreen();
-//                    int i = 0;
-//                    int indexNode = 0;
-//                    while (i < rects.size()) {
-//                        if (nodeRect.equals(rects.get(i))) {
-//                            indexNode = i;
-//                            break;
-//                        }
-//                        i++;
-//                    }
-//                    return indexNode-invisibleNumber;
-//
-//                } else {
-//                    return 0;
-//                }
-//            }
-//            return 0;
-//        }
-//        return -1;
-//    }
-
 
 
     /**
@@ -262,27 +214,17 @@ public class OverlayClickedDialog{
         List<Node> nodesList=getParentalNode(node.getEntityValue());
 
         String xpath="(HAS_XPATH /hierarchy";
-//        System.out.println("ParentalNode Info:");
         Collections.reverse(nodesList);
-//        System.out.print("(HAS_XPATH ");
-//        System.out.print("/hierarchy");
         for (Node simpleNode:nodesList){
             int ownIndex=getNodeIndex(simpleNode);
-//            System.out.println(ownIndex);
             if (ownIndex>0) {
                 xpath=xpath+"/"+simpleNode.getClassName() + "[" + (ownIndex+1) +"]";
-//                System.out.print("/"+simpleNode.getClassName() + "[" + (ownIndex+1) +"]");
             }
             else{
                 xpath=xpath+"/"+simpleNode.getClassName();
-//                System.out.print("/"+simpleNode.getClassName());
             }
         }
         xpath=xpath+")";
-//        System.out.print(")");
-//        System.out.println();
-//        Intent i= getIntent();
-//        String scriptName=i.getStringExtra("scriptName");
 
         System.out.println("scriptName is:"+ NewScriptDialog.getScript_name());
         writeXPATH(NewScriptDialog.getScript_name(),xpath);
@@ -291,21 +233,6 @@ public class OverlayClickedDialog{
 
         if (queryScoreList.size() > 0) {
             System.out.println("Query Score List in OverlayClickedDialog: " + queryScoreList);
-//            System.out.println("UISnapshot in OverlayClickedDialog: "+uiSnapshot.getNodeSugiliteEntityMap());
-
-            //threshold for determine whether the results are ambiguous
-            /*
-            if (queryScoreList.size() <= 1 || (queryScoreList.get(1).second.doubleValue() - queryScoreList.get(0).second.doubleValue() >= 2)) {
-                //not ambiguous, show the confirmation popup
-                SugiliteOperationBlock block = blockBuildingHelper.getUnaryOperationBlockWithOntologyQueryFromQuery(queryScoreList.get(0).first, isLongClick ? SugiliteOperation.LONG_CLICK : SugiliteOperation.CLICK, featurePack);
-                showConfirmation(block, featurePack, queryScoreList);
-
-            } else {
-                //ask for clarification if ambiguous
-                //need to run on ui thread
-                showAmbiguousPopup(queryScoreList, featurePack, node);
-            }
-            */
 
             //TODO: 19/03/11 temporarily disable the ambiguous pop-up for PUMICE study
 

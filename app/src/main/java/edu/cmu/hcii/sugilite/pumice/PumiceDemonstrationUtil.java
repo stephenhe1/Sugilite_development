@@ -14,6 +14,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Environment;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -22,6 +23,15 @@ import android.widget.Toast;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -46,6 +56,8 @@ import edu.cmu.hcii.sugilite.ontology.SugiliteSerializableEntity;
 import edu.cmu.hcii.sugilite.ontology.UISnapshot;
 import edu.cmu.hcii.sugilite.pumice.dialog.PumiceDialogManager;
 import edu.cmu.hcii.sugilite.recording.SugiliteScreenshotManager;
+import edu.cmu.hcii.sugilite.ui.LocalScriptDetailActivity;
+import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
 import edu.cmu.hcii.sugilite.ui.dialog.VariableSetValueDialog;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.VerbalInstructionIconManager;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.SugiliteAndroidAPIVoiceRecognitionListener;
@@ -205,12 +217,9 @@ public class PumiceDemonstrationUtil {
     public static void endRecording(Context context, SugiliteData sugiliteData, SharedPreferences sharedPreferences, SugiliteScriptDao sugiliteScriptDao) {
         SharedPreferences.Editor prefEditor = sharedPreferences.edit();
         SugiliteBlockJSONProcessor jsonProcessor = new SugiliteBlockJSONProcessor(context);
-
-
         //end recording
         prefEditor.putBoolean("recording_in_process", false);
         prefEditor.apply();
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -227,6 +236,38 @@ public class PumiceDemonstrationUtil {
                                 sugiliteData.getScriptHead().uiSnapshotOnEnd = new SerializableUISnapshot(latestUISnapshot);
                                 sugiliteData.getScriptHead().screenshotOnEnd = sugiliteScreenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, sugiliteScreenshotManager.getFileNameFromDate());
                             }
+                            System.out.println("The following blocks of the scriptHead is: ");
+                            try(BufferedReader in = new BufferedReader(new FileReader(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + NewScriptDialog.getScript_name().split("\\.")[0]+"_xpath.txt")))){
+                                String testScript="";
+                                String str;
+                                for(SugiliteBlock block:sugiliteData.getScriptHead().getFollowingBlocks()){
+                                    if ((str=in.readLine())!=null){
+                                        testScript=testScript+block+str+"\n";
+                                    }
+                                }
+                                System.out.println(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name()+".txt");
+                                try(BufferedWriter bw = new BufferedWriter(new FileWriter(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name()+".txt")))){
+                                    bw.write(testScript);
+                                }
+                                Path path= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/");
+                                if (!Files.exists(path)){
+                                    File file=path.toFile();
+                                    file.mkdir();
+                                    File file1=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts");
+                                    file1.mkdir();
+                                }
+                                System.out.println("Whether directory exists or not: "+Files.exists(path));
+                                try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/"+NewScriptDialog.getScript_name()+".txt")))){
+                                    bw1.write(testScript);
+                                }
+                                catch (IOException exception){
+                                    exception.printStackTrace();
+                                }
+                            }
+                            catch (IOException e){
+                                e.printStackTrace();
+                            }
+                            NewScriptDialog.getScript_name();
                             sugiliteScriptDao.save(sugiliteData.getScriptHead());
                         }
                         sugiliteScriptDao.commitSave(new Runnable() {

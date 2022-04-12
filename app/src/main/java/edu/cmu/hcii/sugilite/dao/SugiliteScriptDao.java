@@ -1,5 +1,7 @@
 package edu.cmu.hcii.sugilite.dao;
 
+import android.content.Context;
+
 import java.util.List;
 
 import edu.cmu.hcii.sugilite.model.block.SugiliteBlock;
@@ -66,6 +68,8 @@ public interface SugiliteScriptDao {
      * @return get the next available default name (Untitled Script N)
      */
     String getNextAvailableDefaultName();
+
+    Context getContext();
 
 
 }

@@ -222,6 +222,8 @@ public class FragmentScriptListTab extends Fragment {
                     String scriptPrefix=PumiceDemonstrationUtil.addScriptExtension(((TextView) info.targetView).getText().toString());
                     scriptPrefix=scriptPrefix.split("\\.")[0];
                     boolean success = (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + scriptPrefix+"_xpath.txt")).delete();
+                    new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+scriptPrefix+".txt").delete();
+                    (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/" + scriptPrefix+".txt")).delete();
                     PumiceDemonstrationUtil.showSugiliteAlertDialog(String.format("Successfully deleted the script \"%s\"!", ((TextView) info.targetView).getText().toString()));
                     setUpScriptList();
                 }

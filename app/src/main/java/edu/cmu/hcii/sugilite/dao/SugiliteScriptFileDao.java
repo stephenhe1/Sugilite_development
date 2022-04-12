@@ -88,6 +88,7 @@ public class SugiliteScriptFileDao implements SugiliteScriptDao {
 
         try {
             File rootDataDir = context.getFilesDir();
+            System.out.println("The saved file location is: "+context.getFilesDir().getPath()+"/scripts");
             scriptDir = new File(rootDataDir.getPath() + "/scripts");
             if (!scriptDir.exists() || !scriptDir.isDirectory())
                 scriptDir.mkdir();
@@ -350,5 +351,9 @@ public class SugiliteScriptFileDao implements SugiliteScriptDao {
         if (currentBlock.getNextBlock() != null) {
             setParentBlockForNextBlocks(currentBlock.getNextBlock());
         }
+    }
+
+    public Context getContext() {
+        return context;
     }
 }
