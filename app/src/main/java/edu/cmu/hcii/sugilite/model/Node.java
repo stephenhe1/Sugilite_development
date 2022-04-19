@@ -49,6 +49,7 @@ public class Node implements Serializable {
 
 //    private List<Node> childNodes;
     private transient AccessibilityNodeInfo parentalNode=null;
+    private transient AccessibilityNodeInfo thisNode=null;
 
 //    private List<TextDistancePair> childrenTextLabels, nearbyTextLabels, holisticTextLabels;
     private Integer windowZIndex;
@@ -65,71 +66,7 @@ public class Node implements Serializable {
         this.nodeZIndexSequence.add(nodeInfo.getDrawingOrder());
     }
 
-    public int getNodeIndex(AccessibilityNodeInfo nodeInfo) {
 
-        if (nodeInfo != null) {
-            if (nodeInfo.getParent() != null) {
-                AccessibilityNodeInfo parentalNode = nodeInfo.getParent();
-                int childCount = parentalNode.getChildCount();
-                if (childCount > 1) {
-                    List<Rect> rects = new ArrayList<>();
-                    for (int i = 0; i < childCount; i++) {
-                        Rect rect = new Rect();
-                        if(null!=parentalNode.getChild(i)){
-                            try {
-                                if (parentalNode.getChild(i).getClassName().equals(nodeInfo.getClassName())) {
-                                    parentalNode.getChild(i).getBoundsInScreen(rect);
-                                    if (parentalNode.getChild(i).isVisibleToUser() == true) {
-                                        rects.add(rect);
-                                    }
-                                }
-                            }
-                            catch (NullPointerException e){
-                                e.printStackTrace();
-                            }
-                    }
-                    }
-//                    if ("com.google.android.apps.youtube.music:id/two_column_item_content".equals(parentalNode.getViewIdResourceName())) {
-//                        System.out.println("two_column_item_content: " + parentalNode.getChildCount() + "," + parentalNode.getChild(1).isVisibleToUser() + "," + parentalNode.getChild(3).isVisibleToUser());
-//                        System.out.println(rects);
-//                        Rect nodeRect1 = new Rect();
-//                        nodeInfo.getBoundsInScreen(nodeRect1);
-//                        int ii = 0;
-//                        int indexNode1 = 0;
-//                        while (ii < rects.size()) {
-//                            if (nodeRect1.equals(rects.get(ii))) {
-//                                indexNode1 = ii;
-//                                break;
-//                            }
-//                            ii++;
-//                        }
-//                        System.out.println(indexNode1);
-//                    }
-
-
-                    Rect nodeRect = new Rect();
-                    nodeInfo.getBoundsInScreen(nodeRect);
-                    int i = 0;
-                    int indexNode = 0;
-                    while (i < rects.size()) {
-                        if (nodeRect.equals(rects.get(i))) {
-                            indexNode = i;
-                            break;
-                        }
-                        i++;
-                    }
-                    return indexNode;
-                } else {
-                    return 0;
-                }
-            }
-            return 0;
-        }
-        return 0;
-    }
-
-    public Node() {
-    }
 
     public Node(AccessibilityNodeInfo nodeInfo, String activityName){
         if(nodeInfo == null){
@@ -152,27 +89,7 @@ public class Node implements Serializable {
         if(nodeInfo.getClassName() != null) {
             className = nodeInfo.getClassName().toString();
         }
-//        if (nodeInfo.getChildCount()>0){
-//            for(int i=0;i<nodeInfo.getChildCount();i++){
-//                Node node1=new Node();
-//                if(null!=nodeInfo.getChild(i).getClassName()) {
-//                    node1.className=nodeInfo.getChild(i).getClassName().toString();
-//                }
-//                if(null!=nodeInfo.getChild(i).getViewIdResourceName()) {
-//                    node1.viewId = nodeInfo.getChild(i).getViewIdResourceName().toString();
-//                }
-//                Rect childBoundsInScreen = new Rect();
-//                nodeInfo.getBoundsInScreen(childBoundsInScreen);
-//                node1.boundsInScreen = childBoundsInScreen.flattenToString();
-//
-//                childNodes.add(node1);
-//            }
-//        }
-//        else{
-//            childNodes=new ArrayList<>();
-//        }
-//        if(nodeInfo.getEventManagerId() != null)
-//            eventManagerId = nodeInfo.getEventManagerId();
+
 
         Rect boundsInScreen = new Rect();
         Rect boundsInParent = new Rect();
@@ -180,7 +97,6 @@ public class Node implements Serializable {
         nodeInfo.getBoundsInParent(boundsInParent);
         this.boundsInScreen = boundsInScreen.flattenToString();
         this.boundsInParent = boundsInParent.flattenToString();
-//        this.bounds=boundsInScreen;
         this.isClickable = nodeInfo.isClickable();
         this.isLongClickable = nodeInfo.isLongClickable();
         this.isEditable = nodeInfo.isEditable();
@@ -194,25 +110,10 @@ public class Node implements Serializable {
             this.parentalNode=nodeInfo.getParent();
         }
 
-//        this.ownIndex=getNodeIndex(nodeInfo);
-        // currently this causes a infinite loop constructor
-
-//        childNodes = new ArrayList<>();
-//        int childCount = nodeInfo.getChildCount();
-//        for(int i = 0; i < childCount; i ++){
-//            if(nodeInfo.getChild(i) != null)
-//            childNodes.add(new Node(nodeInfo.getChild(i)));
-//        }
         if(nodeInfo.getParent() != null) {
             parent = new Node(nodeInfo.getParent(), activityName);
         }
-//        TextLabelManager textLabelManager = new TextLabelManager();
-//        this.childrenTextLabels = textLabelManager.getChildrenTextLabels(this);
-//        if(rootNode != null) {
-//            this.nearbyTextLabels = textLabelManager.getNearbyTextLabels(this, rootNode, Const.NEARBY_TEXT_LABEL_LIMIT);
-//            rootNodeDescendantsCount = textLabelManager.traverseNode(rootNode).size();
-//        }
-//        holisticTextLabels = textLabelManager.getHolisticTextLabels(this);
+        thisNode=nodeInfo;
     }
 
     public String getText(){
@@ -312,32 +213,15 @@ public class Node implements Serializable {
         return parent;
     }
 
-//    public List<Node> getChildNodes() {
-//        return childNodes;
-//    }
+    public AccessibilityNodeInfo getThisNode() {
+        return thisNode;
+    }
 
     public int getOwnIndex() {
         return ownIndex;
     }
 
-//    public List<AccessibilityNodeInfo> getChildNodes() {
-//        return childNodes;
-//    }
 
-//    public Rect getBounds() {
-//        return bounds;
-//    }
-
-//    public AccessibilityNodeInfo getParentalNode() {
-//        return parentalNode;
-//    }
-//    public List<TextDistancePair> getChildrenTextLabels() {
-//        return childrenTextLabels;
-//    }
-//
-//    public List<TextDistancePair> getNearbyTextLabels() {
-//        return nearbyTextLabels;
-//    }
 
     @Deprecated
     public boolean sameNode(Node obj) {

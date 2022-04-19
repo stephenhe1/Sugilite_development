@@ -142,21 +142,25 @@ public class OverlayClickedDialog{
         if  (null!=nodeInfo) {
             if (null!=nodeInfo.getParent()) {
                 AccessibilityNodeInfo  parent = nodeInfo.getParentalNode();
-//                AccessibilityNodeInfo  parent = null;
                 int childCount = parent.getChildCount();
                 if (childCount > 1) {
-                    List<Rect> rects = new ArrayList<>();
+                    int count=0;
+                    int length=0;
                     int invisibleNumber=0;
                     for (int i = 0; i < childCount; i++) {
-                        Rect rect = new Rect();
                         if(null!=parent.getChild(i)){
                             try {
+                                if(parent.getChild(i).equals(nodeInfo.getThisNode())){
+                                    length=count-invisibleNumber;
+                                    return length;
+                                }
                                 if (parent.getChild(i).getClassName().toString().equals(nodeInfo.getClassName())) {
-                                    parent.getChild(i).getBoundsInScreen(rect);
-                                    if("com.google.android.apps.youtube.music:id/waze_bar_container".equals(parent.getChild(i).getViewIdResourceName())){
-                                        invisibleNumber=1;
-                                    }
-                                    rects.add(rect);
+                                    count++;
+//                                    parent.getChild(i).getBoundsInScreen(rect);
+//                                    if("com.google.android.apps.youtube.music:id/waze_bar_container".equals(parent.getChild(i).getViewIdResourceName())){
+//                                        invisibleNumber=1;
+//                                    }
+//                                    rects.add(rect);
                                 }
                             }
                             catch (NullPointerException e){
@@ -164,17 +168,6 @@ public class OverlayClickedDialog{
                             }
                         }
                     }
-                    String nodeRect=nodeInfo.getBoundsInScreen();
-                    int i = 0;
-                    int indexNode = 0;
-                    while (i < rects.size()) {
-                        if (nodeRect.equals(rects.get(i).flattenToString())) {
-                            indexNode = i;
-                            break;
-                        }
-                        i++;
-                    }
-                    return indexNode-invisibleNumber;
 
                 } else {
                     return 0;
@@ -188,7 +181,7 @@ public class OverlayClickedDialog{
     public void writeXPATH(String fileName,String XPATH){
         BufferedWriter bw = null;
         try {
-            System.out.println("The saved file path is: "+Environment.getExternalStorageDirectory().getAbsolutePath());
+//            System.out.println("The saved file path is: "+sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+fileName+"_xpath.txt");
             bw = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + fileName+"_xpath.txt"),true));
             bw.write(XPATH+"\n");
         } catch (IOException e) {

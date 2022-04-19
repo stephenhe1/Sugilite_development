@@ -133,7 +133,7 @@ public class SugiliteScreenshotManager {
                             }
                         }, delay);
                     } else {
-                        PumiceDemonstrationUtil.showSugiliteToast("Media Projection Manager is not running!", Toast.LENGTH_SHORT);
+//                        PumiceDemonstrationUtil.showSugiliteToast("Media Projection Manager is not running!", Toast.LENGTH_SHORT);
                         screenshotAvailable = false;
                     }
                 }
