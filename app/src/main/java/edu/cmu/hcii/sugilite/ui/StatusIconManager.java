@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.Settings;
 import android.text.Html;
 import android.text.SpannableString;
@@ -29,6 +30,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -546,6 +556,37 @@ public class StatusIconManager {
 
                                     //step 3: remove the duck and the status view
                                     removeStatusIcon();
+
+                                    try(BufferedReader in = new BufferedReader(new FileReader(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + NewScriptDialog.getScript_name().split("\\.")[0]+"_xpath.txt")))){
+                                        String testScript="";
+                                        String str;
+                                        for(SugiliteBlock block:sugiliteData.getScriptHead().getFollowingBlocks()){
+                                            if ((str=in.readLine())!=null){
+                                                testScript=testScript+block+str+"\n";
+                                            }
+                                        }
+                                        System.out.println(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name()+".txt");
+                                        try(BufferedWriter bw = new BufferedWriter(new FileWriter(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name()+".txt")))){
+                                            bw.write(testScript);
+                                        }
+                                        Path path= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/");
+                                        if (!Files.exists(path)){
+                                            File file=path.toFile();
+                                            file.mkdir();
+                                            File file1=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts");
+                                            file1.mkdir();
+                                        }
+                                        System.out.println("Whether directory exists or not: "+Files.exists(path));
+                                        try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/"+NewScriptDialog.getScript_name()+".txt")))){
+                                            bw1.write(testScript);
+                                        }
+                                        catch (IOException exception){
+                                            exception.printStackTrace();
+                                        }
+                                    }
+                                    catch (IOException exception){
+                                        exception.printStackTrace();
+                                    }
 
                                     //step 4: kill Sugilite app
                                     Intent first_activity_intent = new Intent(context, SugiliteMainActivity.class);

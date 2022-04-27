@@ -152,15 +152,16 @@ public class OverlayClickedDialog{
                             try {
                                 if(parent.getChild(i).equals(nodeInfo.getThisNode())){
                                     length=count-invisibleNumber;
-                                    return length;
+                                    if (hasMoreThanOneSibling(parent, nodeInfo.getClassName())){
+                                        return length+1;
+                                    }
+                                    else{
+                                        return length;
+                                    }
                                 }
                                 if (parent.getChild(i).getClassName().toString().equals(nodeInfo.getClassName())) {
                                     count++;
-//                                    parent.getChild(i).getBoundsInScreen(rect);
-//                                    if("com.google.android.apps.youtube.music:id/waze_bar_container".equals(parent.getChild(i).getViewIdResourceName())){
-//                                        invisibleNumber=1;
-//                                    }
-//                                    rects.add(rect);
+
                                 }
                             }
                             catch (NullPointerException e){
@@ -176,6 +177,22 @@ public class OverlayClickedDialog{
             return 0;
         }
         return -1;
+    }
+
+    public boolean hasMoreThanOneSibling(AccessibilityNodeInfo parent, String className) {
+        int sameCount=0;
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            if (sameCount>1)
+                return true;
+            if(null!=parent.getChild(i)){
+                if (parent.getChild(i).getClassName().toString().equals(className))
+                    sameCount++;
+            }
+        }
+        if (sameCount<2)
+            return false;
+        else
+            return true;
     }
 
     public void writeXPATH(String fileName,String XPATH){
@@ -211,7 +228,7 @@ public class OverlayClickedDialog{
         for (Node simpleNode:nodesList){
             int ownIndex=getNodeIndex(simpleNode);
             if (ownIndex>0) {
-                xpath=xpath+"/"+simpleNode.getClassName() + "[" + (ownIndex+1) +"]";
+                xpath=xpath+"/"+simpleNode.getClassName() + "[" + ownIndex +"]";
             }
             else{
                 xpath=xpath+"/"+simpleNode.getClassName();

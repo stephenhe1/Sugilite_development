@@ -1,12 +1,14 @@
 package edu.cmu.hcii.sugilite.accessibility_service;
 
 import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.GestureDescription;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.preference.PreferenceManager;
@@ -908,6 +910,27 @@ public class SugiliteAccessibilityService extends AccessibilityService {
             refreshIconHandler.removeMessages(0);
         }
 
+    }
+
+    public boolean performTap(int x, int y, int startTime, int duration){
+        if(x < 0 || y < 0)
+            return false;
+        GestureDescription.Builder gestureBuilder = new GestureDescription.Builder();
+        Path swipePath = new Path();
+        swipePath.moveTo(x, y);
+        gestureBuilder.addStroke(new GestureDescription.StrokeDescription(swipePath, startTime, duration));
+        GestureDescription gestureDescription = gestureBuilder.build();
+        return dispatchGesture(gestureDescription, new AccessibilityService.GestureResultCallback() {
+            @Override
+            public void onCompleted(GestureDescription gestureDescription) {
+                super.onCompleted(gestureDescription);
+            }
+
+            @Override
+            public void onCancelled(GestureDescription gestureDescription) {
+                super.onCancelled(gestureDescription);
+            }
+        },null);
     }
 }
 

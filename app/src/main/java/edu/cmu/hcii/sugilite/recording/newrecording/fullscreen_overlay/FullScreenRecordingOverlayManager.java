@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PixelFormat;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Handler;
@@ -48,6 +49,8 @@ import edu.cmu.hcii.sugilite.verbal_instruction_demo.study.SugiliteStudyHandler;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.util.NavigationBarUtil;
 
 import static edu.cmu.hcii.sugilite.Const.OVERLAY_TYPE;
+
+import org.apache.lucene.geo.Line;
 
 /**
  * @author toby
@@ -244,7 +247,7 @@ public class FullScreenRecordingOverlayManager {
 
         overlay.setOnTouchListener(new View.OnTouchListener() {
             GestureDetector myGestureDetector = new GestureDetector(context, new MyGestureDetector());
-            ;
+
 
             @Override
             public boolean onTouch(final View v, MotionEvent event) {
@@ -342,11 +345,11 @@ public class FullScreenRecordingOverlayManager {
         if (uiSnapshot != null) {
             for (SugiliteEntity<Node> entity : uiSnapshot.getNodeSugiliteEntityMap().values()) {
                 Node node = entity.getEntityValue();
-                if (getClickableNodeOnly) {
-                    if (!node.getClickable()) {
-                        continue;
-                    }
-                }
+//                if (getClickableNodeOnly) {
+//                    if (!node.getClickable()) {
+//                        continue;
+//                    }
+//                }
                 if (getLongClickableNodeOnly) {
                     if (!node.getLongClickable()) {
                         continue;
@@ -425,6 +428,42 @@ public class FullScreenRecordingOverlayManager {
         }
     }
 
+    private int findNearestNode(float x, float y,List<SugiliteEntity<Node>> matchedNodeEntities){
+        double minDist=1000;
+        int index=0;
+        int minIndex=0;
+        for(SugiliteEntity<Node> entity:matchedNodeEntities){
+            Node node=entity.getEntityValue();
+            Rect boundingBox = Rect.unflattenFromString(node.getBoundsInScreen());
+            int centerX=boundingBox.centerX();
+            int centerY=boundingBox.centerY();
+            double distance=Math.sqrt(Math.pow((centerY-y),2) + Math.pow((centerX-x),2));
+            if (distance<minDist) {
+                minDist=distance;
+                minIndex=index;
+            }
+            index++;
+
+//            int top=boundingBox.top;
+//            int bottom=boundingBox.bottom;
+//            int left= boundingBox.left;
+//            int right=boundingBox.right;
+//            Point pointA=new Point(left,top);
+//            Point pointB=new Point(right,top);
+//            Point pointC=new Point(right,bottom);
+//            Point pointD=new Point(left,bottom);
+//            float slopeAB=Math.abs((pointA.y-pointB.y)/(pointA.x-pointB.x));
+//            float bAB=pointA.y-slopeAB*pointA.x;
+
+        }
+        return minIndex;
+    }
+
+//
+//    private float lineFunc(float slope, float b){
+//
+//    }
+
     /**
      * handle when the overlay detects a click at (x, y) -> should determine the UI object to match this click event to, and create an OverlayClickedDialog
      *
@@ -437,9 +476,76 @@ public class FullScreenRecordingOverlayManager {
         File screenshot = getLatestScreenshot();
         if (uiSnapshot != null) {
             List<SugiliteEntity<Node>> matchedNodeEntities = getMatchedNodesFromCoordinate(x, y, uiSnapshot, true, false);
-            if (matchedNodeEntities != null) {
-                node = matchedNodeEntities.get(0);
+
+//            TODO:If the first element is not clickable, do the following operations
+            if (matchedNodeEntities.get(0).getEntityValue().getClickable()){
+                node= matchedNodeEntities.get(0);
             }
+            else if (matchedNodeEntities.get(0).getEntityValue().getClickable()==false&&(null!=matchedNodeEntities.get(0).getEntityValue().getText()||null!=matchedNodeEntities.get(0).getEntityValue().getContentDescription())){
+                node= matchedNodeEntities.get(0);
+
+            }
+            else{
+                if (matchedNodeEntities != null) {
+                    if (matchedNodeEntities.size()>1){
+                        int i=0;
+                        int k=0;
+                        while (!matchedNodeEntities.get(i).getEntityValue().getClickable()){
+                            if (null!=matchedNodeEntities.get(i).getEntityValue().getText()){
+                                Node targetNode=matchedNodeEntities.get(i).getEntityValue();
+                                if ("Forgot password?".equals(targetNode.getText())){
+                                    Rect rect=new Rect();
+                                    targetNode.getThisNode().getBoundsInScreen(rect);
+                                    System.out.println("The coordinate is :"+rect.centerX()+","+rect.centerY());
+                                    double distance=Math.sqrt(Math.pow((rect.centerY()-y),2) + Math.pow((rect.centerX()-x),2));
+                                    System.out.println(x+","+y);
+                                    System.out.println("The distance is :"+distance);
+                                    System.out.println("The index is :"+i);
+                                }
+
+                            }
+                            if (i+1>=matchedNodeEntities.size()) {
+                                break;
+                            }
+                            i++;
+                        }
+
+                        if (i>=matchedNodeEntities.size()) {
+                            int innerIndex=0;
+                            while (true){
+                                if (innerIndex>=matchedNodeEntities.size()){
+                                    break;
+                                }
+                                if (null!=matchedNodeEntities.get(innerIndex).getEntityValue().getText()||null!=matchedNodeEntities.get(innerIndex).getEntityValue().getContentDescription()){
+                                    k=innerIndex;
+                                    break;
+                                }
+                                innerIndex++;
+                            }
+                            node = matchedNodeEntities.get(k);
+                            Rect rect=new Rect();
+                            node.getEntityValue().getThisNode().getBoundsInScreen(rect);
+                            System.out.println("The coordinate is :"+rect.centerX()+","+rect.centerY());
+                            double distance=Math.sqrt(Math.pow((rect.centerY()-y),2) + Math.pow((rect.centerX()-x),2));
+                            System.out.println(x+","+y);
+                            System.out.println("The distance is :"+distance);
+//                        System.out.println("The text of the node is :" + node.getEntityValue().getText());
+//                        System.out.println("The text of the node is :" + node.getEntityValue().getContentDescription());
+                        }
+                        else{
+                            node=matchedNodeEntities.get(i);
+                            System.out.println("The coordinate of matched node is :"+node.getEntityValue().getBoundsInScreen());
+                            System.out.println(x+","+y);
+                        }
+                    }
+                    else{
+                        node = matchedNodeEntities.get(0);
+                        System.out.println("The coordinate of matched node is :"+node.getEntityValue().getBoundsInScreen());
+                        System.out.println(x+","+y);
+                    }
+                }
+            }
+
         }
         if (node != null) {
             if (sugiliteAccessibilityService.getSugiliteStudyHandler().isToRecordNextOperation()) {

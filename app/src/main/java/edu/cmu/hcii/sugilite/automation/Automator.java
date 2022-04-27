@@ -1,10 +1,13 @@
 package edu.cmu.hcii.sugilite.automation;
 
+import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.GestureDescription;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Html;
@@ -287,6 +290,7 @@ public class Automator {
 
                                 //!!!execute on node
                                 boolean retVal = performAction(node, operationBlock);
+                                System.out.println("Whether is success or not: "+retVal);
                                 if (retVal) {
                                     //the action is performed successfully
                                     if (!succeeded) {
@@ -340,21 +344,21 @@ public class Automator {
                         AccessibilityNodeInfo accessibilityNodeInfo = uiSnapshot.getNodeAccessibilityNodeInfoMap().get(e.getEntityValue());
 
                         if (operationBlock.getOperation() instanceof SugiliteClickOperation) {
-                            if (!accessibilityNodeInfo.isClickable()) {
-                                continue;
-                            }
+//                            if (!accessibilityNodeInfo.isClickable()) {
+//                                continue;
+//                            }
                         }
 
                         if (operationBlock.getOperation() instanceof SugiliteLongClickOperation) {
-                            if (!accessibilityNodeInfo.isLongClickable()) {
-                                continue;
-                            }
+//                            if (!accessibilityNodeInfo.isLongClickable()) {
+//                                continue;
+//                            }
                         }
 
                         if (operationBlock.getOperation() instanceof SugiliteSetTextOperation) {
-                            if (!accessibilityNodeInfo.isEditable()) {
-                                continue;
-                            }
+//                            if (!accessibilityNodeInfo.isEditable()) {
+//                                continue;
+//                            }
                         }
 
                         preFilteredNodes.add(accessibilityNodeInfo);
@@ -450,6 +454,7 @@ public class Automator {
                 for (AccessibilityNodeInfo node : filteredNodes) {
                     //TODO: scrolling to find more nodes -- not only the ones displayed on the current screen
                     boolean retVal = performAction(node, operationBlock);
+                    System.out.println("Whether is success or not: "+retVal);
                     if (retVal) {
                         if (!succeeded) {
                             //report success
@@ -501,9 +506,19 @@ public class Automator {
     private boolean performAction(AccessibilityNodeInfo node, SugiliteOperationBlock block) {
 
         AccessibilityNodeInfo nodeToAction = node;
+        Rect rect=new Rect();
+        node.getBoundsInScreen(rect);
 
         if (block.getOperation().getOperationType() == SugiliteOperation.CLICK) {
-            return nodeToAction.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            boolean result=nodeToAction.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            if (result==true){
+                return result;
+            }
+            else{
+                return serviceContext.performTap(rect.centerX(),rect.centerY(),10,50);
+            }
+//            return nodeToAction.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+
         }
 
         if (block.getOperation().getOperationType() == SugiliteOperation.SET_TEXT) {
@@ -628,6 +643,7 @@ public class Automator {
     }
 
 
+
     private void addNextBlockToQueue(final SugiliteBlock block) {
         if (block instanceof SugiliteStartingBlock) {
             sugiliteData.addInstruction(block.getNextBlockToRun());
@@ -683,5 +699,7 @@ public class Automator {
             throw new RuntimeException("Unsupported Block Type!");
         }
     }
+
+
 
 }

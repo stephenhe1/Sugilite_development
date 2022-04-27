@@ -81,9 +81,14 @@ public class SugiliteMainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean("EXIT", false)) {
-            finish();
-            return;
+//        if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean("EXIT", false)) {
+//            finish();
+//            return;
+//        }
+        if (getIntent().getBooleanExtra("EXIT",false)){
+            super.finish();
+            finishAndRemoveTask();
+            android.os.Process.killProcess(android.os.Process.myPid());
         }
 
 
@@ -165,10 +170,19 @@ public class SugiliteMainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+
+        android.os.Process.killProcess(android.os.Process.myPid());
+        // This above line close correctly
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         startScreenshotCaptureIntent();
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
