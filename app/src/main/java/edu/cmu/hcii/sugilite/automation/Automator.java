@@ -510,14 +510,13 @@ public class Automator {
         node.getBoundsInScreen(rect);
 
         if (block.getOperation().getOperationType() == SugiliteOperation.CLICK) {
-            boolean result=nodeToAction.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-            if (result==true){
-                return result;
+            if (null!=nodeToAction){
+                if (null!=nodeToAction.getContentDescription()&&nodeToAction.getContentDescription().equals("Apps list")){
+                    return nodeToAction.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                }
             }
-            else{
-                return serviceContext.performTap(rect.centerX(),rect.centerY(),10,50);
-            }
-//            return nodeToAction.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            return serviceContext.performTap(rect.centerX(),rect.centerY(),0,20);
+
 
         }
 

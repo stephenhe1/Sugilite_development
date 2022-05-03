@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -920,7 +921,8 @@ public class SugiliteAccessibilityService extends AccessibilityService {
         swipePath.moveTo(x, y);
         gestureBuilder.addStroke(new GestureDescription.StrokeDescription(swipePath, startTime, duration));
         GestureDescription gestureDescription = gestureBuilder.build();
-        return dispatchGesture(gestureDescription, new AccessibilityService.GestureResultCallback() {
+        verbalInstructionIconManager.turnOffCatOverlay();
+        boolean result= dispatchGesture(gestureDescription, new AccessibilityService.GestureResultCallback() {
             @Override
             public void onCompleted(GestureDescription gestureDescription) {
                 super.onCompleted(gestureDescription);
@@ -931,6 +933,21 @@ public class SugiliteAccessibilityService extends AccessibilityService {
                 super.onCancelled(gestureDescription);
             }
         },null);
+        try {
+            Thread.sleep(800);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        new Handler(Looper.getMainLooper()).post(new Runnable(){
+            @Override
+            public void run() {
+                        verbalInstructionIconManager.turnOnCatOverlay();
+
+
+            }
+        });
+
+        return result;
     }
 }
 

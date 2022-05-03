@@ -267,11 +267,11 @@ public class FullScreenRecordingOverlayManager {
 
                 @Override
                 public void onLongPress(MotionEvent event) {
-                    System.out.println("Context click detected");
-                    float rawX = event.getRawX();
-                    float rawY = event.getRawY();
-                    handleContextClick(rawX, rawY, tts);
-                    return;
+//                    System.out.println("Context click detected");
+//                    float rawX = event.getRawX();
+//                    float rawY = event.getRawY();
+//                    handleContextClick(rawX, rawY, tts);
+//                    return;
                 }
 
                 @Override
@@ -428,41 +428,7 @@ public class FullScreenRecordingOverlayManager {
         }
     }
 
-    private int findNearestNode(float x, float y,List<SugiliteEntity<Node>> matchedNodeEntities){
-        double minDist=1000;
-        int index=0;
-        int minIndex=0;
-        for(SugiliteEntity<Node> entity:matchedNodeEntities){
-            Node node=entity.getEntityValue();
-            Rect boundingBox = Rect.unflattenFromString(node.getBoundsInScreen());
-            int centerX=boundingBox.centerX();
-            int centerY=boundingBox.centerY();
-            double distance=Math.sqrt(Math.pow((centerY-y),2) + Math.pow((centerX-x),2));
-            if (distance<minDist) {
-                minDist=distance;
-                minIndex=index;
-            }
-            index++;
 
-//            int top=boundingBox.top;
-//            int bottom=boundingBox.bottom;
-//            int left= boundingBox.left;
-//            int right=boundingBox.right;
-//            Point pointA=new Point(left,top);
-//            Point pointB=new Point(right,top);
-//            Point pointC=new Point(right,bottom);
-//            Point pointD=new Point(left,bottom);
-//            float slopeAB=Math.abs((pointA.y-pointB.y)/(pointA.x-pointB.x));
-//            float bAB=pointA.y-slopeAB*pointA.x;
-
-        }
-        return minIndex;
-    }
-
-//
-//    private float lineFunc(float slope, float b){
-//
-//    }
 
     /**
      * handle when the overlay detects a click at (x, y) -> should determine the UI object to match this click event to, and create an OverlayClickedDialog
@@ -480,6 +446,8 @@ public class FullScreenRecordingOverlayManager {
 //            TODO:If the first element is not clickable, do the following operations
             if (matchedNodeEntities.get(0).getEntityValue().getClickable()){
                 node= matchedNodeEntities.get(0);
+                System.out.println("Get the coordinate");
+                System.out.println(x+","+y);
             }
             else if (matchedNodeEntities.get(0).getEntityValue().getClickable()==false&&(null!=matchedNodeEntities.get(0).getEntityValue().getText()||null!=matchedNodeEntities.get(0).getEntityValue().getContentDescription())){
                 node= matchedNodeEntities.get(0);

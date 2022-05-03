@@ -83,11 +83,11 @@ public class RecordingOverlayContextClickDialog {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, stringArray);
         mainListView.setAdapter(adapter);
 
-        if(getTextLabelNodeEntityMap().size() > 0) {
-            builder.setTitle("You've long clicked on the item " + getTextLabelNodeEntityMap().keySet().toString() + ". What do you want to do?");
-        } else {
-            builder.setTitle("You've long clicked on the item. What do you want to do?");
-        }
+//        if(getTextLabelNodeEntityMap().size() > 0) {
+//            builder.setTitle("You've long clicked on the item " + getTextLabelNodeEntityMap().keySet().toString() + ". What do you want to do?");
+//        } else {
+//            builder.setTitle("You've long clicked on the item. What do you want to do?");
+//        }
 
         builder.setView(mainListView);
         mainListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -149,7 +149,7 @@ public class RecordingOverlayContextClickDialog {
                 }
             }
         });
-        dialog = builder.create();
+//        dialog = builder.create();
     }
 
     private Map<String, SugiliteEntity<Node>> getTextLabelNodeEntityMap(){
