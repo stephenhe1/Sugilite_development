@@ -238,11 +238,11 @@ public class SugiliteMainActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
                                     sugiliteScriptDao.clear();
-                                    File rootFile=new File(Environment.getExternalStorageDirectory().getAbsolutePath());
-                                    for (File file : rootFile.listFiles()){
-                                        if(file.getName().contains("_xpath.txt"))
-                                            file.delete();
-                                    }
+//                                    File rootFile=new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+//                                    for (File file : rootFile.listFiles()){
+//                                        if(file.getName().contains("_xpath.txt"))
+//                                            file.delete();
+//                                    }
                                     File rootFile2=new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts");
                                     for (File file : rootFile2.listFiles()){
                                         if(file.getName().contains(".txt"))

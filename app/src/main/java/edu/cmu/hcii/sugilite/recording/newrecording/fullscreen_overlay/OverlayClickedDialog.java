@@ -199,7 +199,7 @@ public class OverlayClickedDialog{
         BufferedWriter bw = null;
         try {
 //            System.out.println("The saved file path is: "+sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+fileName+"_xpath.txt");
-            bw = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + fileName+"_xpath.txt"),true));
+            bw = new BufferedWriter(new FileWriter(new File(context.getFilesDir().getPath()+"/scripts/" + fileName+"_xpath.txt"),true));
             bw.write(XPATH+"\n");
         } catch (IOException e) {
             e.printStackTrace();

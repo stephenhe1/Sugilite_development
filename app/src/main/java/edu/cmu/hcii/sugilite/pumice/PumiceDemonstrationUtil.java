@@ -237,7 +237,7 @@ public class PumiceDemonstrationUtil {
                                 sugiliteData.getScriptHead().screenshotOnEnd = sugiliteScreenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, sugiliteScreenshotManager.getFileNameFromDate());
                             }
                             System.out.println("The following blocks of the scriptHead is: ");
-                            try(BufferedReader in = new BufferedReader(new FileReader(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + NewScriptDialog.getScript_name().split("\\.")[0]+"_xpath.txt")))){
+                            try(BufferedReader in = new BufferedReader(new FileReader(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/" + NewScriptDialog.getScript_name().split("\\.")[0]+"_xpath.txt")))){
                                 String testScript="";
                                 String str;
                                 for(SugiliteBlock block:sugiliteData.getScriptHead().getFollowingBlocks()){

@@ -102,7 +102,7 @@ public abstract class ScriptDetailActivity extends AppCompatActivity {
                 System.out.println("scriptName is:"+ LocalScriptDetailActivity.getScript_name());
                 BufferedReader in=null;
                 try {
-                    in = new BufferedReader(new FileReader(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_xpath.txt")));
+                    in = new BufferedReader(new FileReader(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_xpath.txt")));
 
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
