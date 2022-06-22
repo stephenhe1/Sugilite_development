@@ -557,7 +557,7 @@ public class StatusIconManager {
                                     //step 3: remove the duck and the status view
                                     removeStatusIcon();
 
-                                    try(BufferedReader in = new BufferedReader(new FileReader(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + NewScriptDialog.getScript_name().split("\\.")[0]+"_xpath.txt")))){
+                                    try(BufferedReader in = new BufferedReader(new FileReader(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name().split("\\.")[0]+"_xpath.txt")))){
                                         String testScript="";
                                         String str;
                                         for(SugiliteBlock block:sugiliteData.getScriptHead().getFollowingBlocks()){

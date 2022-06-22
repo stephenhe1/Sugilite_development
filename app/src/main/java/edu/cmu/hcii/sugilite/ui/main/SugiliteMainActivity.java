@@ -52,6 +52,7 @@ import edu.cmu.hcii.sugilite.sovite.visual.text_selection.SoviteSetTextParameter
 import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
 import edu.cmu.hcii.sugilite.study.StudyConst;
 import edu.cmu.hcii.sugilite.study.StudyDataUploadManager;
+import edu.cmu.hcii.sugilite.ui.LocalScriptDetailActivity;
 import edu.cmu.hcii.sugilite.ui.SettingsActivity;
 import edu.cmu.hcii.sugilite.ui.dialog.AddTriggerDialog;
 import edu.cmu.hcii.sugilite.ui.dialog.SugiliteProgressDialog;
@@ -250,6 +251,11 @@ public class SugiliteMainActivity extends AppCompatActivity {
                                     }
                                     File rootFile3=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/");
                                     for (File file : rootFile3.listFiles()){
+                                        if(file.getName().contains(".txt"))
+                                            file.delete();
+                                    }
+                                    File rootFile4=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/");
+                                    for (File file : rootFile4.listFiles()){
                                         if(file.getName().contains(".txt"))
                                             file.delete();
                                     }

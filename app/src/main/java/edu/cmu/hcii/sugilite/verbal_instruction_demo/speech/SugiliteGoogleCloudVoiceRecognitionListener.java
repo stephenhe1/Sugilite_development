@@ -49,26 +49,26 @@ public class SugiliteGoogleCloudVoiceRecognitionListener implements SugiliteVoic
 
         @Override
         public void onVoiceStart() {
-            if (mSpeechService != null) {
-                //update the context phrases
-                mSpeechService.setContextPhrases(contextPhrases);
-                mSpeechService.startRecognizing(mVoiceRecorder.getSampleRate());
-            }
+//            if (mSpeechService != null) {
+//                //update the context phrases
+//                mSpeechService.setContextPhrases(contextPhrases);
+//                mSpeechService.startRecognizing(mVoiceRecorder.getSampleRate());
+//            }
         }
 
         @Override
         public void onVoice(byte[] data, int size) {
-            if (mSpeechService != null) {
-                mSpeechService.recognize(data, size);
-            }
+//            if (mSpeechService != null) {
+//                mSpeechService.recognize(data, size);
+//            }
         }
 
         @Override
         public void onVoiceEnd() {
-            stopListening();
-            if (mSpeechService != null) {
-                mSpeechService.finishRecognizing();
-            }
+//            stopListening();
+//            if (mSpeechService != null) {
+//                mSpeechService.finishRecognizing();
+//            }
         }
 
     };
@@ -124,7 +124,7 @@ public class SugiliteGoogleCloudVoiceRecognitionListener implements SugiliteVoic
         this.sugiliteVoiceInterface = voiceInterface;
         this.tts = tts;
         this.sugiliteGoogleCloudVoiceRecognitionListener = this;
-        this.mSpeechService = sugiliteData.getSpeechService();
+//        this.mSpeechService = sugiliteData.getSpeechService();
 
 
         // Check the permission for recording voices
@@ -160,22 +160,22 @@ public class SugiliteGoogleCloudVoiceRecognitionListener implements SugiliteVoic
             @Override
             public void run() {
                 synchronized (this) {
-                    while (mSpeechService == null) {
-                        try {
-                            sugiliteData.speechServiceLock.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+//                    while (mSpeechService == null) {
+//                        try {
+//                            sugiliteData.speechServiceLock.wait();
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
                 }
                 SugiliteData.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         //only allow ONE listener at a time
                         try {
-                        mSpeechService.clearListener();
-
-                        mSpeechService.addListener(mSpeechServiceListener);
+//                        mSpeechService.clearListener();
+//
+//                        mSpeechService.addListener(mSpeechServiceListener);
                         mVoiceRecorder = new GoogleVoiceRecorder(context, mVoiceCallback);
                         mVoiceRecorder.start(new Runnable() {
                             @Override

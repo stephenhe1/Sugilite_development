@@ -1,5 +1,7 @@
 package edu.cmu.hcii.sugilite;
 
+import static java.util.Locale.US;
+
 import android.app.AlertDialog;
 import android.app.Application;
 import android.app.Dialog;
@@ -55,6 +57,8 @@ import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.GoogleCloudSpeechSer
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.GoogleVoiceRecorder;
 
 import static edu.cmu.hcii.sugilite.Const.OVERLAY_TYPE;
+
+import org.w3c.dom.Text;
 
 
 /**
@@ -144,9 +148,9 @@ public class SugiliteData extends Application {
         tts = new TextToSpeech(applicationContext, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                tts.setLanguage(Locale.US);
             }
         });
+        tts.setLanguage(US);
         setTTS(tts);
 
         //initiate ASR
@@ -154,10 +158,10 @@ public class SugiliteData extends Application {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder binder) {
                 // use a service ready callback to ensure that the service is ready
-                mSpeechService = GoogleCloudSpeechService.from(binder);
-                synchronized (speechServiceLock) {
-                    speechServiceLock.notifyAll();
-                }
+//                mSpeechService = GoogleCloudSpeechService.from(binder);
+//                synchronized (speechServiceLock) {
+//                    speechServiceLock.notifyAll();
+//                }
             }
             @Override
             public void onServiceDisconnected(ComponentName componentName) {
@@ -490,7 +494,7 @@ public class SugiliteData extends Application {
         tts = new TextToSpeech(applicationContext, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                tts.setLanguage(Locale.US);
+                tts.setLanguage(US);
             }
         });
         setTTS(tts);

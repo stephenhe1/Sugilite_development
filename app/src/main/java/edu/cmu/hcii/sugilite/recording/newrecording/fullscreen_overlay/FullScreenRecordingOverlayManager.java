@@ -442,76 +442,48 @@ public class FullScreenRecordingOverlayManager {
         File screenshot = getLatestScreenshot();
         if (uiSnapshot != null) {
             List<SugiliteEntity<Node>> matchedNodeEntities = getMatchedNodesFromCoordinate(x, y, uiSnapshot, true, false);
+            if (matchedNodeEntities.size()>1){
+                //            TODO:If the first element is not clickable, do the following operations
+                if (matchedNodeEntities.get(0).getEntityValue().getClickable()) {
+                    node = matchedNodeEntities.get(0);
+//                    System.out.println("Get the coordinate");
+//                    System.out.println(x + "," + y);
+                }
+                else if (matchedNodeEntities.get(0).getEntityValue().getClickable() == false && (null != matchedNodeEntities.get(0).getEntityValue().getText() || null != matchedNodeEntities.get(0).getEntityValue().getContentDescription())) {
+                    node = matchedNodeEntities.get(0);
+                }
+                else {
+                            int i = 0;
+                            int k = 0;
+                            while (!matchedNodeEntities.get(i).getEntityValue().getClickable()) {
+                                if (i + 1 >= matchedNodeEntities.size()) {
+                                    break;
+                                }
+                                i++;
+                            }
 
-//            TODO:If the first element is not clickable, do the following operations
-            if (matchedNodeEntities.get(0).getEntityValue().getClickable()){
-                node= matchedNodeEntities.get(0);
-                System.out.println("Get the coordinate");
-                System.out.println(x+","+y);
-            }
-            else if (matchedNodeEntities.get(0).getEntityValue().getClickable()==false&&(null!=matchedNodeEntities.get(0).getEntityValue().getText()||null!=matchedNodeEntities.get(0).getEntityValue().getContentDescription())){
-                node= matchedNodeEntities.get(0);
+                            if (i >= matchedNodeEntities.size()) {
+                                int innerIndex = 0;
+                                while (true) {
+                                    if (innerIndex >= matchedNodeEntities.size()) {
+                                        break;
+                                    }
+                                    if (null != matchedNodeEntities.get(innerIndex).getEntityValue().getText() || null != matchedNodeEntities.get(innerIndex).getEntityValue().getContentDescription()) {
+                                        k = innerIndex;
+                                        break;
+                                    }
+                                    innerIndex++;
+                                }
+                                node = matchedNodeEntities.get(k);
+                            } else {
+                                node = matchedNodeEntities.get(i);
+                            }
 
+
+                }
             }
             else{
-                if (matchedNodeEntities != null) {
-                    if (matchedNodeEntities.size()>1){
-                        int i=0;
-                        int k=0;
-                        while (!matchedNodeEntities.get(i).getEntityValue().getClickable()){
-                            if (null!=matchedNodeEntities.get(i).getEntityValue().getText()){
-                                Node targetNode=matchedNodeEntities.get(i).getEntityValue();
-                                if ("Forgot password?".equals(targetNode.getText())){
-                                    Rect rect=new Rect();
-                                    targetNode.getThisNode().getBoundsInScreen(rect);
-                                    System.out.println("The coordinate is :"+rect.centerX()+","+rect.centerY());
-                                    double distance=Math.sqrt(Math.pow((rect.centerY()-y),2) + Math.pow((rect.centerX()-x),2));
-                                    System.out.println(x+","+y);
-                                    System.out.println("The distance is :"+distance);
-                                    System.out.println("The index is :"+i);
-                                }
-
-                            }
-                            if (i+1>=matchedNodeEntities.size()) {
-                                break;
-                            }
-                            i++;
-                        }
-
-                        if (i>=matchedNodeEntities.size()) {
-                            int innerIndex=0;
-                            while (true){
-                                if (innerIndex>=matchedNodeEntities.size()){
-                                    break;
-                                }
-                                if (null!=matchedNodeEntities.get(innerIndex).getEntityValue().getText()||null!=matchedNodeEntities.get(innerIndex).getEntityValue().getContentDescription()){
-                                    k=innerIndex;
-                                    break;
-                                }
-                                innerIndex++;
-                            }
-                            node = matchedNodeEntities.get(k);
-                            Rect rect=new Rect();
-                            node.getEntityValue().getThisNode().getBoundsInScreen(rect);
-                            System.out.println("The coordinate is :"+rect.centerX()+","+rect.centerY());
-                            double distance=Math.sqrt(Math.pow((rect.centerY()-y),2) + Math.pow((rect.centerX()-x),2));
-                            System.out.println(x+","+y);
-                            System.out.println("The distance is :"+distance);
-//                        System.out.println("The text of the node is :" + node.getEntityValue().getText());
-//                        System.out.println("The text of the node is :" + node.getEntityValue().getContentDescription());
-                        }
-                        else{
-                            node=matchedNodeEntities.get(i);
-                            System.out.println("The coordinate of matched node is :"+node.getEntityValue().getBoundsInScreen());
-                            System.out.println(x+","+y);
-                        }
-                    }
-                    else{
-                        node = matchedNodeEntities.get(0);
-                        System.out.println("The coordinate of matched node is :"+node.getEntityValue().getBoundsInScreen());
-                        System.out.println(x+","+y);
-                    }
-                }
+                node = matchedNodeEntities.get(0);
             }
 
         }

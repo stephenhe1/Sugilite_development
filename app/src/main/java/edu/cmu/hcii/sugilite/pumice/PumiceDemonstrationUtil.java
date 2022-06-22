@@ -120,6 +120,21 @@ public class PumiceDemonstrationUtil {
                 e.printStackTrace();
             }
 
+            //create the prefix file
+            Path path= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/");
+            if (!Files.exists(path)){
+                File file=path.toFile();
+                file.mkdir();
+            }
+            File file1=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix");
+            file1.mkdir();
+            try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/"+NewScriptDialog.getScript_name()+"_prefix"+".txt")))){
+                bw1.write("Started");
+            }
+            catch (IOException exception){
+                exception.printStackTrace();
+            }
+
             //send the phone back to the home screen
             Intent startMain = new Intent(Intent.ACTION_MAIN);
             startMain.addCategory(Intent.CATEGORY_HOME);

@@ -286,7 +286,6 @@ public class SugiliteAccessibilityService extends AccessibilityService {
         List<AccessibilityNodeInfo> preOrderTraverseRootNode = null;
         List<AccessibilityNodeInfo> preOrderTraverseSibNode = null;
 
-
         //Type of accessibility events to handle in this function
         //return if the event is not among the accessibilityEventArrayToHandle
         if (!accessibilityEventSetToHandle.contains(eventType)) {
@@ -925,16 +924,18 @@ public class SugiliteAccessibilityService extends AccessibilityService {
         boolean result= dispatchGesture(gestureDescription, new AccessibilityService.GestureResultCallback() {
             @Override
             public void onCompleted(GestureDescription gestureDescription) {
+                System.out.println("The gesture completed");
                 super.onCompleted(gestureDescription);
             }
 
             @Override
             public void onCancelled(GestureDescription gestureDescription) {
+                System.out.println("The gesture has been cancelled");
                 super.onCancelled(gestureDescription);
             }
         },null);
         try {
-            Thread.sleep(800);
+            Thread.sleep(1500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

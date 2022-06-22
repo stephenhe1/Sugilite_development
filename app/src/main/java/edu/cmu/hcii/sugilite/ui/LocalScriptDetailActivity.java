@@ -187,6 +187,7 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                             sugiliteScriptDao.delete(scriptName);
                             (new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_xpath.txt")).delete();
                             (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".txt")).delete();
+                            (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_prefix"+".txt")).delete();
                             Boolean success=(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".txt")).delete();
                             sugiliteData.logUsageData(ScriptUsageLogManager.REMOVE_SCRIPT, scriptName);
 
@@ -689,6 +690,7 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                                     sugiliteScriptDao.delete(scriptName);
                                     (new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_xpath.txt")).delete();
                                     (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".txt")).delete();
+                                    (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_prefix"+".txt")).delete();
                                     Boolean success=(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".txt")).delete();
                                 }
                                 catch (Exception e){
