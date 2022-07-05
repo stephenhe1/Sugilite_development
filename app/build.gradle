@@ -114,6 +114,8 @@ dependencies {
     implementation('com.google.auth:google-auth-library-oauth2-http:0.7.0') {
         exclude module: 'httpclient'
     }
+    implementation 'tech.gusavila92:java-android-websocket-client:1.2.2'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 protobuf {

@@ -38,9 +38,13 @@ import edu.cmu.hcii.sugilite.recording.newrecording.SugiliteBlockBuildingHelper;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogManager;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogSimpleState;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogUtteranceFilter;
+import tech.gusavila92.websocketclient.WebSocketClient;
 
 import static edu.cmu.hcii.sugilite.Const.OVERLAY_TYPE;
 import static edu.cmu.hcii.sugilite.Const.SQL_SCRIPT_DAO;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author toby
@@ -174,6 +178,7 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
         dialog.dismiss();
         if (sharedPreferences.getBoolean("recording_in_process", false)) {
             try {
+                sendNodeInfo(featurePack);
                 blockBuildingHelper.saveBlock(block, featurePack);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -330,6 +335,55 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
         //set current sate
         setCurrentState(askingForConfirmationState);
         initPrompt();
+    }
+
+    private void sendNodeInfo(SugiliteAvailableFeaturePack sugiliteAvailableFeaturePack){
+        //Get the websocket instance
+        WebSocketClient webSocketClient=PumiceDemonstrationUtil.getWebSocketClientInst();
+        JSONObject jsonObject=new JSONObject();
+        if(null != sugiliteAvailableFeaturePack){
+            if(null != sugiliteAvailableFeaturePack.text){
+                try {
+                    jsonObject.put("Text",sugiliteAvailableFeaturePack.text);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != sugiliteAvailableFeaturePack.contentDescription){
+                try {
+                    jsonObject.put("Content_Desc",sugiliteAvailableFeaturePack.contentDescription);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != sugiliteAvailableFeaturePack.className){
+                try {
+                    jsonObject.put("Class_Name",sugiliteAvailableFeaturePack.className);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != sugiliteAvailableFeaturePack.viewId){
+                try {
+                    jsonObject.put("Resource_ID",sugiliteAvailableFeaturePack.viewId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != sugiliteAvailableFeaturePack.packageName){
+                try {
+                    jsonObject.put("Package_Name",sugiliteAvailableFeaturePack.packageName);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                jsonObject.put("Xpath",sugiliteAvailableFeaturePack.xPath);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            webSocketClient.send(String.valueOf(jsonObject));
+        }
     }
 
 }

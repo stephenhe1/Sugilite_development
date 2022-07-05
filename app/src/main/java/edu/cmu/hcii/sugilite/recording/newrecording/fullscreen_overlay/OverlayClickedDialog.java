@@ -19,6 +19,8 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
 import org.apache.commons.collections.map.HashedMap;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -43,6 +45,7 @@ import edu.cmu.hcii.sugilite.recording.newrecording.SugiliteBlockBuildingHelper;
 import edu.cmu.hcii.sugilite.ui.AppCompatPreferenceActivity;
 import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
 import edu.cmu.hcii.sugilite.ui.main.FragmentScriptListTab;
+import tech.gusavila92.websocketclient.WebSocketClient;
 
 
 /**
@@ -126,76 +129,76 @@ public class OverlayClickedDialog{
         dialog = builder.create();
     }
 
-    private List<Node> getParentalNode(Node nodeEntity){
-        List<Node> nodesList=new ArrayList<>();
-        while (nodeEntity!=null){
-            nodesList.add(nodeEntity);
-            nodeEntity=nodeEntity.getParent();
-        }
-        return nodesList;
-    }
+//    private List<Node> getParentalNode(Node nodeEntity){
+//        List<Node> nodesList=new ArrayList<>();
+//        while (nodeEntity!=null){
+//            nodesList.add(nodeEntity);
+//            nodeEntity=nodeEntity.getParent();
+//        }
+//        return nodesList;
+//    }
 
 
 
 
-    public int getNodeIndex(Node nodeInfo) {
-        if  (null!=nodeInfo) {
-            if (null!=nodeInfo.getParent()) {
-                AccessibilityNodeInfo  parent = nodeInfo.getParentalNode();
-                int childCount = parent.getChildCount();
-                if (childCount > 1) {
-                    int count=0;
-                    int length=0;
-                    int invisibleNumber=0;
-                    for (int i = 0; i < childCount; i++) {
-                        if(null!=parent.getChild(i)){
-                            try {
-                                if(parent.getChild(i).equals(nodeInfo.getThisNode())){
-                                    length=count-invisibleNumber;
-                                    if (hasMoreThanOneSibling(parent, nodeInfo.getClassName())){
-                                        return length+1;
-                                    }
-                                    else{
-                                        return length;
-                                    }
-                                }
-                                if (parent.getChild(i).getClassName().toString().equals(nodeInfo.getClassName())) {
-                                    count++;
+//    private int getNodeIndex(Node nodeInfo) {
+//        if  (null!=nodeInfo) {
+//            if (null!=nodeInfo.getParent()) {
+//                AccessibilityNodeInfo  parent = nodeInfo.getParentalNode();
+//                int childCount = parent.getChildCount();
+//                if (childCount > 1) {
+//                    int count=0;
+//                    int length=0;
+//                    int invisibleNumber=0;
+//                    for (int i = 0; i < childCount; i++) {
+//                        if(null!=parent.getChild(i)){
+//                            try {
+//                                if(parent.getChild(i).equals(nodeInfo.getThisNode())){
+//                                    length=count-invisibleNumber;
+//                                    if (hasMoreThanOneSibling(parent, nodeInfo.getClassName())){
+//                                        return length+1;
+//                                    }
+//                                    else{
+//                                        return length;
+//                                    }
+//                                }
+//                                if (parent.getChild(i).getClassName().toString().equals(nodeInfo.getClassName())) {
+//                                    count++;
+//
+//                                }
+//                            }
+//                            catch (NullPointerException e){
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//
+//                } else {
+//                    return 0;
+//                }
+//            }
+//            return 0;
+//        }
+//        return -1;
+//    }
 
-                                }
-                            }
-                            catch (NullPointerException e){
-                                e.printStackTrace();
-                            }
-                        }
-                    }
+//    private boolean hasMoreThanOneSibling(AccessibilityNodeInfo parent, String className) {
+//        int sameCount=0;
+//        for (int i = 0; i < parent.getChildCount(); i++) {
+//            if (sameCount>1)
+//                return true;
+//            if(null!=parent.getChild(i)){
+//                if (parent.getChild(i).getClassName().toString().equals(className))
+//                    sameCount++;
+//            }
+//        }
+//        if (sameCount<2)
+//            return false;
+//        else
+//            return true;
+//    }
 
-                } else {
-                    return 0;
-                }
-            }
-            return 0;
-        }
-        return -1;
-    }
-
-    public boolean hasMoreThanOneSibling(AccessibilityNodeInfo parent, String className) {
-        int sameCount=0;
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            if (sameCount>1)
-                return true;
-            if(null!=parent.getChild(i)){
-                if (parent.getChild(i).getClassName().toString().equals(className))
-                    sameCount++;
-            }
-        }
-        if (sameCount<2)
-            return false;
-        else
-            return true;
-    }
-
-    public void writeXPATH(String fileName,String XPATH){
+    private void writeXPATH(String fileName,String XPATH){
         BufferedWriter bw = null;
         try {
 //            System.out.println("The saved file path is: "+sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+fileName+"_xpath.txt");
@@ -214,6 +217,57 @@ public class OverlayClickedDialog{
         }
     }
 
+    private void sendNodeInfo(Node nodeInfo, String xpath){
+        //Get the websocket instance
+        WebSocketClient webSocketClient=PumiceDemonstrationUtil.getWebSocketClientInst();
+        JSONObject jsonObject=new JSONObject();
+        if(nodeInfo != null){
+            if(null != nodeInfo.getText()){
+                try {
+                    jsonObject.put("Text",nodeInfo.getText());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != nodeInfo.getContentDescription()){
+                try {
+                    jsonObject.put("Content_Desc",nodeInfo.getContentDescription());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != nodeInfo.getClassName()){
+                try {
+                    jsonObject.put("Class_Name",nodeInfo.getClassName());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != nodeInfo.getViewId()){
+                try {
+                    jsonObject.put("Resource_ID",nodeInfo.getViewId());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != nodeInfo.getPackageName()){
+                try {
+                    jsonObject.put("Package_Name",nodeInfo.getPackageName());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                jsonObject.put("Xpath",xpath);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            webSocketClient.send(String.valueOf(jsonObject));
+        }
+    }
+
+
+
 
 
     /**
@@ -221,25 +275,27 @@ public class OverlayClickedDialog{
      */
     private void handleRecording() {
         List<Pair<OntologyQuery, Double>> queryScoreList = SugiliteBlockBuildingHelper.newGenerateDefaultQueries(uiSnapshot, node);
-        List<Node> nodesList=getParentalNode(node.getEntityValue());
-
-        String xpath="(HAS_XPATH /hierarchy";
-        Collections.reverse(nodesList);
-        for (Node simpleNode:nodesList){
-            int ownIndex=getNodeIndex(simpleNode);
-            if (ownIndex>0) {
-                xpath=xpath+"/"+simpleNode.getClassName() + "[" + ownIndex +"]";
-            }
-            else{
-                xpath=xpath+"/"+simpleNode.getClassName();
-            }
-        }
-        xpath=xpath+")";
+//        List<Node> nodesList=getParentalNode(node.getEntityValue());
+//
+//        String xpath="(HAS_XPATH /hierarchy";
+//        Collections.reverse(nodesList);
+//        for (Node simpleNode:nodesList){
+//            int ownIndex=getNodeIndex(simpleNode);
+//            if (ownIndex>0) {
+//                xpath=xpath+"/"+simpleNode.getClassName() + "[" + ownIndex +"]";
+//            }
+//            else{
+//                xpath=xpath+"/"+simpleNode.getClassName();
+//            }
+//        }
+//        xpath=xpath+")";
 
         System.out.println("scriptName is:"+ NewScriptDialog.getScript_name());
-        writeXPATH(NewScriptDialog.getScript_name(),xpath);
+//        writeXPATH(NewScriptDialog.getScript_name(),xpath);
+        writeXPATH(NewScriptDialog.getScript_name(),"");
 
-
+        //Send Xpath and the corresponding information to the server
+//        sendNodeInfo(node.getEntityValue(),xpath);
 
         if (queryScoreList.size() > 0) {
             System.out.println("Query Score List in OverlayClickedDialog: " + queryScoreList);

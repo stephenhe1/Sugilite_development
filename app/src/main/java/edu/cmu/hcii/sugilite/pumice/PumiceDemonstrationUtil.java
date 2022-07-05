@@ -20,9 +20,15 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.ArraySet;
 import android.widget.Toast;
+import android.util.Log;
 
+import tech.gusavila92.websocketclient.WebSocketClient;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -63,6 +69,7 @@ import edu.cmu.hcii.sugilite.verbal_instruction_demo.VerbalInstructionIconManage
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.SugiliteAndroidAPIVoiceRecognitionListener;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.SugiliteGoogleCloudVoiceRecognitionListener;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.SugiliteVoiceRecognitionListener;
+import okhttp3.WebSocket;
 
 import static edu.cmu.hcii.sugilite.Const.OVERLAY_TYPE;
 
@@ -83,6 +90,9 @@ public class PumiceDemonstrationUtil {
      * @param sugiliteScriptDao
      * @param verbalInstructionIconManager
      */
+
+    private static WebSocketClient webSocketClient=null;
+
     public static void initiateDemonstration(Context context, ServiceStatusManager serviceStatusManager, SharedPreferences sharedPreferences, String scriptName, SugiliteData sugiliteData, Runnable afterRecordingCallback, SugiliteScriptDao sugiliteScriptDao, VerbalInstructionIconManager verbalInstructionIconManager){
         if(!serviceStatusManager.isRunning()){
             //prompt the user if the accessibility service is not active
@@ -97,6 +107,11 @@ public class PumiceDemonstrationUtil {
                         }
                     }).show();
         } else {
+            //Register to the server and start the recording
+            createWebSocketClient();
+            System.out.println("Executed create web socket client");
+
+
             //start demonstration
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("scriptName", scriptName);
@@ -235,6 +250,9 @@ public class PumiceDemonstrationUtil {
         //end recording
         prefEditor.putBoolean("recording_in_process", false);
         prefEditor.apply();
+        if(null != webSocketClient){
+            webSocketClient.close();
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -457,5 +475,72 @@ public class PumiceDemonstrationUtil {
             }
         }
         return bestLocation;
+    }
+
+    private static void createWebSocketClient() {
+        URI uri;
+        try {
+            // Connect to local host
+            uri = new URI("ws://10.0.2.2:8765");
+        }
+        catch (URISyntaxException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        webSocketClient = new WebSocketClient(uri) {
+            @Override
+            public void onOpen() {
+                Log.i("WebSocket", "Session is starting");
+                JSONObject obj = new JSONObject();
+
+                try {
+                    obj.put("name", "RECORDER");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                webSocketClient.send(String.valueOf(obj));
+            }
+
+            @Override
+            public void onTextReceived(String message) {
+
+            }
+
+
+            @Override
+            public void onBinaryReceived(byte[] data) {
+            }
+
+            @Override
+            public void onPingReceived(byte[] data) {
+            }
+
+            @Override
+            public void onPongReceived(byte[] data) {
+            }
+
+            @Override
+            public void onException(Exception e) {
+                System.out.println(e.getMessage());
+            }
+
+            @Override
+            public void onCloseReceived() {
+                Log.i("WebSocket", "Closed ");
+                System.out.println("onCloseReceived");
+            }
+        };
+
+        webSocketClient.setConnectTimeout(10000);
+        webSocketClient.setReadTimeout(60000);
+        webSocketClient.enableAutomaticReconnection(5000);
+        webSocketClient.connect();
+    }
+
+    public static WebSocketClient getWebSocketClientInst(){
+        if(webSocketClient != null) return webSocketClient;
+        createWebSocketClient();
+        return webSocketClient;
     }
 }
