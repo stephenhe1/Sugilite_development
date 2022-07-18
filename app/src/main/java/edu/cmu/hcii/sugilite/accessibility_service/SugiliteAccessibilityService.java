@@ -925,7 +925,13 @@ public class SugiliteAccessibilityService extends AccessibilityService {
             @Override
             public void onCompleted(GestureDescription gestureDescription) {
                 System.out.println("The gesture completed");
-                super.onCompleted(gestureDescription);
+//                super.onCompleted(gestureDescription);
+                new Handler(Looper.getMainLooper()).post(new Runnable(){
+                    @Override
+                    public void run() {
+                        verbalInstructionIconManager.turnOnCatOverlay();
+                    }
+                });
             }
 
             @Override
@@ -934,19 +940,21 @@ public class SugiliteAccessibilityService extends AccessibilityService {
                 super.onCancelled(gestureDescription);
             }
         },null);
+
+//        new Handler(Looper.getMainLooper()).post(new Runnable(){
+//            @Override
+//            public void run() {
+//                verbalInstructionIconManager.turnOnCatOverlay();
+//
+//
+//            }
+//        });
+
         try {
-            Thread.sleep(1500);
+            Thread.sleep(1200);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        new Handler(Looper.getMainLooper()).post(new Runnable(){
-            @Override
-            public void run() {
-                        verbalInstructionIconManager.turnOnCatOverlay();
-
-
-            }
-        });
 
         return result;
     }

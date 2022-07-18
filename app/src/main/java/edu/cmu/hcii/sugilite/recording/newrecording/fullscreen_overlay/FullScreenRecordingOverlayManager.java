@@ -214,8 +214,6 @@ public class FullScreenRecordingOverlayManager {
 
     /**
      * set view to be not touchble (so it will pass through touch events)
-     *
-     *
      */
     private void setPassThroughOnTouchListener() {
         overlay.setOnTouchListener(new View.OnTouchListener() {
@@ -328,7 +326,6 @@ public class FullScreenRecordingOverlayManager {
     }
 
 
-
     private UISnapshot getUiSnapshotAndAnnotateStringEntitiesIfNeeded() {
         synchronized (this) {
             //annotate string entities in the ui snapshot if needed
@@ -345,11 +342,11 @@ public class FullScreenRecordingOverlayManager {
         if (uiSnapshot != null) {
             for (SugiliteEntity<Node> entity : uiSnapshot.getNodeSugiliteEntityMap().values()) {
                 Node node = entity.getEntityValue();
-//                if (getClickableNodeOnly) {
-//                    if (!node.getClickable()) {
-//                        continue;
-//                    }
-//                }
+                if (getClickableNodeOnly) {
+                    if (!node.getClickable()) {
+                        continue;
+                    }
+                }
                 if (getLongClickableNodeOnly) {
                     if (!node.getLongClickable()) {
                         continue;
@@ -429,7 +426,6 @@ public class FullScreenRecordingOverlayManager {
     }
 
 
-
     /**
      * handle when the overlay detects a click at (x, y) -> should determine the UI object to match this click event to, and create an OverlayClickedDialog
      *
@@ -442,47 +438,7 @@ public class FullScreenRecordingOverlayManager {
         File screenshot = getLatestScreenshot();
         if (uiSnapshot != null) {
             List<SugiliteEntity<Node>> matchedNodeEntities = getMatchedNodesFromCoordinate(x, y, uiSnapshot, true, false);
-            if (matchedNodeEntities.size()>1){
-                //            TODO:If the first element is not clickable, do the following operations
-                if (matchedNodeEntities.get(0).getEntityValue().getClickable()) {
-                    node = matchedNodeEntities.get(0);
-//                    System.out.println("Get the coordinate");
-//                    System.out.println(x + "," + y);
-                }
-                else if (matchedNodeEntities.get(0).getEntityValue().getClickable() == false && (null != matchedNodeEntities.get(0).getEntityValue().getText() || null != matchedNodeEntities.get(0).getEntityValue().getContentDescription())) {
-                    node = matchedNodeEntities.get(0);
-                }
-                else {
-                            int i = 0;
-                            int k = 0;
-                            while (!matchedNodeEntities.get(i).getEntityValue().getClickable()) {
-                                if (i + 1 >= matchedNodeEntities.size()) {
-                                    break;
-                                }
-                                i++;
-                            }
-
-                            if (i >= matchedNodeEntities.size()) {
-                                int innerIndex = 0;
-                                while (true) {
-                                    if (innerIndex >= matchedNodeEntities.size()) {
-                                        break;
-                                    }
-                                    if (null != matchedNodeEntities.get(innerIndex).getEntityValue().getText() || null != matchedNodeEntities.get(innerIndex).getEntityValue().getContentDescription()) {
-                                        k = innerIndex;
-                                        break;
-                                    }
-                                    innerIndex++;
-                                }
-                                node = matchedNodeEntities.get(k);
-                            } else {
-                                node = matchedNodeEntities.get(i);
-                            }
-
-
-                }
-            }
-            else{
+            if (matchedNodeEntities != null) {
                 node = matchedNodeEntities.get(0);
             }
 
@@ -517,10 +473,84 @@ public class FullScreenRecordingOverlayManager {
                 }
             }
         } else {
-            PumiceDemonstrationUtil.showSugiliteToast("No node matched!", Toast.LENGTH_SHORT);
-            System.out.println("No node matched!");
+            List<SugiliteEntity<Node>> matchedNodeEntities = getMatchedNodesFromCoordinate(x, y, uiSnapshot, false, false);
+            node=matchedNodeEntities.get(0);
+//            if (matchedNodeEntities.size() > 1) {
+//                if (matchedNodeEntities.get(0).getEntityValue().getClickable()) {
+//                    node = matchedNodeEntities.get(0);
+//                } else if (matchedNodeEntities.get(0).getEntityValue().getClickable() == false && (null != matchedNodeEntities.get(0).getEntityValue().getText() || null != matchedNodeEntities.get(0).getEntityValue().getContentDescription())) {
+//                    node = matchedNodeEntities.get(0);
+//                } else {
+//                    int i = 0;
+//                    int k = 0;
+//                    while (!matchedNodeEntities.get(i).getEntityValue().getClickable()) {
+////                        System.out.println("The node info is: "+ matchedNodeEntities.get(i).getEntityValue().);
+//                        if (i + 1 >= matchedNodeEntities.size()) {
+//                            break;
+//                        }
+//                        i++;
+//                    }
+//
+//                    if (i >= matchedNodeEntities.size()) {
+//                        int innerIndex = 0;
+//                        while (true) {
+//                            if (innerIndex >= matchedNodeEntities.size()) {
+//                                break;
+//                            }
+//                            if (null != matchedNodeEntities.get(innerIndex).getEntityValue().getText() || null != matchedNodeEntities.get(innerIndex).getEntityValue().getContentDescription()) {
+//                                k = innerIndex;
+//                                break;
+//                            }
+//                            innerIndex++;
+//                        }
+//                        node = matchedNodeEntities.get(k);
+//                    } else {
+//                        node = matchedNodeEntities.get(i);
+//                    }
+//
+//
+//                }
+//            } else {
+//                node = matchedNodeEntities.get(0);
+//            }
+            if (node != null) {
+                if (sugiliteAccessibilityService.getSugiliteStudyHandler().isToRecordNextOperation()) {
+                    //save a study packet
+                    Date time = Calendar.getInstance().getTime();
+                    String timeString = Const.dateFormat.format(time);
+                    String path = "/sdcard/Download/sugilite_study_packets";
+                    String fileName = "packet_" + timeString;
+                    try {
+                        sugiliteScreenshotManager.takeScreenshotUsingShellCommand(true, path, fileName + ".png");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    SugiliteStudyHandler studyHandler = sugiliteAccessibilityService.getSugiliteStudyHandler();
+                    studyHandler.handleEvent(new SugiliteAvailableFeaturePack(node, uiSnapshot, getLatestScreenshot()), uiSnapshot, path, fileName);
+                } else {
+                    OverlayClickedDialog overlayClickedDialog = new OverlayClickedDialog(context, node, uiSnapshot, screenshot, x, y, this, overlay, sugiliteData, sharedPreferences, tts, false);
+                    overlayClickedDialog.show();
+
+                    //flush the textChangedEventHandler
+                    if (textChangedEventHandler != null) {
+                        Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            public void run() {
+                                //capture the screen
+                                textChangedEventHandler.flush();
+                            }
+                        }, 500);
+                    }
+                }
+
+
+//            PumiceDemonstrationUtil.showSugiliteToast("No node matched!", Toast.LENGTH_SHORT);
+//            System.out.println("No node matched!");
+            }
         }
     }
+
+
 
     private void handleContextClick(float x, float y, TextToSpeech tts) {
         UISnapshot uiSnapshot = getUiSnapshotAndAnnotateStringEntitiesIfNeeded();

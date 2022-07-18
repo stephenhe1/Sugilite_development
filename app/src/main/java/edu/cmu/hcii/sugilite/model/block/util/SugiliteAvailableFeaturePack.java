@@ -59,7 +59,7 @@ public class SugiliteAvailableFeaturePack implements Serializable{
         }
         //Add Xpath;
         List<Node> nodesList=getParentalNode(node);
-        String xpath="(HAS_XPATH /hierarchy";
+        String xpath="/hierarchy";
         Collections.reverse(nodesList);
         for (Node simpleNode:nodesList){
             int ownIndex=getNodeIndex(simpleNode);
@@ -70,7 +70,6 @@ public class SugiliteAvailableFeaturePack implements Serializable{
                 xpath=xpath+"/"+simpleNode.getClassName();
             }
         }
-        xpath=xpath+")";
         this.xPath=xpath;
 
 

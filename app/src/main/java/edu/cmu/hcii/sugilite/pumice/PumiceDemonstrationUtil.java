@@ -111,7 +111,6 @@ public class PumiceDemonstrationUtil {
             createWebSocketClient();
             System.out.println("Executed create web socket client");
 
-
             //start demonstration
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putString("scriptName", scriptName);
@@ -160,6 +159,90 @@ public class PumiceDemonstrationUtil {
             if(verbalInstructionIconManager != null){
                 verbalInstructionIconManager.turnOnCatOverlay();
             }
+        }
+    }
+
+    public static void initiateDemonstration(Context context, ServiceStatusManager serviceStatusManager, SharedPreferences sharedPreferences, String scriptName, SugiliteData sugiliteData, Runnable afterRecordingCallback, SugiliteScriptDao sugiliteScriptDao, VerbalInstructionIconManager verbalInstructionIconManager, String packageName){
+        if(!serviceStatusManager.isRunning()){
+            //prompt the user if the accessibility service is not active
+            AlertDialog.Builder builder1 = new AlertDialog.Builder(context);
+            builder1.setTitle("Service not running")
+                    .setMessage("The " + Const.appNameUpperCase + " accessiblity service is not enabled. Please enable the service in the phone settings before recording.")
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            serviceStatusManager.promptEnabling();
+                            //do nothing
+                        }
+                    }).show();
+        } else {
+            //Register to the server and start the recording
+            createWebSocketClient();
+            System.out.println("Executed create web socket client");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            JSONObject startRecordSM=new JSONObject();
+            try {
+                startRecordSM.put("action","START");
+                startRecordSM.put("package_name", packageName);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            webSocketClient.send(String.valueOf(startRecordSM));
+
+            //start demonstration
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("scriptName", scriptName);
+            editor.putBoolean("recording_in_process", true);
+            editor.commit();
+
+            //set the system state
+            sugiliteData.setCurrentSystemState(SugiliteData.RECORDING_STATE);
+
+
+            //set the active script to the newly created script
+            sugiliteData.initiateScriptRecording(PumiceDemonstrationUtil.addScriptExtension(scriptName), afterRecordingCallback); //add the end recording callback
+            sugiliteData.initiatedExternally = false;
+
+            //save the newly created script to DB
+            try {
+                sugiliteScriptDao.save(sugiliteData.getScriptHead());
+                sugiliteScriptDao.commitSave(null);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+
+            //create the prefix file
+            Path path= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/");
+            if (!Files.exists(path)){
+                File file=path.toFile();
+                file.mkdir();
+            }
+            File file1=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix");
+            file1.mkdir();
+            try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/"+NewScriptDialog.getScript_name()+"_prefix"+".txt")))){
+                bw1.write("Started");
+            }
+            catch (IOException exception){
+                exception.printStackTrace();
+            }
+
+            //send the phone back to the home screen
+//            Intent startMain = new Intent(Intent.ACTION_MAIN);
+//            startMain.addCategory(Intent.CATEGORY_HOME);
+//            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//            context.startActivity(startMain);
+            context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packageName));  //Start the specified application
+
+            //turn on the cat overlay to prepare for demonstration
+            if(verbalInstructionIconManager != null){
+                verbalInstructionIconManager.turnOnCatOverlay();
+            }
+
         }
     }
 
@@ -250,6 +333,13 @@ public class PumiceDemonstrationUtil {
         //end recording
         prefEditor.putBoolean("recording_in_process", false);
         prefEditor.apply();
+        JSONObject endRecordSM=new JSONObject();
+        try {
+            endRecordSM.put("action","ENDRECORD");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        webSocketClient.send(String.valueOf(endRecordSM));
         if(null != webSocketClient){
             webSocketClient.close();
         }
@@ -269,38 +359,66 @@ public class PumiceDemonstrationUtil {
                                 sugiliteData.getScriptHead().uiSnapshotOnEnd = new SerializableUISnapshot(latestUISnapshot);
                                 sugiliteData.getScriptHead().screenshotOnEnd = sugiliteScreenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, sugiliteScreenshotManager.getFileNameFromDate());
                             }
-                            System.out.println("The following blocks of the scriptHead is: ");
-                            try(BufferedReader in = new BufferedReader(new FileReader(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/" + NewScriptDialog.getScript_name().split("\\.")[0]+"_xpath.txt")))){
-                                String testScript="";
+//                            System.out.println("The following blocks of the scriptHead is: ");
+                            Path path= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/");
+                            if (!Files.exists(path)) {
+                                File file = path.toFile();
+                                file.mkdir();
+                            }
+                            Path path1= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts");
+                            if (!Files.exists(path1)) {
+                                File file1=path1.toFile();
+                                file1.mkdir();
+                            }
+
+                            String testScript="";
+                            try(BufferedReader in = new BufferedReader(new FileReader(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/" + NewScriptDialog.getScript_name()+".jsonl")))){
                                 String str;
-                                for(SugiliteBlock block:sugiliteData.getScriptHead().getFollowingBlocks()){
-                                    if ((str=in.readLine())!=null){
-                                        testScript=testScript+block+str+"\n";
-                                    }
-                                }
-                                System.out.println(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name()+".txt");
-                                try(BufferedWriter bw = new BufferedWriter(new FileWriter(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name()+".txt")))){
-                                    bw.write(testScript);
-                                }
-                                Path path= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/");
-                                if (!Files.exists(path)){
-                                    File file=path.toFile();
-                                    file.mkdir();
-                                    File file1=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts");
-                                    file1.mkdir();
-                                }
-                                System.out.println("Whether directory exists or not: "+Files.exists(path));
-                                try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/"+NewScriptDialog.getScript_name()+".txt")))){
-                                    bw1.write(testScript);
-                                }
-                                catch (IOException exception){
-                                    exception.printStackTrace();
+                                while ((str=in.readLine()) != null) {
+                                    testScript = testScript + str + "\n";
                                 }
                             }
-                            catch (IOException e){
-                                e.printStackTrace();
+                            catch (IOException exception){
+                                exception.printStackTrace();
                             }
-                            NewScriptDialog.getScript_name();
+
+                            try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/"+NewScriptDialog.getScript_name()+".jsonl")))){
+                                bw1.write(testScript);
+                            }
+                            catch (IOException exception){
+                                exception.printStackTrace();
+                            }
+
+//                            try(BufferedReader in = new BufferedReader(new FileReader(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/" + NewScriptDialog.getScript_name()+"_xpath.txt")))){
+//                                String testScript="";
+//                                String str;
+//                                for(SugiliteBlock block:sugiliteData.getScriptHead().getFollowingBlocks()){
+//                                    if ((str=in.readLine())!=null){
+//                                        testScript=testScript+block+str+"\n";
+//                                    }
+//                                }
+//                                System.out.println(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name()+".txt");
+//                                try(BufferedWriter bw = new BufferedWriter(new FileWriter(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name()+".txt")))){
+//                                    bw.write(testScript);
+//                                }
+//                                Path path= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/");
+//                                if (!Files.exists(path)){
+//                                    File file=path.toFile();
+//                                    file.mkdir();
+//                                    File file1=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts");
+//                                    file1.mkdir();
+//                                }
+//                                System.out.println("Whether directory exists or not: "+Files.exists(path));
+//                                try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/"+NewScriptDialog.getScript_name()+".txt")))){
+//                                    bw1.write(testScript);
+//                                }
+//                                catch (IOException exception){
+//                                    exception.printStackTrace();
+//                                }
+//                            }
+//                            catch (IOException e){
+//                                e.printStackTrace();
+//                            }
                             sugiliteScriptDao.save(sugiliteData.getScriptHead());
                         }
                         sugiliteScriptDao.commitSave(new Runnable() {
@@ -481,61 +599,68 @@ public class PumiceDemonstrationUtil {
         URI uri;
         try {
             // Connect to local host
-            uri = new URI("ws://10.0.2.2:8765");
+            String serverAddress = NewScriptDialog.getServerAddress();
+            System.out.println("serverAddress is : "+serverAddress);
+            uri = new URI("ws://"+ serverAddress + ":8765");
         }
         catch (URISyntaxException e) {
             e.printStackTrace();
             return;
         }
 
-        webSocketClient = new WebSocketClient(uri) {
-            @Override
-            public void onOpen() {
-                Log.i("WebSocket", "Session is starting");
-                JSONObject obj = new JSONObject();
+        if (webSocketClient == null) {
 
-                try {
-                    obj.put("name", "RECORDER");
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            webSocketClient = new WebSocketClient(uri) {
+                @Override
+                public void onOpen() {
+                    Log.i("WebSocket", "Session is starting");
+                    JSONObject registerSM = new JSONObject();
+
+                    try {
+                        registerSM.put("action","REGISTER");
+                        registerSM.put("name", "RECORDER");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    webSocketClient.send(String.valueOf(registerSM));
                 }
-                webSocketClient.send(String.valueOf(obj));
-            }
 
-            @Override
-            public void onTextReceived(String message) {
+                @Override
+                public void onTextReceived(String message) {
 
-            }
+                }
 
 
-            @Override
-            public void onBinaryReceived(byte[] data) {
-            }
+                @Override
+                public void onBinaryReceived(byte[] data) {
+                }
 
-            @Override
-            public void onPingReceived(byte[] data) {
-            }
+                @Override
+                public void onPingReceived(byte[] data) {
+                }
 
-            @Override
-            public void onPongReceived(byte[] data) {
-            }
+                @Override
+                public void onPongReceived(byte[] data) {
+                }
 
-            @Override
-            public void onException(Exception e) {
-                System.out.println(e.getMessage());
-            }
+                @Override
+                public void onException(Exception e) {
+                    System.out.println(e.getMessage());
+                }
 
-            @Override
-            public void onCloseReceived() {
-                Log.i("WebSocket", "Closed ");
-                System.out.println("onCloseReceived");
-            }
-        };
+                @Override
+                public void onCloseReceived() {
+                    Log.i("WebSocket", "Closed ");
+                    System.out.println("onCloseReceived");
+                }
+            };
+            webSocketClient.setConnectTimeout(10000);
+            webSocketClient.setReadTimeout(60000);
+            webSocketClient.enableAutomaticReconnection(5000);
+            webSocketClient.connect();
+        }
 
-        webSocketClient.setConnectTimeout(10000);
-        webSocketClient.setReadTimeout(60000);
-        webSocketClient.enableAutomaticReconnection(5000);
-        webSocketClient.connect();
+
     }
 
     public static WebSocketClient getWebSocketClientInst(){

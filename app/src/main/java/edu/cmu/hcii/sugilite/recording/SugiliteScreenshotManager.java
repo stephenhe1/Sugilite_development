@@ -27,6 +27,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -110,6 +112,10 @@ public class SugiliteScreenshotManager {
         return takeScreenshot(directoryPath, fileName, 100);
     }
     public File takeScreenshot(String directoryPath, String fileName, long delay) {
+        if (! Files.exists(Paths.get(directoryPath))){
+            File file = Paths.get(directoryPath).toFile();
+            file.mkdirs();
+        }
         String imagePath = directoryPath + fileName;
         File imageFile = new File(imagePath);
         new Thread(new Runnable() {
@@ -215,6 +221,7 @@ public class SugiliteScreenshotManager {
                     if (bitmap != null) {
                         try {
                             if (!imageFile.exists()) {
+                                System.out.println("The imageFile Path is: "+imageFile.getAbsolutePath());
                                 imageFile.createNewFile();
                             }
                             FileOutputStream out = new FileOutputStream(imageFile);

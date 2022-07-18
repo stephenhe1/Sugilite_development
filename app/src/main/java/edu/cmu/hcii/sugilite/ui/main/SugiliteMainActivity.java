@@ -246,12 +246,12 @@ public class SugiliteMainActivity extends AppCompatActivity {
 //                                    }
                                     File rootFile2=new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts");
                                     for (File file : rootFile2.listFiles()){
-                                        if(file.getName().contains(".txt"))
+                                        if(file.getName().contains(".jsonl"))
                                             file.delete();
                                     }
                                     File rootFile3=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/");
                                     for (File file : rootFile3.listFiles()){
-                                        if(file.getName().contains(".txt"))
+                                        if(file.getName().contains(".jsonl"))
                                             file.delete();
                                     }
                                     File rootFile4=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/");

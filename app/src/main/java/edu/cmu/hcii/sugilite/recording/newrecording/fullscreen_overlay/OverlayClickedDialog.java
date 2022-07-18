@@ -292,7 +292,7 @@ public class OverlayClickedDialog{
 
         System.out.println("scriptName is:"+ NewScriptDialog.getScript_name());
 //        writeXPATH(NewScriptDialog.getScript_name(),xpath);
-        writeXPATH(NewScriptDialog.getScript_name(),"");
+//        writeXPATH(NewScriptDialog.getScript_name(),"");
 
         //Send Xpath and the corresponding information to the server
 //        sendNodeInfo(node.getEntityValue(),xpath);

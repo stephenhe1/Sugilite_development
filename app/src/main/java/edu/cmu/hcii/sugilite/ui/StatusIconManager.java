@@ -449,30 +449,30 @@ public class StatusIconManager {
                     }
                     else{
                         if(recordingInProcess){
-                            operationList.add("View Current Recording");
-                            operationList.add("Add GO_HOME Operation Block");
-                            operationList.add("Add Running a Subscript");
-                            if(Const.KEEP_ALL_TEXT_LABEL_LIST)
-                                operationList.add("Get a Text Element on the Screen");
-                            operationList.add("Add a Delay");
+//                            operationList.add("View Current Recording");
+//                            operationList.add("Add GO_HOME Operation Block");
+//                            operationList.add("Add Running a Subscript");
+//                            if(Const.KEEP_ALL_TEXT_LABEL_LIST)
+//                                operationList.add("Get a Text Element on the Screen");
+//                            operationList.add("Add a Delay");
                             operationList.add("End Recording");
                         }
                         else{
-                            operationList.add("View Last Recording");
-                            operationList.add("Resume Last Recording");
+//                            operationList.add("View Last Recording");
+//                            operationList.add("Resume Last Recording");
                             operationList.add("New Recording");
                         }
                     }
 
                     if(verbalInstructionIconManager != null) {
                         if(verbalInstructionIconManager.isShowingIcon()) {
-                            operationList.add("Turn off verbal instruction");
+//                            operationList.add("Turn off verbal instruction");
                         }
                         else{
-                            operationList.add("Turn on verbal instruction");
+//                            operationList.add("Turn on verbal instruction");
                         }
                     }
-                    operationList.add("Hide Duck Icon");
+//                    operationList.add("Hide Duck Icon");
                     operationList.add("Quit Sugilite");
                     String[] operations = new String[operationList.size()];
                     operations = operationList.toArray(operations);
@@ -491,18 +491,18 @@ public class StatusIconManager {
                                         sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
                                     break;
                                 //bring the user to the script list activity
-                                case "View Last Recording":
-                                case "View Current Recording":
-                                    Intent intent = new Intent(context, LocalScriptDetailActivity.class);
-                                    if(startingBlock != null && startingBlock.getScriptName() != null) {
-                                        intent.putExtra("scriptName", startingBlock.getScriptName());
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        context.startActivity(intent);
-                                    }
-                                    PumiceDemonstrationUtil.showSugiliteToast("view current script", Toast.LENGTH_SHORT);
-                                    if(runningInProgress)
-                                        sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
-                                    break;
+//                                case "View Last Recording":
+//                                case "View Current Recording":
+//                                    Intent intent = new Intent(context, LocalScriptDetailActivity.class);
+//                                    if(startingBlock != null && startingBlock.getScriptName() != null) {
+//                                        intent.putExtra("scriptName", startingBlock.getScriptName());
+//                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                                        context.startActivity(intent);
+//                                    }
+//                                    PumiceDemonstrationUtil.showSugiliteToast("view current script", Toast.LENGTH_SHORT);
+//                                    if(runningInProgress)
+//                                        sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
+//                                    break;
                                 case "End Recording":
                                     //end recording
                                     PumiceDemonstrationUtil.endRecording(context, sugiliteData, sharedPreferences, sugiliteScriptDao);
@@ -512,19 +512,19 @@ public class StatusIconManager {
                                     NewScriptDialog newScriptDialog = new NewScriptDialog(v.getContext(), sugiliteScriptDao, serviceStatusManager, sharedPreferences, sugiliteData, true, null, null);
                                     newScriptDialog.show();
                                     break;
-                                case "Resume Last Recording":
-                                    //resume the recording of an existing script
-                                    sugiliteData.initiatedExternally = false;
-                                    SharedPreferences.Editor prefEditor2 = sharedPreferences.edit();
-                                    prefEditor2.putBoolean("recording_in_process", true);
-                                    prefEditor2.apply();
-                                    PumiceDemonstrationUtil.showSugiliteToast("resume recording", Toast.LENGTH_SHORT);
-                                    sugiliteData.setCurrentSystemState(SugiliteData.RECORDING_STATE);
-                                    break;
-                                case "Hide Duck Icon":
-                                    //step: remove the duck and the status view
-                                    removeStatusIcon();
-                                    break;
+//                                case "Resume Last Recording":
+//                                    //resume the recording of an existing script
+//                                    sugiliteData.initiatedExternally = false;
+//                                    SharedPreferences.Editor prefEditor2 = sharedPreferences.edit();
+//                                    prefEditor2.putBoolean("recording_in_process", true);
+//                                    prefEditor2.apply();
+//                                    PumiceDemonstrationUtil.showSugiliteToast("resume recording", Toast.LENGTH_SHORT);
+//                                    sugiliteData.setCurrentSystemState(SugiliteData.RECORDING_STATE);
+//                                    break;
+//                                case "Hide Duck Icon":
+//                                    //step: remove the duck and the status view
+//                                    removeStatusIcon();
+//                                    break;
                                 case "Quit Sugilite":
                                     PumiceDemonstrationUtil.showSugiliteToast("quit sugilite", Toast.LENGTH_SHORT);
 
