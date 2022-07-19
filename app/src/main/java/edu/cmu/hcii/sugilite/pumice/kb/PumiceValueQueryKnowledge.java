@@ -28,7 +28,7 @@ import edu.cmu.hcii.sugilite.pumice.communication.SkipPumiceJSONSerialization;
 import edu.cmu.hcii.sugilite.pumice.dialog.PumiceDialogManager;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.pumice.kb.default_query.BuiltInValueQuery;
-import edu.cmu.hcii.sugilite.sovite.SoviteAppNameAppInfoManager;
+//import edu.cmu.hcii.sugilite.sovite.SoviteAppNameAppInfoManager;
 
 
 /**
@@ -82,11 +82,11 @@ public class PumiceValueQueryKnowledge<T> implements Serializable {
                 involvedAppPackageNames.add(packageName);
             }
         }
-        SoviteAppNameAppInfoManager soviteAppNameAppInfoManager = SoviteAppNameAppInfoManager.getInstance(SugiliteData.getAppContext());
-        for(String packageName : involvedAppPackageNames){
-            //get app name for package name
-            involvedAppNames.add(soviteAppNameAppInfoManager.getReadableAppNameForPackageName(packageName));
-        }
+//        SoviteAppNameAppInfoManager soviteAppNameAppInfoManager = SoviteAppNameAppInfoManager.getInstance(SugiliteData.getAppContext());
+//        for(String packageName : involvedAppPackageNames){
+//            //get app name for package name
+//            involvedAppNames.add(soviteAppNameAppInfoManager.getReadableAppNameForPackageName(packageName));
+//        }
     }
 
     public void copyFrom(PumiceValueQueryKnowledge pumiceValueQueryKnowledge){

@@ -11,7 +11,6 @@ import edu.cmu.hcii.sugilite.model.operation.trinary.SugiliteTrinaryOperation;
 import edu.cmu.hcii.sugilite.model.operation.unary.SugiliteUnaryOperation;
 import edu.cmu.hcii.sugilite.ontology.OntologyQuery;
 import edu.cmu.hcii.sugilite.ontology.description.OntologyDescriptionGenerator;
-import edu.cmu.hcii.sugilite.ontology.HashedStringLeafOntologyQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,40 +26,40 @@ public class ScriptQueryHasher {
     }
 
     public void hashOntologyQueries(SugiliteStartingBlock sugiliteStartingBlock) {
-        for (SugiliteBlock block : getAllOperationBlocks(sugiliteStartingBlock)) {
-            if (block instanceof SugiliteOperationBlock) {
-                SugiliteOperationBlock operationBlock = (SugiliteOperationBlock)block;
-                SugiliteOperation op = ((SugiliteOperationBlock) block).getOperation();
-                if (op instanceof SugiliteUnaryOperation) {
-                    SugiliteUnaryOperation unary = (SugiliteUnaryOperation)op;
-                    if (unary.getParameter0() instanceof OntologyQuery) {
-                        unary.setParameter0(HashedStringLeafOntologyQuery.hashQuery((OntologyQuery) unary.getParameter0()));
-                    }
-                }
-                if (op instanceof SugiliteBinaryOperation) {
-                    SugiliteBinaryOperation binary = (SugiliteBinaryOperation)op;
-                    if (binary.getParameter0() instanceof OntologyQuery) {
-                        binary.setParameter0(HashedStringLeafOntologyQuery.hashQuery((OntologyQuery) binary.getParameter0()));
-                    }
-                    if (binary.getParameter1() instanceof OntologyQuery) {
-                        binary.setParameter1(HashedStringLeafOntologyQuery.hashQuery((OntologyQuery) binary.getParameter1()));
-                    }
-                }
-                if (op instanceof SugiliteTrinaryOperation) {
-                    SugiliteTrinaryOperation trinary = (SugiliteTrinaryOperation)op;
-                    if (trinary.getParameter0() instanceof OntologyQuery) {
-                        trinary.setParameter0(HashedStringLeafOntologyQuery.hashQuery((OntologyQuery) trinary.getParameter0()));
-                    }
-                    if (trinary.getParameter1() instanceof OntologyQuery) {
-                        trinary.setParameter1(HashedStringLeafOntologyQuery.hashQuery((OntologyQuery) trinary.getParameter1()));
-                    }
-                    if (trinary.getParameter2() instanceof OntologyQuery) {
-                        trinary.setParameter2(HashedStringLeafOntologyQuery.hashQuery((OntologyQuery) trinary.getParameter2()));
-                    }
-                }
-                operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(operationBlock.getOperation(), operationBlock.getOperation().getDataDescriptionQueryIfAvailable()));
-            }
-        }
+//        for (SugiliteBlock block : getAllOperationBlocks(sugiliteStartingBlock)) {
+//            if (block instanceof SugiliteOperationBlock) {
+//                SugiliteOperationBlock operationBlock = (SugiliteOperationBlock)block;
+//                SugiliteOperation op = ((SugiliteOperationBlock) block).getOperation();
+//                if (op instanceof SugiliteUnaryOperation) {
+//                    SugiliteUnaryOperation unary = (SugiliteUnaryOperation)op;
+//                    if (unary.getParameter0() instanceof OntologyQuery) {
+//                        unary.setParameter0(HashedStringLeafOntologyQuery.hashQuery((OntologyQuery) unary.getParameter0()));
+//                    }
+//                }
+//                if (op instanceof SugiliteBinaryOperation) {
+//                    SugiliteBinaryOperation binary = (SugiliteBinaryOperation)op;
+//                    if (binary.getParameter0() instanceof OntologyQuery) {
+//                        binary.setParameter0(HashedStringLeafOntologyQuery.hashQuery((OntologyQuery) binary.getParameter0()));
+//                    }
+//                    if (binary.getParameter1() instanceof OntologyQuery) {
+//                        binary.setParameter1(HashedStringLeafOntologyQuery.hashQuery((OntologyQuery) binary.getParameter1()));
+//                    }
+//                }
+//                if (op instanceof SugiliteTrinaryOperation) {
+//                    SugiliteTrinaryOperation trinary = (SugiliteTrinaryOperation)op;
+//                    if (trinary.getParameter0() instanceof OntologyQuery) {
+//                        trinary.setParameter0(HashedStringLeafOntologyQuery.hashQuery((OntologyQuery) trinary.getParameter0()));
+//                    }
+//                    if (trinary.getParameter1() instanceof OntologyQuery) {
+//                        trinary.setParameter1(HashedStringLeafOntologyQuery.hashQuery((OntologyQuery) trinary.getParameter1()));
+//                    }
+//                    if (trinary.getParameter2() instanceof OntologyQuery) {
+//                        trinary.setParameter2(HashedStringLeafOntologyQuery.hashQuery((OntologyQuery) trinary.getParameter2()));
+//                    }
+//                }
+//                operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(operationBlock.getOperation(), operationBlock.getOperation().getDataDescriptionQueryIfAvailable()));
+//            }
+//        }
     }
 
 

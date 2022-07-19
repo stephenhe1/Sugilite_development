@@ -12,7 +12,7 @@ import static edu.cmu.hcii.sugilite.source_parsing.SugiliteScriptExpression.addQ
 public class SugiliteClickOperation extends SugiliteUnaryOperation<OntologyQuery> {
     private OntologyQuery targetUIElementDataDescriptionQuery;
     private OntologyQuery alternativeTargetUIElementDataDescriptionQuery;
-    private OntologyQuery alternativeTargetUIElementDataDescriptionQuery2;
+    private OntologyQuery alternativeTargetUIElementDataDescriptionQuery2;  // TODO: What is this?
     public SugiliteClickOperation(){
         super();
         this.setOperationType(CLICK);

@@ -320,7 +320,7 @@ public class SugiliteScriptExpression<T> {
 
             //set the description
             if (descriptionGenerator != null) {
-                operationBlock.setDescription(descriptionGenerator.getSpannedDescriptionForOperation(operation, operationBlock.getOperation().getDataDescriptionQueryIfAvailable()));
+//                operationBlock.setDescription(descriptionGenerator.getSpannedDescriptionForOperation(operation, operationBlock.getOperation().getDataDescriptionQueryIfAvailable()));
             } else {
                 operationBlock.setDescription(operationBlock.toString());
             }
@@ -406,7 +406,7 @@ public class SugiliteScriptExpression<T> {
 
             //set the description
             if (descriptionGenerator != null && operationBlock.getOperation().getDataDescriptionQueryIfAvailable() != null) {
-                operationBlock.setDescription(descriptionGenerator.getSpannedDescriptionForOperation(operation, operationBlock.getOperation().getDataDescriptionQueryIfAvailable()));
+//                operationBlock.setDescription(descriptionGenerator.getSpannedDescriptionForOperation(operation, operationBlock.getOperation().getDataDescriptionQueryIfAvailable()));
             } else {
                 operationBlock.setDescription(operationBlock.toString());
             }
@@ -443,7 +443,7 @@ public class SugiliteScriptExpression<T> {
 
             //set the description
             if (descriptionGenerator != null) {
-                operationBlock.setDescription(descriptionGenerator.getSpannedDescriptionForOperation(operation, operationBlock.getOperation().getDataDescriptionQueryIfAvailable()));
+//                operationBlock.setDescription(descriptionGenerator.getSpannedDescriptionForOperation(operation, operationBlock.getOperation().getDataDescriptionQueryIfAvailable()));
             } else {
                 operationBlock.setDescription(operationBlock.toString());
             }

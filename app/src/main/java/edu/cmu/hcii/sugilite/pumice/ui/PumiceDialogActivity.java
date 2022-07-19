@@ -22,13 +22,13 @@ import edu.cmu.hcii.sugilite.SugiliteData;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.pumice.dialog.PumiceDialogManager;
 import edu.cmu.hcii.sugilite.pumice.dialog.intent_handler.PumiceUtteranceIntentHandler;
-import edu.cmu.hcii.sugilite.sovite.conversation.dialog.SoviteKnowledgeManagementDialog;
-import edu.cmu.hcii.sugilite.sovite.conversation_state.SoviteConversationState;
-import edu.cmu.hcii.sugilite.sovite.conversation_state.SoviteConversationStateGenerateDialog;
-import edu.cmu.hcii.sugilite.sovite.conversation_state.SoviteConversationStateLoadDialog;
-import edu.cmu.hcii.sugilite.sovite.conversation_state.SoviteSerializableRecoverableIntentHanlder;
-import edu.cmu.hcii.sugilite.sovite.study.SoviteStudyDumpGenerateDialog;
-import edu.cmu.hcii.sugilite.sovite.study.SoviteStudyDumpLoadDialog;
+//import edu.cmu.hcii.sugilite.sovite.conversation.dialog.SoviteKnowledgeManagementDialog;
+//import edu.cmu.hcii.sugilite.sovite.conversation_state.SoviteConversationState;
+//import edu.cmu.hcii.sugilite.sovite.conversation_state.SoviteConversationStateGenerateDialog;
+//import edu.cmu.hcii.sugilite.sovite.conversation_state.SoviteConversationStateLoadDialog;
+//import edu.cmu.hcii.sugilite.sovite.conversation_state.SoviteSerializableRecoverableIntentHanlder;
+//import edu.cmu.hcii.sugilite.sovite.study.SoviteStudyDumpGenerateDialog;
+//import edu.cmu.hcii.sugilite.sovite.study.SoviteStudyDumpLoadDialog;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.SugiliteAndroidAPIVoiceRecognitionListener;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.SugiliteGoogleCloudVoiceRecognitionListener;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.SugiliteVoiceInterface;
@@ -201,8 +201,8 @@ public class PumiceDialogActivity extends AppCompatActivity implements SugiliteV
         //noinspection SimplifiableIfStatement
         if (id == R.id.show_knowledge) {
             stopTTSandASR();
-            SoviteKnowledgeManagementDialog soviteKnowledgeManagementDialog = new SoviteKnowledgeManagementDialog(context, pumiceDialogManager.getPumiceKnowledgeManager(), pumiceDialogManager, sugiliteData);
-            soviteKnowledgeManagementDialog.show();
+//            SoviteKnowledgeManagementDialog soviteKnowledgeManagementDialog = new SoviteKnowledgeManagementDialog(context, pumiceDialogManager.getPumiceKnowledgeManager(), pumiceDialogManager, sugiliteData);
+//            soviteKnowledgeManagementDialog.show();
             /*
             pumiceDialogManager.sendAgentMessage("Below are the current knowledge...", true, false);
             pumiceDialogManager.sendAgentMessage(pumiceDialogManager.getPumiceKnowledgeManager().getKnowledgeInString(), false, false);
@@ -231,18 +231,18 @@ public class PumiceDialogActivity extends AppCompatActivity implements SugiliteV
             //dump a sovite conversation state
             PumiceDialogManager.PumiceDialogState pumiceDialogState = pumiceDialogManager.getPumiceDialogState();
             PumiceUtteranceIntentHandler currentHandler = pumiceDialogState.getPumiceUtteranceIntentHandlerInUse();
-            if (currentHandler instanceof SoviteSerializableRecoverableIntentHanlder) {
-                //the current handler is serializable
-                SoviteConversationState soviteConversationState = new SoviteConversationState();
-                soviteConversationState.setSoviteSerializableRecoverableIntentHanlder((SoviteSerializableRecoverableIntentHanlder) currentHandler);
-                soviteConversationState.setUtteranceHistory(pumiceDialogState.getUtteranceHistory());
-
-                //show a dialog that saves the conversation state
-                SoviteConversationStateGenerateDialog soviteConversationStateGenerateDialog = new SoviteConversationStateGenerateDialog(context, soviteConversationState);
-                soviteConversationStateGenerateDialog.show();
-            } else {
-                PumiceDemonstrationUtil.showSugiliteAlertDialog("The current conversation state is not serializable!");
-            }
+//            if (currentHandler instanceof SoviteSerializableRecoverableIntentHanlder) {
+//                //the current handler is serializable
+//                SoviteConversationState soviteConversationState = new SoviteConversationState();
+//                soviteConversationState.setSoviteSerializableRecoverableIntentHanlder((SoviteSerializableRecoverableIntentHanlder) currentHandler);
+//                soviteConversationState.setUtteranceHistory(pumiceDialogState.getUtteranceHistory());
+//
+//                //show a dialog that saves the conversation state
+//                SoviteConversationStateGenerateDialog soviteConversationStateGenerateDialog = new SoviteConversationStateGenerateDialog(context, soviteConversationState);
+//                soviteConversationStateGenerateDialog.show();
+//            } else {
+//                PumiceDemonstrationUtil.showSugiliteAlertDialog("The current conversation state is not serializable!");
+//            }
 
             return true;
         }
@@ -251,9 +251,9 @@ public class PumiceDialogActivity extends AppCompatActivity implements SugiliteV
             stopTTSandASR();
             //load a sovite state
 
-
-            SoviteConversationStateLoadDialog soviteConversationStateLoadDialog = new SoviteConversationStateLoadDialog(this, pumiceDialogManager);
-            soviteConversationStateLoadDialog.show();
+//
+//            SoviteConversationStateLoadDialog soviteConversationStateLoadDialog = new SoviteConversationStateLoadDialog(this, pumiceDialogManager);
+//            soviteConversationStateLoadDialog.show();
 
             return true;
         }
@@ -269,16 +269,16 @@ public class PumiceDialogActivity extends AppCompatActivity implements SugiliteV
 
         if (id == R.id.dump_packet) {
             stopTTSandASR();
-            SoviteStudyDumpGenerateDialog soviteStudyDumpGenerateDialog = new SoviteStudyDumpGenerateDialog(context, sugiliteData, pumiceDialogManager);
-            soviteStudyDumpGenerateDialog.show();
+//            SoviteStudyDumpGenerateDialog soviteStudyDumpGenerateDialog = new SoviteStudyDumpGenerateDialog(context, sugiliteData, pumiceDialogManager);
+//            soviteStudyDumpGenerateDialog.show();
             return true;
         }
 
         if (id == R.id.load_packet) {
             stopTTSandASR();
             //TODO: load a previously stored packet
-            SoviteStudyDumpLoadDialog soviteStudyDumpLoadDialog = new SoviteStudyDumpLoadDialog(context, sugiliteData, pumiceDialogManager);
-            soviteStudyDumpLoadDialog.show();
+//            SoviteStudyDumpLoadDialog soviteStudyDumpLoadDialog = new SoviteStudyDumpLoadDialog(context, sugiliteData, pumiceDialogManager);
+//            soviteStudyDumpLoadDialog.show();
         }
 
 

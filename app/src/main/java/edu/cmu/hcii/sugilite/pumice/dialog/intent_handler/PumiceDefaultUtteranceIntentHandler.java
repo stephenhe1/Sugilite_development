@@ -19,7 +19,6 @@ import edu.cmu.hcii.sugilite.pumice.communication.PumiceSemanticParsingResultPac
 import edu.cmu.hcii.sugilite.pumice.communication.SkipPumiceJSONSerialization;
 import edu.cmu.hcii.sugilite.pumice.dialog.PumiceDialogManager;
 import edu.cmu.hcii.sugilite.pumice.dialog.PumiceUtterance;
-import edu.cmu.hcii.sugilite.pumice.dialog.intent_handler.parsing_confirmation.PumiceParsingResultNoResolveConfirmationHandler;
 import edu.cmu.hcii.sugilite.pumice.dialog.intent_handler.parsing_confirmation.PumiceParsingResultWithResolveFnConfirmationHandler;
 import edu.cmu.hcii.sugilite.source_parsing.SugiliteScriptParser;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.server_comm.SugiliteVerbalInstructionHTTPQueryInterface;
@@ -197,42 +196,42 @@ public class PumiceDefaultUtteranceIntentHandler implements PumiceUtteranceInten
                             } else {
                                 // the top formula does not contain a resolve Fn
                                 // send the result to a PumiceScriptExecutingConfirmationIntentHandler
-                                PumiceParsingResultNoResolveConfirmationHandler parsingConfirmationHandler = new PumiceParsingResultNoResolveConfirmationHandler(context, sugiliteData, pumiceDialogManager, 0);
-                                parsingConfirmationHandler.handleParsingResult(resultPacket, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        //runnable for retry
-                                        pumiceDialogManager.updateUtteranceIntentHandlerInANewState(pumiceDefaultUtteranceIntentHandler);
-                                        sendPromptForTheIntentHandler();
-
-                                    }
-                                }, new PumiceParsingResultWithResolveFnConfirmationHandler.ConfirmedParseRunnable() {
-                                    @Override
-                                    public void run(String confirmedFormula) {
-                                        //runnable for confirmed parse
-                                        pumiceDialogManager.getExecutorService().submit(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                //parse and process the server response
-                                                SugiliteStartingBlock script = null;
-                                                try {
-                                                    if (confirmedFormula.length() > 0) {
-                                                        script = sugiliteScriptParser.parseBlockFromString(confirmedFormula);
-                                                    } else {
-                                                        throw new RuntimeException("empty server result!");
-                                                    }
-                                                } catch (Exception e) {
-                                                    e.printStackTrace();
-                                                }
-
-                                                PumiceScriptExecutingConfirmationIntentHandler pumiceScriptExecutingConfirmationIntentHandler = new PumiceScriptExecutingConfirmationIntentHandler(pumiceDialogManager, context, sugiliteData, script, resultPacket.userUtterance, false);
-                                                pumiceDialogManager.updateUtteranceIntentHandlerInANewState(pumiceScriptExecutingConfirmationIntentHandler);
-                                                pumiceScriptExecutingConfirmationIntentHandler.sendPromptForTheIntentHandler();
-
-                                            }
-                                        });
-                                    }
-                                }, true);
+//                                PumiceParsingResultNoResolveConfirmationHandler parsingConfirmationHandler = new PumiceParsingResultNoResolveConfirmationHandler(context, sugiliteData, pumiceDialogManager, 0);
+//                                parsingConfirmationHandler.handleParsingResult(resultPacket, new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        //runnable for retry
+//                                        pumiceDialogManager.updateUtteranceIntentHandlerInANewState(pumiceDefaultUtteranceIntentHandler);
+//                                        sendPromptForTheIntentHandler();
+//
+//                                    }
+//                                }, new PumiceParsingResultWithResolveFnConfirmationHandler.ConfirmedParseRunnable() {
+//                                    @Override
+//                                    public void run(String confirmedFormula) {
+//                                        //runnable for confirmed parse
+//                                        pumiceDialogManager.getExecutorService().submit(new Runnable() {
+//                                            @Override
+//                                            public void run() {
+//                                                //parse and process the server response
+//                                                SugiliteStartingBlock script = null;
+//                                                try {
+//                                                    if (confirmedFormula.length() > 0) {
+//                                                        script = sugiliteScriptParser.parseBlockFromString(confirmedFormula);
+//                                                    } else {
+//                                                        throw new RuntimeException("empty server result!");
+//                                                    }
+//                                                } catch (Exception e) {
+//                                                    e.printStackTrace();
+//                                                }
+//
+//                                                PumiceScriptExecutingConfirmationIntentHandler pumiceScriptExecutingConfirmationIntentHandler = new PumiceScriptExecutingConfirmationIntentHandler(pumiceDialogManager, context, sugiliteData, script, resultPacket.userUtterance, false);
+//                                                pumiceDialogManager.updateUtteranceIntentHandlerInANewState(pumiceScriptExecutingConfirmationIntentHandler);
+//                                                pumiceScriptExecutingConfirmationIntentHandler.sendPromptForTheIntentHandler();
+//
+//                                            }
+//                                        });
+//                                    }
+//                                }, true);
                             }
 
                         } else {

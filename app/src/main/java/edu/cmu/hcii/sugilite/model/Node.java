@@ -106,9 +106,10 @@ public class Node implements Serializable {
         this.isChecked = nodeInfo.isChecked();
         this.isCheckable = nodeInfo.isCheckable();
         this.isScrollable = nodeInfo.isScrollable();
-        if (null!=nodeInfo.getParent()){
+
+        if (nodeInfo.getParent() != null){
             this.parentalNode=nodeInfo.getParent();
-        }
+        }  // TODO: Merge with the lines below
 
         if(nodeInfo.getParent() != null) {
             parent = new Node(nodeInfo.getParent(), activityName);

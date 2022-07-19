@@ -40,7 +40,7 @@ import edu.cmu.hcii.sugilite.pumice.dialog.PumiceDialogManager;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogManager;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogSimpleState;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogUtteranceFilter;
-import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
+//import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 import static edu.cmu.hcii.sugilite.Const.MUL_ZEROS;
@@ -314,7 +314,7 @@ public class VariableSetValueDialog extends SugiliteDialogManager implements Abs
             AutomatorUtil.killPackage(packageName, (ActivityManager) context.getSystemService(ACTIVITY_SERVICE));
         }
 
-        sugiliteData.logUsageData(ScriptUsageLogManager.EXECUTE_SCRIPT, startingBlock.getScriptName());
+//        sugiliteData.logUsageData(ScriptUsageLogManager.EXECUTE_SCRIPT, startingBlock.getScriptName());
 
         SugiliteProgressDialog progressDialog = new SugiliteProgressDialog(context, R.string.prepareing_script_execution_message);
         progressDialog.show();

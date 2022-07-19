@@ -58,7 +58,7 @@ public class SugiliteAvailableFeaturePack implements Serializable{
             this.boundsInScreen = new String(node.getBoundsInScreen());
         }
         //Add Xpath;
-        List<Node> nodesList=getParentalNode(node);
+        List<Node> nodesList= getAncestors(node);
         String xpath="/hierarchy";
         Collections.reverse(nodesList);
         for (Node simpleNode:nodesList){
@@ -178,6 +178,7 @@ public class SugiliteAvailableFeaturePack implements Serializable{
 
 
     private int getNodeIndex(Node nodeInfo) {
+        // TODO: Refactor
         if  (null!=nodeInfo) {
             if (null!=nodeInfo.getParent()) {
                 AccessibilityNodeInfo parent = nodeInfo.getParentalNode();
@@ -219,6 +220,7 @@ public class SugiliteAvailableFeaturePack implements Serializable{
     }
 
     private boolean hasMoreThanOneSibling(AccessibilityNodeInfo parent, String className) {
+        // TODO: Refactor
         int sameCount=0;
         for (int i = 0; i < parent.getChildCount(); i++) {
             if (sameCount>1)
@@ -234,7 +236,7 @@ public class SugiliteAvailableFeaturePack implements Serializable{
             return true;
     }
 
-    private List<Node> getParentalNode(Node nodeEntity){
+    private List<Node> getAncestors(Node nodeEntity){
         List<Node> nodesList=new ArrayList<>();
         while (nodeEntity!=null){
             nodesList.add(nodeEntity);

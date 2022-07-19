@@ -48,7 +48,7 @@ import edu.cmu.hcii.sugilite.ontology.*;
 import edu.cmu.hcii.sugilite.ontology.description.OntologyDescriptionGenerator;
 import edu.cmu.hcii.sugilite.ontology.OntologyQueryWithSubQueries;
 import edu.cmu.hcii.sugilite.recording.ReadableDescriptionGenerator;
-import edu.cmu.hcii.sugilite.sharing.PrivateNonPrivateLeafOntologyQueryPairWrapper;
+//import edu.cmu.hcii.sugilite.sharing.PrivateNonPrivateLeafOntologyQueryPairWrapper;
 
 import static edu.cmu.hcii.sugilite.Const.SQL_SCRIPT_DAO;
 
@@ -92,7 +92,7 @@ public class SugiliteBlockBuildingHelper {
             operationBlock.setOperation(sugiliteOperation);
             operationBlock.setFeaturePack(featurePack);
             operationBlock.setScreenshot(featurePack.screenshot);
-            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteOperation, query));
+//            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteOperation, query));
             return operationBlock;
         }
 
@@ -106,7 +106,7 @@ public class SugiliteBlockBuildingHelper {
             operationBlock.setOperation(sugiliteOperation);
             operationBlock.setFeaturePack(featurePack);
             operationBlock.setScreenshot(featurePack.screenshot);
-            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteOperation, query));
+//            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteOperation, query));
             return operationBlock;
         }
 
@@ -130,7 +130,7 @@ public class SugiliteBlockBuildingHelper {
             operationBlock.setOperation(sugiliteOperation);
             operationBlock.setFeaturePack(featurePack);
             operationBlock.setScreenshot(featurePack.screenshot);
-            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteOperation, query));
+//            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteOperation, query));
             return operationBlock;
         }
 
@@ -148,7 +148,7 @@ public class SugiliteBlockBuildingHelper {
             operationBlock.setOperation(sugiliteOperation);
             operationBlock.setFeaturePack(featurePack);
             operationBlock.setScreenshot(featurePack.screenshot);
-            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteOperation, query));
+//            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteOperation, query));
             return operationBlock;
         }
 
@@ -172,7 +172,7 @@ public class SugiliteBlockBuildingHelper {
             operationBlock.setOperation(sugiliteSetTextOperation);
             operationBlock.setFeaturePack(featurePack);
             operationBlock.setScreenshot(featurePack.screenshot);
-            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteSetTextOperation, query));
+//            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteSetTextOperation, query));
             return operationBlock;
         }
 
@@ -185,7 +185,7 @@ public class SugiliteBlockBuildingHelper {
             operationBlock.setOperation(sugiliteReadoutOperation);
             operationBlock.setFeaturePack(featurePack);
             operationBlock.setScreenshot(featurePack.screenshot);
-            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteReadoutOperation, query));
+//            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sugiliteReadoutOperation, query));
             return operationBlock;
         }
 
@@ -228,13 +228,13 @@ public class SugiliteBlockBuildingHelper {
             }
         }
 
-        if (ontologyQuery instanceof PrivateNonPrivateLeafOntologyQueryPairWrapper) {
-            return checkIfOntologyQueryContainsHashedQuery(((PrivateNonPrivateLeafOntologyQueryPairWrapper) ontologyQuery).getQueryInUse());
-        }
+//        if (ontologyQuery instanceof PrivateNonPrivateLeafOntologyQueryPairWrapper) {
+//            return checkIfOntologyQueryContainsHashedQuery(((PrivateNonPrivateLeafOntologyQueryPairWrapper) ontologyQuery).getQueryInUse());
+//        }
 
-        if (ontologyQuery instanceof HashedStringLeafOntologyQuery) {
-            return true;
-        }
+//        if (ontologyQuery instanceof HashedStringLeafOntologyQuery) {
+//            return true;
+//        }
 
         return false;
     }
@@ -255,9 +255,9 @@ public class SugiliteBlockBuildingHelper {
             }
         }
 
-        if (ontologyQuery instanceof PrivateNonPrivateLeafOntologyQueryPairWrapper) {
-            result.addAll(getAllResultsOfRelationTypesInOntologyQuery(((PrivateNonPrivateLeafOntologyQueryPairWrapper) ontologyQuery).getQueryInUse(), relations));
-        }
+//        if (ontologyQuery instanceof PrivateNonPrivateLeafOntologyQueryPairWrapper) {
+//            result.addAll(getAllResultsOfRelationTypesInOntologyQuery(((PrivateNonPrivateLeafOntologyQueryPairWrapper) ontologyQuery).getQueryInUse(), relations));
+//        }
         return result;
     }
 
@@ -278,25 +278,25 @@ public class SugiliteBlockBuildingHelper {
             }
         }
 
-        if (ontologyQuery instanceof HashedStringLeafOntologyQuery) {
-            for (SugiliteRelation relation : relations) {
-                if (relation.equals(((HashedStringLeafOntologyQuery) ontologyQuery).getR())) {
-                    return true;
-                }
-            }
-        }
+//        if (ontologyQuery instanceof HashedStringLeafOntologyQuery) {
+//            for (SugiliteRelation relation : relations) {
+//                if (relation.equals(((HashedStringLeafOntologyQuery) ontologyQuery).getR())) {
+//                    return true;
+//                }
+//            }
+//        }
+//
+//        if (ontologyQuery instanceof StringAlternativeOntologyQuery) {
+//            for (SugiliteRelation relation : relations) {
+//                if (relation.equals(((StringAlternativeOntologyQuery) ontologyQuery).getR())) {
+//                    return true;
+//                }
+//            }
+//        }
 
-        if (ontologyQuery instanceof StringAlternativeOntologyQuery) {
-            for (SugiliteRelation relation : relations) {
-                if (relation.equals(((StringAlternativeOntologyQuery) ontologyQuery).getR())) {
-                    return true;
-                }
-            }
-        }
-
-        if (ontologyQuery instanceof PrivateNonPrivateLeafOntologyQueryPairWrapper) {
-            return checkIfOntologyQueryContainsRelations(((PrivateNonPrivateLeafOntologyQueryPairWrapper) ontologyQuery).getQueryInUse(), relations);
-        }
+//        if (ontologyQuery instanceof PrivateNonPrivateLeafOntologyQueryPairWrapper) {
+//            return checkIfOntologyQueryContainsRelations(((PrivateNonPrivateLeafOntologyQueryPairWrapper) ontologyQuery).getQueryInUse(), relations);
+//        }
 
         return false;
     }
@@ -690,9 +690,9 @@ public class SugiliteBlockBuildingHelper {
         Map<SugiliteOperationBlock, Spanned> results = new HashMap<>();
         for(SugiliteOperationBlock operationBlock : blocks){
             OntologyQuery query = operationBlock.getOperation().getDataDescriptionQueryIfAvailable();
-            if(query != null) {
-                results.put(operationBlock, ontologyDescriptionGenerator.getSpannedDescriptionForOperation(operationBlock.getOperation(), stripOntologyQuery(query)));
-            }
+//            if(query != null) {
+//                results.put(operationBlock, ontologyDescriptionGenerator.getSpannedDescriptionForOperation(operationBlock.getOperation(), stripOntologyQuery(query)));
+//            }
         }
         return results;
     }

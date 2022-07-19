@@ -343,23 +343,25 @@ public class Automator {
                     if (e.getEntityValue() instanceof Node) {
                         AccessibilityNodeInfo accessibilityNodeInfo = uiSnapshot.getNodeAccessibilityNodeInfoMap().get(e.getEntityValue());
 
-                        if (operationBlock.getOperation() instanceof SugiliteClickOperation) {
+                        // TODO: Add a configurable check instead of commenting out.
+                        // These are commented because in some inaccessible UI, although the element is not clickable, it can be clicked
+//                        if (operationBlock.getOperation() instanceof SugiliteClickOperation) {
 //                            if (!accessibilityNodeInfo.isClickable()) {
 //                                continue;
 //                            }
-                        }
-
-                        if (operationBlock.getOperation() instanceof SugiliteLongClickOperation) {
+//                        }
+//
+//                        if (operationBlock.getOperation() instanceof SugiliteLongClickOperation) {
 //                            if (!accessibilityNodeInfo.isLongClickable()) {
 //                                continue;
 //                            }
-                        }
-
-                        if (operationBlock.getOperation() instanceof SugiliteSetTextOperation) {
+//                        }
+//
+//                        if (operationBlock.getOperation() instanceof SugiliteSetTextOperation) {
 //                            if (!accessibilityNodeInfo.isEditable()) {
 //                                continue;
 //                            }
-                        }
+//                        }
 
                         preFilteredNodes.add(accessibilityNodeInfo);
                         accessibilityNodeInfoNodeMap.put(accessibilityNodeInfo, e);
@@ -369,31 +371,31 @@ public class Automator {
                 if (preFilteredNodes.size() == 0) {
                     //couldn't find a matched node in the current UISnapshot using the OntologyQuery
                     //check if an alternative query is useful in reconstructing mode
-                    if (sugiliteData.getObfuscatedScriptReconstructor() != null && sugiliteData.getObfuscatedScriptReconstructor().getScriptInProcess() != null) {
-                        //in reconstructing mode
-                        OntologyQuery alternativeQuery = null;
-                        if (operationBlock.getOperation() instanceof SugiliteClickOperation) {
-                            alternativeQuery = ((SugiliteClickOperation) operationBlock.getOperation()).getAlternativeTargetUIElementDataDescriptionQuery();
-                        }
-                        if (operationBlock.getOperation() instanceof SugiliteLongClickOperation) {
-                            alternativeQuery = ((SugiliteLongClickOperation) operationBlock.getOperation()).getAlternativeTargetUIElementDataDescriptionQuery();
-                        }
-                        if (alternativeQuery != null) {
-                            alternativeQuery = alternativeQuery.clone();
-                            Set<SugiliteEntity> alternativeQuerySet = q.executeOn(uiSnapshot);
-                            for (SugiliteEntity e : alternativeQuerySet) {
-                                if (e.getEntityValue() instanceof Node) {
-                                    AccessibilityNodeInfo accessibilityNodeInfo = uiSnapshot.getNodeAccessibilityNodeInfoMap().get(e.getEntityValue());
-                                    preFilteredNodes.add(accessibilityNodeInfo);
-                                    accessibilityNodeInfoNodeMap.put(accessibilityNodeInfo, e);
-                                }
-                            }
-                        }
-                        if (preFilteredNodes.size() == 0) {
-                            //alternative query can't match anything either
-                            return false;
-                        }
-                    }
+//                    if (sugiliteData.getObfuscatedScriptReconstructor() != null && sugiliteData.getObfuscatedScriptReconstructor().getScriptInProcess() != null) {
+//                        //in reconstructing mode
+//                        OntologyQuery alternativeQuery = null;
+//                        if (operationBlock.getOperation() instanceof SugiliteClickOperation) {
+//                            alternativeQuery = ((SugiliteClickOperation) operationBlock.getOperation()).getAlternativeTargetUIElementDataDescriptionQuery();
+//                        }
+//                        if (operationBlock.getOperation() instanceof SugiliteLongClickOperation) {
+//                            alternativeQuery = ((SugiliteLongClickOperation) operationBlock.getOperation()).getAlternativeTargetUIElementDataDescriptionQuery();
+//                        }
+//                        if (alternativeQuery != null) {
+//                            alternativeQuery = alternativeQuery.clone();
+//                            Set<SugiliteEntity> alternativeQuerySet = q.executeOn(uiSnapshot);
+//                            for (SugiliteEntity e : alternativeQuerySet) {
+//                                if (e.getEntityValue() instanceof Node) {
+//                                    AccessibilityNodeInfo accessibilityNodeInfo = uiSnapshot.getNodeAccessibilityNodeInfoMap().get(e.getEntityValue());
+//                                    preFilteredNodes.add(accessibilityNodeInfo);
+//                                    accessibilityNodeInfoNodeMap.put(accessibilityNodeInfo, e);
+//                                }
+//                            }
+//                        }
+//                        if (preFilteredNodes.size() == 0) {
+//                            //alternative query can't match anything either
+//                            return false;
+//                        }
+//                    }
                     Log.v("Automator", "couldn't find a matched node for query " + q.toString());
                     return false;
                 }
@@ -462,7 +464,7 @@ public class Automator {
                             addNextBlockToQueue(operationBlock);
 
                             //report ReconstructObfuscatedScript
-                            sugiliteData.handleReconstructObfuscatedScript(operationBlock, accessibilityNodeInfoNodeMap.get(node), uiSnapshot);
+//                            sugiliteData.handleReconstructObfuscatedScript(operationBlock, accessibilityNodeInfoNodeMap.get(node), uiSnapshot);
                             if (sugiliteData.getInstructionQueueSize() > 0) {
                                 synchronized (this) {
                                     if (sugiliteData.peekInstructionQueue() != null && sugiliteData.peekInstructionQueue().equals(blockToMatch)) {
@@ -641,8 +643,6 @@ public class Automator {
         return false;
     }
 
-
-
     private void addNextBlockToQueue(final SugiliteBlock block) {
         if (block instanceof SugiliteStartingBlock) {
             sugiliteData.addInstruction(block.getNextBlockToRun());
@@ -698,7 +698,4 @@ public class Automator {
             throw new RuntimeException("Unsupported Block Type!");
         }
     }
-
-
-
 }

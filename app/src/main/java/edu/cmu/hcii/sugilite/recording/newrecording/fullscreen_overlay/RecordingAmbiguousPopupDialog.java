@@ -455,13 +455,13 @@ public class RecordingAmbiguousPopupDialog extends SugiliteDialogManager impleme
                     if (topQueryA != null) {
                         OntologyQuery topQuery = topQueryA.clone();
                         topQuery = OntologyQueryUtils.getQueryWithClassAndPackageConstraints(topQuery, actualClickedNode.getEntityValue(), false, true, true);
-                        descriptionForTopQuery = descriptionGenerator.getSpannedDescriptionForOperation(((SugiliteOperationBlock) resultBlock).getOperation(), topQuery.clone());
-                        if(descriptionForTopQuery != null){
-                            SpannableStringBuilder text = new SpannableStringBuilder();
-                            text.append(Html.fromHtml(boldify(context.getString(R.string.disambiguation_result_wont_match)) + "<br><br> Intepretation for your description: "));
-                            text.append(descriptionForTopQuery);
-                            textPrompt.setText(text);
-                        }
+//                        descriptionForTopQuery = descriptionGenerator.getSpannedDescriptionForOperation(((SugiliteOperationBlock) resultBlock).getOperation(), topQuery.clone());
+//                        if(descriptionForTopQuery != null){
+//                            SpannableStringBuilder text = new SpannableStringBuilder();
+//                            text.append(Html.fromHtml(boldify(context.getString(R.string.disambiguation_result_wont_match)) + "<br><br> Intepretation for your description: "));
+//                            text.append(descriptionForTopQuery);
+//                            textPrompt.setText(text);
+//                        }
                     }
                 }
 

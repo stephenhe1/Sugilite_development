@@ -43,7 +43,7 @@ import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.pumice.dialog.PumiceDialogManager;
 import edu.cmu.hcii.sugilite.recording.RecordingPopUpDialog;
 import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.OverlayClickedDialog;
-import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
+//import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
 import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
 import edu.cmu.hcii.sugilite.ui.dialog.VariableSetValueDialog;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.server_comm.SugiliteVerbalInstructionHTTPQueryManager;
@@ -188,7 +188,7 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                             (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
                             (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_prefix"+".txt")).delete();
                             Boolean success=(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
-                            sugiliteData.logUsageData(ScriptUsageLogManager.REMOVE_SCRIPT, scriptName);
+//                            sugiliteData.logUsageData(ScriptUsageLogManager.REMOVE_SCRIPT, scriptName);
 
                         }
                         catch (Exception e){
@@ -350,7 +350,7 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                     };
                     RecordingPopUpDialog recordingPopUpDialog = new RecordingPopUpDialog(sugiliteData, this, script, sharedPreferences, (SugiliteOperationBlock)currentBlock, RecordingPopUpDialog.TRIGGERED_BY_EDIT, callback);
                     sugiliteData.initiatedExternally = false;
-                    sugiliteData.logUsageData(ScriptUsageLogManager.EDIT_SCRIPT, scriptName);
+//                    sugiliteData.logUsageData(ScriptUsageLogManager.EDIT_SCRIPT, scriptName);
                     recordingPopUpDialog.show(true);
                     break;
                     //match, pop up the edit

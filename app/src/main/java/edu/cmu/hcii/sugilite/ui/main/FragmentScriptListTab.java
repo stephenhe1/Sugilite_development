@@ -40,14 +40,14 @@ import edu.cmu.hcii.sugilite.model.NewScriptGeneralizer;
 import edu.cmu.hcii.sugilite.model.block.SugiliteStartingBlock;
 import edu.cmu.hcii.sugilite.ontology.description.OntologyDescriptionGenerator;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
-import edu.cmu.hcii.sugilite.sharing.SharingScriptReviewActivity;
-import edu.cmu.hcii.sugilite.sharing.SugiliteScriptSharingHTTPQueryManager;
-import edu.cmu.hcii.sugilite.sharing.SugiliteSharingScriptPreparer;
-import edu.cmu.hcii.sugilite.sharing.TempUserAccountNameManager;
-import edu.cmu.hcii.sugilite.sharing.imwut_study.StudyResultForScript;
-import edu.cmu.hcii.sugilite.sharing.imwut_study.StudyScriptProcessor;
-import edu.cmu.hcii.sugilite.sovite.screen2vec.RicoDataPreparer;
-import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
+//import edu.cmu.hcii.sugilite.sharing.SharingScriptReviewActivity;
+//import edu.cmu.hcii.sugilite.sharing.SugiliteScriptSharingHTTPQueryManager;
+//import edu.cmu.hcii.sugilite.sharing.SugiliteSharingScriptPreparer;
+//import edu.cmu.hcii.sugilite.sharing.TempUserAccountNameManager;
+//import edu.cmu.hcii.sugilite.sharing.imwut_study.StudyResultForScript;
+//import edu.cmu.hcii.sugilite.sharing.imwut_study.StudyScriptProcessor;
+//import edu.cmu.hcii.sugilite.sovite.screen2vec.RicoDataPreparer;
+//import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
 import edu.cmu.hcii.sugilite.ui.LocalScriptDetailActivity;
 import edu.cmu.hcii.sugilite.ui.ScriptDebuggingActivity;
 import edu.cmu.hcii.sugilite.ui.ScriptSourceActivity;
@@ -70,9 +70,9 @@ public class FragmentScriptListTab extends Fragment {
     private Activity activity;
     private NewScriptGeneralizer newScriptGeneralizer;
     private OntologyDescriptionGenerator ontologyDescriptionGenerator;
-    private SugiliteScriptSharingHTTPQueryManager sugiliteScriptSharingHTTPQueryManager;
-    private SugiliteSharingScriptPreparer sugiliteSharingScriptPreparer;
-    private TempUserAccountNameManager tempUserAccountNameManager;
+//    private SugiliteScriptSharingHTTPQueryManager sugiliteScriptSharingHTTPQueryManager;
+//    private SugiliteSharingScriptPreparer sugiliteSharingScriptPreparer;
+//    private TempUserAccountNameManager tempUserAccountNameManager;
     private static String nameofScript;
 
 
@@ -86,9 +86,9 @@ public class FragmentScriptListTab extends Fragment {
         this.sugiliteData = (SugiliteData) activity.getApplication();
         this.newScriptGeneralizer = new NewScriptGeneralizer(activity);
         this.ontologyDescriptionGenerator = new OntologyDescriptionGenerator();
-        this.sugiliteScriptSharingHTTPQueryManager = SugiliteScriptSharingHTTPQueryManager.getInstance(activity);
-        this.sugiliteSharingScriptPreparer = new SugiliteSharingScriptPreparer(activity);
-        this.tempUserAccountNameManager = new TempUserAccountNameManager(activity);
+//        this.sugiliteScriptSharingHTTPQueryManager = SugiliteScriptSharingHTTPQueryManager.getInstance(activity);
+//        this.sugiliteSharingScriptPreparer = new SugiliteSharingScriptPreparer(activity);
+//        this.tempUserAccountNameManager = new TempUserAccountNameManager(activity);
 
         if (Const.DAO_TO_USE == SQL_SCRIPT_DAO) {
             this.sugiliteScriptDao = new SugiliteScriptSQLDao(activity);
@@ -300,7 +300,7 @@ public class FragmentScriptListTab extends Fragment {
                                                 setUpScriptList();
                                                 sugiliteScriptDao.delete(scriptName);
                                                 setUpScriptList();
-                                                sugiliteData.logUsageData(ScriptUsageLogManager.REMOVE_SCRIPT, scriptName);
+//                                                sugiliteData.logUsageData(ScriptUsageLogManager.REMOVE_SCRIPT, scriptName);
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
@@ -322,8 +322,8 @@ public class FragmentScriptListTab extends Fragment {
                         public void run() {
                             try {
                                 SugiliteStartingBlock script = sugiliteScriptDao.read(scriptName);
-                                String id = sugiliteScriptSharingHTTPQueryManager.uploadScript(scriptName, tempUserAccountNameManager.getBestUserName(), script);
-                                Log.i("Upload script", "Script shared with id : " + id);
+//                                String id = sugiliteScriptSharingHTTPQueryManager.uploadScript(scriptName, tempUserAccountNameManager.getBestUserName(), script);
+//                                Log.i("Upload script", "Script shared with id : " + id);
 
                                 PumiceDemonstrationUtil.showSugiliteAlertDialog(String.format("Successfully uploaded the script \"%s\"!", removeScriptExtension(scriptName)));
 
@@ -337,12 +337,12 @@ public class FragmentScriptListTab extends Fragment {
                         }
                     }).start();
                     break;
-                case ITEM_SHARE_FILTERED:
-                    final Intent scriptShareIntent = new Intent(activity, SharingScriptReviewActivity.class);
-                    scriptShareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    scriptShareIntent.putExtra("scriptName", scriptName);
-                    startActivity(scriptShareIntent);
-                    break;
+//                case ITEM_SHARE_FILTERED:
+//                    final Intent scriptShareIntent = new Intent(activity, SharingScriptReviewActivity.class);
+//                    scriptShareIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                    scriptShareIntent.putExtra("scriptName", scriptName);
+//                    startActivity(scriptShareIntent);
+//                    break;
                 case ITEM_GENERALIZE:
                     //generalize
                     new Thread(new Runnable() {
@@ -418,31 +418,31 @@ public class FragmentScriptListTab extends Fragment {
                         }
                     }).start();
                     break;
-                case ITEM_IMWUT_STUDY:
-                    try {
-                        SugiliteStartingBlock script = sugiliteScriptDao.read(scriptName);
-                        StudyScriptProcessor studyScriptProcessor = new StudyScriptProcessor(activity);
-                        StudyResultForScript result = studyScriptProcessor.process(script);
-                        //System.out.println(result);
-                        result.saveToFile();
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                case ITEM_RICO_STUDY:
-                    SugiliteStartingBlock script = sugiliteScriptDao.read(scriptName);
-                    RicoDataPreparer ricoDataPreparer = new RicoDataPreparer(activity);
-                    SugiliteData.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                ricoDataPreparer.exportRicoDataForScript(script);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                    PumiceDemonstrationUtil.showSugiliteAlertDialog(String.format("Successfully exported the script \"%s\" to the RICO format!", removeScriptExtension(scriptName)));
+//                case ITEM_IMWUT_STUDY:
+//                    try {
+//                        SugiliteStartingBlock script = sugiliteScriptDao.read(scriptName);
+//                        StudyScriptProcessor studyScriptProcessor = new StudyScriptProcessor(activity);
+//                        StudyResultForScript result = studyScriptProcessor.process(script);
+//                        //System.out.println(result);
+//                        result.saveToFile();
+//
+//                    } catch (Exception e) {
+//                        e.printStackTrace();
+//                    }
+//                case ITEM_RICO_STUDY:
+//                    SugiliteStartingBlock script = sugiliteScriptDao.read(scriptName);
+//                    RicoDataPreparer ricoDataPreparer = new RicoDataPreparer(activity);
+//                    SugiliteData.runOnUiThread(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            try {
+//                                ricoDataPreparer.exportRicoDataForScript(script);
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    });
+//                    PumiceDemonstrationUtil.showSugiliteAlertDialog(String.format("Successfully exported the script \"%s\" to the RICO format!", removeScriptExtension(scriptName)));
             }
         } catch (Exception e) {
             e.printStackTrace();

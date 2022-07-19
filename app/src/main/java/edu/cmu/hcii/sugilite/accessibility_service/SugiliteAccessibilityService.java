@@ -57,7 +57,7 @@ import edu.cmu.hcii.sugilite.model.trigger.SugiliteTriggerHandler;
 import edu.cmu.hcii.sugilite.recording.TextChangedEventHandler;
 import edu.cmu.hcii.sugilite.recording.newrecording.NewDemonstrationHandler;
 import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.FullScreenRecordingOverlayManager;
-import edu.cmu.hcii.sugilite.tracking.SugiliteTrackingHandler;
+//import edu.cmu.hcii.sugilite.tracking.SugiliteTrackingHandler;
 import edu.cmu.hcii.sugilite.ui.StatusIconManager;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.VerbalInstructionIconManager;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.study.SugiliteStudyHandler;
@@ -91,7 +91,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
     private Set<Integer> accessibilityEventSetToHandle, accessibilityEventSetToSend, accessibilityEventSetToTrack;
 
     private SugiliteAccessibilityService context;
-    private SugiliteTrackingHandler sugilteTrackingHandler;
+//    private SugiliteTrackingHandler sugilteTrackingHandler;
     private SugiliteAppVocabularyDao vocabularyDao;
     private SugiliteTriggerHandler triggerHandler;
     private TextChangedEventHandler textChangedEventHandler;
@@ -149,7 +149,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
         screenshotManager = SugiliteScreenshotManager.getInstance(sharedPreferences, sugiliteData);
         sugiliteTextParentAnnotator = SugiliteTextParentAnnotator.getInstance();
         automator = new Automator(sugiliteData, this, statusIconManager, sharedPreferences, sugiliteTextParentAnnotator, sugiliteData.getTTS());
-        sugilteTrackingHandler = new SugiliteTrackingHandler(sugiliteData, getApplicationContext());
+//        sugilteTrackingHandler = new SugiliteTrackingHandler(sugiliteData, getApplicationContext());
         availableAlternatives = new HashSet<>();
         availableAlternativeNodes = new HashSet<>();
         trackingPackageVocabs = new HashSet<>();
@@ -217,7 +217,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
             sugiliteData.errorHandler = new ErrorHandler(this, sugiliteData, sharedPreferences);
         }
         if (sugiliteData.trackingName != null && sugiliteData.trackingName.contentEquals("default")) {
-            sugiliteData.initiateTracking(sugilteTrackingHandler.getDefaultTrackingName());
+//            sugiliteData.initiateTracking(sugilteTrackingHandler.getDefaultTrackingName());
         }
 
         errorHandlingHandler = new Handler();
@@ -675,9 +675,9 @@ public class SugiliteAccessibilityService extends AccessibilityService {
                 @Override
                 public void run() {
                     //background tracking in progress
-                    if (accessibilityEventSetToTrack.contains(eventType) && (!trackingExcludedPackages.contains(eventPackageName))) {
-                        sugilteTrackingHandler.handle(event, sourceNode, generateFeaturePack(event, sourceNode, rootNodeForTracking, null, null, preOrderTraverseSourceNodeForTracking, preOrderTracerseRootNodeForTracking, preOrderTraverseSibNodeForTracking, null));
-                    }
+//                    if (accessibilityEventSetToTrack.contains(eventType) && (!trackingExcludedPackages.contains(eventPackageName))) {
+//                        sugilteTrackingHandler.handle(event, sourceNode, generateFeaturePack(event, sourceNode, rootNodeForTracking, null, null, preOrderTraverseSourceNodeForTracking, preOrderTracerseRootNodeForTracking, preOrderTraverseSibNodeForTracking, null));
+//                    }
 
                     //add all seen clickable nodes to package vocab DB
                     if (BUILDING_VOCAB) {
@@ -929,7 +929,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
                 new Handler(Looper.getMainLooper()).post(new Runnable(){
                     @Override
                     public void run() {
-                        verbalInstructionIconManager.turnOnCatOverlay();
+                        verbalInstructionIconManager.turnOnCatOverlay();  // TODO: What does it do?
                     }
                 });
             }
@@ -951,7 +951,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
 //        });
 
         try {
-            Thread.sleep(1200);
+            Thread.sleep(1200);  // TODO: Why?
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

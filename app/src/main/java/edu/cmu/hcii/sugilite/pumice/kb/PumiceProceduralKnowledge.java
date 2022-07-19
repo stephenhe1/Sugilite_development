@@ -25,7 +25,7 @@ import edu.cmu.hcii.sugilite.model.variable.Variable;
 import edu.cmu.hcii.sugilite.model.variable.VariableValue;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.pumice.communication.SkipPumiceJSONSerialization;
-import edu.cmu.hcii.sugilite.sovite.SoviteAppNameAppInfoManager;
+//import edu.cmu.hcii.sugilite.sovite.SoviteAppNameAppInfoManager;
 /**
  * @author toby
  * @date 10/29/18
@@ -104,11 +104,11 @@ public class PumiceProceduralKnowledge implements Serializable {
             }
         }
 
-        SoviteAppNameAppInfoManager soviteAppNameAppInfoManager = SoviteAppNameAppInfoManager.getInstance(SugiliteData.getAppContext());
-        for(String packageName : involvedAppPackageNames){
-            //get app name for package name
-            involvedAppNames.add(soviteAppNameAppInfoManager.getReadableAppNameForPackageName(packageName));
-        }
+//        SoviteAppNameAppInfoManager soviteAppNameAppInfoManager = SoviteAppNameAppInfoManager.getInstance(SugiliteData.getAppContext());
+//        for(String packageName : involvedAppPackageNames){
+//            //get app name for package name
+//            involvedAppNames.add(soviteAppNameAppInfoManager.getReadableAppNameForPackageName(packageName));
+//        }
         //populate parameterNameParameterMap
         if(startingBlock.variableNameDefaultValueMap != null) {
             for (Map.Entry<String, Variable> variableNameVariableObject : startingBlock.variableNameVariableObjectMap.entrySet()) {

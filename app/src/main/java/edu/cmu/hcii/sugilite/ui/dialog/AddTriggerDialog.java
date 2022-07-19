@@ -29,7 +29,7 @@ import edu.cmu.hcii.sugilite.dao.SugiliteScriptDao;
 import edu.cmu.hcii.sugilite.dao.SugiliteTriggerDao;
 import edu.cmu.hcii.sugilite.model.trigger.SugiliteTrigger;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
-import edu.cmu.hcii.sugilite.sovite.SoviteAppNameAppInfoManager;
+//import edu.cmu.hcii.sugilite.sovite.SoviteAppNameAppInfoManager;
 import edu.cmu.hcii.sugilite.ui.main.FragmentScriptListTab;
 import edu.cmu.hcii.sugilite.ui.main.FragmentTriggerListTab;
 
@@ -82,12 +82,12 @@ public class AddTriggerDialog implements AbstractSugiliteDialog {
         appNameIndexMap = new HashMap<>();
         appNameOrderedList = new ArrayList<>();
 
-        SoviteAppNameAppInfoManager soviteAppNameAppInfoManager = SoviteAppNameAppInfoManager.getInstance(SugiliteData.getAppContext());
-        Map<String, String> allAvailableAppPackageNameReadableNameMap = soviteAppNameAppInfoManager.getAllAvailableAppPackageNameReadableNameMap(false);
-        for (Map.Entry<String, String> entry : allAvailableAppPackageNameReadableNameMap.entrySet()) {
-            packageNameAppNameMap.put(entry.getKey(), entry.getValue());
-            appNamePackageNameMap.put(entry.getValue(), entry.getKey());
-        }
+//        SoviteAppNameAppInfoManager soviteAppNameAppInfoManager = SoviteAppNameAppInfoManager.getInstance(SugiliteData.getAppContext());
+//        Map<String, String> allAvailableAppPackageNameReadableNameMap = soviteAppNameAppInfoManager.getAllAvailableAppPackageNameReadableNameMap(false);
+//        for (Map.Entry<String, String> entry : allAvailableAppPackageNameReadableNameMap.entrySet()) {
+//            packageNameAppNameMap.put(entry.getKey(), entry.getValue());
+//            appNamePackageNameMap.put(entry.getValue(), entry.getKey());
+//        }
 
         //filter out those without a readable app name
         for(Map.Entry<String, String> entry : appNamePackageNameMap.entrySet()) {

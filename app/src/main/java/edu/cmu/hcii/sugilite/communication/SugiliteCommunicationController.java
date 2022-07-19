@@ -228,7 +228,7 @@ public class SugiliteCommunicationController {
         BufferedWriter out = new BufferedWriter(new FileWriter("json.txt"));
         out.write(jsonProcessor.scriptsToJson( getTrackingScripts()));
         out.close();
-        System.out.println("文件创建成功！");
+        System.out.println("File created successfully");
         return sendMessage( SugiliteCommunicationHelper.RESPONSE, SugiliteCommunicationHelper.GET_ALL_TRACKING_SCRIPTS, jsonProcessor
                 .scriptsToJson( getTrackingScripts() ));
     }

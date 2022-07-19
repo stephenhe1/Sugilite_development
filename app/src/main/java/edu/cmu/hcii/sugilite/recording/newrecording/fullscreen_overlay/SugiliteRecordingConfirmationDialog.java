@@ -115,7 +115,7 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        Spanned newDescription = ontologyDescriptionGenerator.getSpannedDescriptionForOperation(block.getOperation(), block.getOperation().getDataDescriptionQueryIfAvailable());
+//        Spanned newDescription = ontologyDescriptionGenerator.getSpannedDescriptionForOperation(block.getOperation(), block.getOperation().getDataDescriptionQueryIfAvailable());
         builder.setTitle("Save Operation Confirmation");
 
         dialogView = layoutInflater.inflate(R.layout.dialog_confirmation_popup_spoken, null);
@@ -124,7 +124,7 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
             //TODO: show the source code temporarily
             SpannableStringBuilder text = new SpannableStringBuilder();
             text.append("Are you sure you want to record the operation: ");
-            text.append(newDescription);
+//            text.append(newDescription);
             confirmationPromptTextView.setText(text);
 
 
@@ -304,8 +304,8 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
     @Override
     public void initDialogManager() {
         //set the prompt
-        Spanned newDescription = ontologyDescriptionGenerator.getSpannedDescriptionForOperation(block.getOperation(), block.getOperation().getDataDescriptionQueryIfAvailable());
-        askingForConfirmationState.setPrompt(context.getString(R.string.ask_if_record) + newDescription.toString());
+//        Spanned newDescription = ontologyDescriptionGenerator.getSpannedDescriptionForOperation(block.getOperation(), block.getOperation().getDataDescriptionQueryIfAvailable());
+//        askingForConfirmationState.setPrompt(context.getString(R.string.ask_if_record) + newDescription.toString());
        // askingForConfirmationState.setPrompt(R.string.ask_if_record + newDescription.toString());
 
         detailPromptState.setPrompt(context.getString(R.string.expand_ask_if_record));

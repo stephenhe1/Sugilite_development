@@ -180,7 +180,7 @@ public class PumiceDemonstrationUtil {
             createWebSocketClient();
             System.out.println("Executed create web socket client");
             try {
-                Thread.sleep(1000);
+                Thread.sleep(1000);  // TODO: Not good
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

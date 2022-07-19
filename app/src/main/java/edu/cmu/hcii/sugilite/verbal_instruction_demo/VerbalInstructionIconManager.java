@@ -45,9 +45,6 @@ import edu.cmu.hcii.sugilite.ontology.UISnapshot;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.FollowUpQuestionDialog;
 import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.FullScreenRecordingOverlayManager;
-import edu.cmu.hcii.sugilite.sharing.HashedSplitStringGenerator;
-import edu.cmu.hcii.sugilite.sharing.SugiliteScriptSharingHTTPQueryManager;
-import edu.cmu.hcii.sugilite.sharing.model.HashedUIStrings;
 import edu.cmu.hcii.sugilite.ui.StatusIconManager;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.SugiliteAndroidAPIVoiceRecognitionListener;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.SugiliteGoogleCloudVoiceRecognitionListener;
@@ -75,7 +72,7 @@ public class VerbalInstructionIconManager implements SugiliteVoiceInterface {
     private SugiliteStudyHandler sugiliteStudyHandler;
     private FullScreenRecordingOverlayManager recordingOverlayManager;
     private SugiliteAccessibilityService sugiliteAccessibilityService;
-    private SugiliteScriptSharingHTTPQueryManager sugiliteScriptSharingHTTPQueryManager;
+//    private SugiliteScriptSharingHTTPQueryManager sugiliteScriptSharingHTTPQueryManager;
     private StatusIconManager duckIconManager;
     private TextToSpeech tts;
     public boolean isListening = false;
@@ -112,7 +109,7 @@ public class VerbalInstructionIconManager implements SugiliteVoiceInterface {
         this.sugiliteStudyHandler = sugiliteStudyHandler;
         this.sugiliteAccessibilityService = sugiliteAccessibilityService;
         this.duckIconManager = sugiliteAccessibilityService.getDuckIconManager();
-        this.sugiliteScriptSharingHTTPQueryManager = SugiliteScriptSharingHTTPQueryManager.getInstance(context);
+//        this.sugiliteScriptSharingHTTPQueryManager = SugiliteScriptSharingHTTPQueryManager.getInstance(context);
         this.tts = tts;
         sugiliteStudyHandler.setIconManager(this);
         windowManager = (WindowManager) context.getSystemService(context.WINDOW_SERVICE);
@@ -238,24 +235,24 @@ public class VerbalInstructionIconManager implements SugiliteVoiceInterface {
                             @Override
                             public void run() {
                                 sugiliteAccessibilityService.updatePumiceOverlay(latestUISnapshot);
-                                if (sharedPreferences.getBoolean("uploading_hashed_ui_in_progress", false)) {
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Date time = Calendar.getInstance().getTime();
-                                            String timeString = Const.dateFormat.format(time);
-                                            //using timeString as device ID for testing purpose
-                                            //HashedUIStrings hashedUIStrings = new HashedUIStrings(latestUISnapshot.getPackageName(), latestUISnapshot.getActivityName(), new SerializableUISnapshot(latestUISnapshot), timeString, new HashedSplitStringGenerator());
-                                            HashedUIStrings hashedUIStrings = new HashedUIStrings(latestUISnapshot.getPackageName(), latestUISnapshot.getActivityName(), new SerializableUISnapshot(latestUISnapshot), Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID), new HashedSplitStringGenerator());
-                                            try {
-                                                sugiliteScriptSharingHTTPQueryManager.uploadHashedUI(hashedUIStrings);
-                                            } catch (Exception e) {
-                                                //TODO: better handle this error
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                    }).start();
-                                }
+//                                if (sharedPreferences.getBoolean("uploading_hashed_ui_in_progress", false)) {
+//                                    new Thread(new Runnable() {
+//                                        @Override
+//                                        public void run() {
+//                                            Date time = Calendar.getInstance().getTime();
+//                                            String timeString = Const.dateFormat.format(time);
+//                                            //using timeString as device ID for testing purpose
+//                                            //HashedUIStrings hashedUIStrings = new HashedUIStrings(latestUISnapshot.getPackageName(), latestUISnapshot.getActivityName(), new SerializableUISnapshot(latestUISnapshot), timeString, new HashedSplitStringGenerator());
+//                                            HashedUIStrings hashedUIStrings = new HashedUIStrings(latestUISnapshot.getPackageName(), latestUISnapshot.getActivityName(), new SerializableUISnapshot(latestUISnapshot), Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID), new HashedSplitStringGenerator());
+//                                            try {
+//                                                sugiliteScriptSharingHTTPQueryManager.uploadHashedUI(hashedUIStrings);
+//                                            } catch (Exception e) {
+//                                                //TODO: better handle this error
+//                                                e.printStackTrace();
+//                                            }
+//                                        }
+//                                    }).start();
+//                                }
                                 sugiliteAccessibilityService.checkIfAutomationCanBePerformed();
                             }
                         });
