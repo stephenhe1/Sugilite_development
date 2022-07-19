@@ -73,7 +73,7 @@ public class SugiliteScreenshotManager {
 
 
     public static final int REQUEST_MEDIA_PROJECTION = 1;
-    public static final String DIRECTORY_PATH = Environment.getExternalStorageDirectory().getPath()+"/sugilite_screenshot/";
+    public static final String DIRECTORY_PATH = Environment.getExternalStorageDirectory().getPath()+"/edu.cmu.hcii.sugilite/ScreenShot/";
 
 
     public static SugiliteScreenshotManager getInstance(SharedPreferences sharedPreferences, SugiliteData sugiliteData){
@@ -104,7 +104,7 @@ public class SugiliteScreenshotManager {
     public String getFileNameFromDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
         String strDate = dateFormat.format(new java.util.Date());
-        return "Screenshot_" + NewScriptDialog.getScript_name() + strDate + ".png";
+        return "Screenshot_" + NewScriptDialog.getScript_name() + "_" +strDate + ".png";
     }
 
     private Boolean screenshotAvailable = true;

@@ -406,10 +406,10 @@ public class FullScreenRecordingOverlayManager {
     }
 
 
-    private File getLatestScreenshot() {
-        File latestScreenshot = sugiliteScreenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, sugiliteScreenshotManager.getFileNameFromDate());
-        return latestScreenshot;
-    }
+//    private File getLatestScreenshot() {
+//        File latestScreenshot = sugiliteScreenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, sugiliteScreenshotManager.getFileNameFromDate());
+//        return latestScreenshot;
+//    }
 
     private void checkDrawOverlayPermission() {
         /* check if we already  have permission to draw over other apps */
@@ -437,7 +437,7 @@ public class FullScreenRecordingOverlayManager {
     private void handleClick(float x, float y) {
         SugiliteEntity<Node> node = null;
         UISnapshot uiSnapshot = getUiSnapshotAndAnnotateStringEntitiesIfNeeded();
-        File screenshot = getLatestScreenshot();
+//        File screenshot = getLatestScreenshot();
         if (uiSnapshot != null) {
             List<SugiliteEntity<Node>> matchedNodeEntities = getMatchedNodesFromCoordinate(x, y, uiSnapshot, true, false);
             if (matchedNodeEntities != null) {
@@ -457,10 +457,10 @@ public class FullScreenRecordingOverlayManager {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                SugiliteStudyHandler studyHandler = sugiliteAccessibilityService.getSugiliteStudyHandler();
-                studyHandler.handleEvent(new SugiliteAvailableFeaturePack(node, uiSnapshot, getLatestScreenshot()), uiSnapshot, path, fileName);
+//                SugiliteStudyHandler studyHandler = sugiliteAccessibilityService.getSugiliteStudyHandler();
+//                studyHandler.handleEvent(new SugiliteAvailableFeaturePack(node, uiSnapshot, getLatestScreenshot()), uiSnapshot, path, fileName);
             } else {
-                OverlayClickedDialog overlayClickedDialog = new OverlayClickedDialog(context, node, uiSnapshot, screenshot, x, y, this, overlay, sugiliteData, sharedPreferences, tts, false);
+                OverlayClickedDialog overlayClickedDialog = new OverlayClickedDialog(context, node, uiSnapshot, null, x, y, this, overlay, sugiliteData, sharedPreferences, tts, false);
                 overlayClickedDialog.show();
 
                 //flush the textChangedEventHandler
@@ -527,10 +527,10 @@ public class FullScreenRecordingOverlayManager {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    SugiliteStudyHandler studyHandler = sugiliteAccessibilityService.getSugiliteStudyHandler();
-                    studyHandler.handleEvent(new SugiliteAvailableFeaturePack(node, uiSnapshot, getLatestScreenshot()), uiSnapshot, path, fileName);
+//                    SugiliteStudyHandler studyHandler = sugiliteAccessibilityService.getSugiliteStudyHandler();
+//                    studyHandler.handleEvent(new SugiliteAvailableFeaturePack(node, uiSnapshot, getLatestScreenshot()), uiSnapshot, path, fileName);
                 } else {
-                    OverlayClickedDialog overlayClickedDialog = new OverlayClickedDialog(context, node, uiSnapshot, screenshot, x, y, this, overlay, sugiliteData, sharedPreferences, tts, false);
+                    OverlayClickedDialog overlayClickedDialog = new OverlayClickedDialog(context, node, uiSnapshot, null, x, y, this, overlay, sugiliteData, sharedPreferences, tts, false);
                     overlayClickedDialog.show();
 
                     //flush the textChangedEventHandler
@@ -556,7 +556,7 @@ public class FullScreenRecordingOverlayManager {
 
     private void handleContextClick(float x, float y, TextToSpeech tts) {
         UISnapshot uiSnapshot = getUiSnapshotAndAnnotateStringEntitiesIfNeeded();
-        File screenshot = getLatestScreenshot();
+//        File screenshot = getLatestScreenshot();
         if (uiSnapshot != null) {
             SugiliteEntity<Node> topLongClickableNode = null;
             SugiliteEntity<Node> topClickableNode = null;
@@ -570,7 +570,7 @@ public class FullScreenRecordingOverlayManager {
             }
             List<SugiliteEntity<Node>> matchedAllNodeEntities = getMatchedNodesFromCoordinate(x, y, uiSnapshot, false, false);
             if (matchedAllNodeEntities != null) {
-                RecordingOverlayContextClickDialog recordingOverlayContextClickDialog = new RecordingOverlayContextClickDialog(context, this, topLongClickableNode, topClickableNode, matchedAllNodeEntities, uiSnapshot, screenshot, sugiliteData, tts, x, y);
+                RecordingOverlayContextClickDialog recordingOverlayContextClickDialog = new RecordingOverlayContextClickDialog(context, this, topLongClickableNode, topClickableNode, matchedAllNodeEntities, uiSnapshot, null, sugiliteData, tts, x, y);
                 recordingOverlayContextClickDialog.show();
 
                 //flush the textChangedEventHandler

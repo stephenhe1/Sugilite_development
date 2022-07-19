@@ -49,6 +49,7 @@ import edu.cmu.hcii.sugilite.ontology.SugiliteEntity;
 import edu.cmu.hcii.sugilite.ontology.UISnapshot;
 import edu.cmu.hcii.sugilite.ontology.description.OntologyDescriptionGenerator;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
+import edu.cmu.hcii.sugilite.recording.SugiliteScreenshotManager;
 import edu.cmu.hcii.sugilite.recording.newrecording.SugiliteBlockBuildingHelper;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogManager;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogSimpleState;
@@ -84,6 +85,7 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
     private TextView confirmationPromptTextView;
     private ImageButton speakButton;
     private SugiliteScriptDao sugiliteScriptDao;
+    private SugiliteScreenshotManager screenshotManager;
 
 
     //construct the 2 states
@@ -105,6 +107,7 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
         this.sugiliteData = sugiliteData;
         this.sharedPreferences = sharedPreferences;
         this.ontologyDescriptionGenerator = new OntologyDescriptionGenerator();
+        this.screenshotManager = SugiliteScreenshotManager.getInstance(sharedPreferences, sugiliteData);
 
         if(Const.DAO_TO_USE == SQL_SCRIPT_DAO) {
             sugiliteScriptDao = new SugiliteScriptSQLDao(context);
@@ -180,6 +183,7 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
         if (sharedPreferences.getBoolean("recording_in_process", false)) {
             try {
 //                takeScreenShot(getActivity(context).getWindow().getDecorView().getRootView(),NewScriptDialog.getScript_name());
+                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, screenshotManager.getFileNameFromDate());
                 sendNodeInfo(featurePack);
                 writeTestScript(NewScriptDialog.getScript_name(),featurePack);
                 blockBuildingHelper.saveBlock(block, featurePack);
