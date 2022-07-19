@@ -912,51 +912,69 @@ public class SugiliteAccessibilityService extends AccessibilityService {
 
     }
 
-    public boolean performTap(int x, int y, int startTime, int duration){
-        if(x < 0 || y < 0)
-            return false;
-        GestureDescription.Builder gestureBuilder = new GestureDescription.Builder();
-        Path swipePath = new Path();
-        swipePath.moveTo(x, y);
-        gestureBuilder.addStroke(new GestureDescription.StrokeDescription(swipePath, startTime, duration));
-        GestureDescription gestureDescription = gestureBuilder.build();
-        verbalInstructionIconManager.turnOffCatOverlay();
-        boolean result= dispatchGesture(gestureDescription, new AccessibilityService.GestureResultCallback() {
-            @Override
-            public void onCompleted(GestureDescription gestureDescription) {
-                System.out.println("The gesture completed");
-//                super.onCompleted(gestureDescription);
-                new Handler(Looper.getMainLooper()).post(new Runnable(){
-                    @Override
-                    public void run() {
-                        verbalInstructionIconManager.turnOnCatOverlay();
-                    }
-                });
-            }
-
-            @Override
-            public void onCancelled(GestureDescription gestureDescription) {
-                System.out.println("The gesture has been cancelled");
-                super.onCancelled(gestureDescription);
-            }
-        },null);
-
-//        new Handler(Looper.getMainLooper()).post(new Runnable(){
+    public boolean performTap(int x, int y, int startTime, int duration) {
+//        new Handler(Looper.getMainLooper()).post(new Runnable() {
 //            @Override
 //            public void run() {
-//                verbalInstructionIconManager.turnOnCatOverlay();
-//
-//
+//                verbalInstructionIconManager.turnOffCatOverlay();
 //            }
 //        });
+//        return true;
 
-        try {
-            Thread.sleep(1200);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
-        return result;
+        if (x < 0 || y < 0)
+            return false;
+
+
+        verbalInstructionIconManager.turnOffCatOverlay();
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                GestureDescription.Builder gestureBuilder = new GestureDescription.Builder();
+                Path swipePath = new Path();
+                swipePath.moveTo(x, y);
+                gestureBuilder.addStroke(new GestureDescription.StrokeDescription(swipePath, startTime, duration));
+                GestureDescription gestureDescription = gestureBuilder.build();
+                dispatchGesture(gestureDescription, new AccessibilityService.GestureResultCallback() {
+                    @Override
+                    public void onCompleted(GestureDescription gestureDescription) {
+                        System.out.println("The gesture completed");
+                        super.onCompleted(gestureDescription);
+                    }
+
+                    @Override
+                    public void onCancelled(GestureDescription gestureDescription) {
+                        System.out.println("The gesture has been cancelled");
+                        super.onCancelled(gestureDescription);
+                    }
+                }, null);
+            }
+        },2000);
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                verbalInstructionIconManager.turnOnCatOverlay();
+            }
+        },2000);
+//        try {
+//            Thread.sleep(3500);
+////            Handler handler = new Handler(Looper.getMainLooper());
+////            handler.post(new Runnable(){
+////                @Override
+////                public void run() {
+////                    verbalInstructionIconManager.turnOnCatOverlay();
+////                }
+////            });
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
+
+        return true;
+    }
+
+    public VerbalInstructionIconManager getVeralManager(){
+        return verbalInstructionIconManager;
     }
 }
 

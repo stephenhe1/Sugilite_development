@@ -510,12 +510,15 @@ public class Automator {
         node.getBoundsInScreen(rect);
 
         if (block.getOperation().getOperationType() == SugiliteOperation.CLICK) {
-            if (null!=nodeToAction){
-                if (null!=nodeToAction.getContentDescription()&&nodeToAction.getContentDescription().equals("Apps list")){
-                    return nodeToAction.performAction(AccessibilityNodeInfo.ACTION_CLICK);
-                }
-            }
-            return serviceContext.performTap(rect.centerX(),rect.centerY(),0,20);
+//            if (null!= nodeToAction && nodeToAction.isClickable()){
+////                if (null!=nodeToAction.getContentDescription()&&nodeToAction.getContentDescription().equals("Apps list")){
+////                    return nodeToAction.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+////                }
+//                return nodeToAction.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+//            }
+
+            return serviceContext.performTap(rect.centerX(),rect.centerY(),0,40);
+
 
 
         }

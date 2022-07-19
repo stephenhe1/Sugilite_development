@@ -42,6 +42,7 @@
         <service
             android:name=".accessibility_service.SugiliteAccessibilityService"
             android:label="@string/accessibility_service_name"
+            android:canPerformGestures="true"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <meta-data
                 android:name="android.accessibilityservice"

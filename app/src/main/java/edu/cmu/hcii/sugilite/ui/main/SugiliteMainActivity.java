@@ -97,7 +97,7 @@ public class SugiliteMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         this.mMediaProjectionManager = (MediaProjectionManager)getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-        this.uploadManager = new StudyDataUploadManager(this, sugiliteData);
+//        this.uploadManager = new StudyDataUploadManager(this, sugiliteData);
         this.sugiliteData = getApplication() instanceof SugiliteData? (SugiliteData)getApplication() : new SugiliteData();
         this.sugiliteScriptSharingHTTPQueryManager = SugiliteScriptSharingHTTPQueryManager.getInstance(this);
         if(Const.DAO_TO_USE == SQL_SCRIPT_DAO) {

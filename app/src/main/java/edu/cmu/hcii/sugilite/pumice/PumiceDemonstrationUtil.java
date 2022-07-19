@@ -608,8 +608,6 @@ public class PumiceDemonstrationUtil {
             return;
         }
 
-        if (webSocketClient == null) {
-
             webSocketClient = new WebSocketClient(uri) {
                 @Override
                 public void onOpen() {
@@ -658,7 +656,7 @@ public class PumiceDemonstrationUtil {
             webSocketClient.setReadTimeout(60000);
             webSocketClient.enableAutomaticReconnection(5000);
             webSocketClient.connect();
-        }
+
 
 
     }

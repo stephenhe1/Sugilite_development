@@ -129,23 +129,7 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
 
 
         }
-//        speakButton = (ImageButton) dialogView.findViewById(R.id.button_verbal_instruction_talk);
-//
-//
-//        if(speakButton != null){
-//            speakButton.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    // speak button
-//                    if (isListening() || (tts != null && tts.isSpeaking())) {
-//                        stopASRandTTS();
-//                    } else {
-//                        initDialogManager();
-//                    }
-//                }
-//            });
-//            refreshSpeakButtonStyle(speakButton);
-//        }
+
 
         builder.setView(dialogView);
 
@@ -274,29 +258,6 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
 
     }
 
-//    @Override
-//    public void speakingStartedCallback() {
-//        super.speakingStartedCallback();
-//        refreshSpeakButtonStyle(speakButton);
-//    }
-//
-//    @Override
-//    public void speakingEndedCallback() {
-//        super.speakingEndedCallback();
-//        refreshSpeakButtonStyle(speakButton);
-//    }
-//
-//    @Override
-//    public void listeningStartedCallback() {
-//        super.listeningStartedCallback();
-//        refreshSpeakButtonStyle(speakButton);
-//    }
-//
-//    @Override
-//    public void listeningEndedCallback() {
-//        super.listeningEndedCallback();
-//        refreshSpeakButtonStyle(speakButton);
-//    }
 
     /**
      * initiate the dialog manager
@@ -486,45 +447,5 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
             }
         }
     }
-
-//    private File takeScreenShot(View view, String fileName) {
-//        Date now = new Date();
-//        CharSequence format=android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
-//        try{
-//            Path dirPath= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/screenshots");
-//            if (!Files.exists(dirPath)) {
-//                File file1=dirPath.toFile();
-//                file1.mkdir();
-//            }
-//
-//            String path = dirPath + "/" + fileName + "-" + format + ".jpeg";
-//
-//            view.setDrawingCacheEnabled(true);
-//            Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
-//            view.setDrawingCacheEnabled(false);
-//
-//            File imageFile = new File(path);
-//            FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
-//            int quality = 100;
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, fileOutputStream);
-//            fileOutputStream.flush();
-//            fileOutputStream.close();
-//            return imageFile;
-//        }
-//        catch (FileNotFoundException e){
-//            e.printStackTrace();
-//        }
-//        catch (IOException e){
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-//
-//    private Activity getActivity(Context context) {
-//        if (context == null) return null;
-//        if (context instanceof Activity) return (Activity) context;
-//        if (context instanceof ContextWrapper) return getActivity(((ContextWrapper)context).getBaseContext());
-//        return null;
-//    }
 
 }

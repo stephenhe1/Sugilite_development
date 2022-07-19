@@ -37,6 +37,7 @@ import java.util.TimeZone;
 
 import edu.cmu.hcii.sugilite.SugiliteData;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
+import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
 
 /**
  * @author toby
@@ -103,7 +104,7 @@ public class SugiliteScreenshotManager {
     public String getFileNameFromDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
         String strDate = dateFormat.format(new java.util.Date());
-        return "Screenshot_" + strDate + ".png";
+        return "Screenshot_" + NewScriptDialog.getScript_name() + strDate + ".png";
     }
 
     private Boolean screenshotAvailable = true;

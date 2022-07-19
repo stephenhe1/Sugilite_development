@@ -1,5 +1,7 @@
 package edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay;
 
+import static android.view.WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY;
+
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;

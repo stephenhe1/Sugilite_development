@@ -12,6 +12,8 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.text.Html;
 import android.text.SpannableString;
@@ -456,6 +458,8 @@ public class StatusIconManager {
 //                                operationList.add("Get a Text Element on the Screen");
 //                            operationList.add("Add a Delay");
                             operationList.add("End Recording");
+                            operationList.add("Turn On Overlay");
+                            operationList.add("Turn Off Overlay");
                         }
                         else{
 //                            operationList.add("View Last Recording");
@@ -512,6 +516,14 @@ public class StatusIconManager {
                                     NewScriptDialog newScriptDialog = new NewScriptDialog(v.getContext(), sugiliteScriptDao, serviceStatusManager, sharedPreferences, sugiliteData, true, null, null);
                                     newScriptDialog.show();
                                     break;
+                                case "Turn On Overlay":
+                                    verbalInstructionIconManager.turnOnCatOverlay();
+                                    break;
+                                case "Turn Off Overlay":
+                                    verbalInstructionIconManager.turnOffCatOverlay();
+                                    break;
+
+
 //                                case "Resume Last Recording":
 //                                    //resume the recording of an existing script
 //                                    sugiliteData.initiatedExternally = false;
