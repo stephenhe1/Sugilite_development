@@ -6,8 +6,7 @@ import edu.cmu.hcii.sugilite.ontology.CombinedOntologyQuery;
 import edu.cmu.hcii.sugilite.ontology.LeafOntologyQuery;
 import edu.cmu.hcii.sugilite.ontology.OntologyQuery;
 import edu.cmu.hcii.sugilite.ontology.SugiliteRelation;
-import edu.cmu.hcii.sugilite.ontology.HashedStringLeafOntologyQuery;
-import edu.cmu.hcii.sugilite.sharing.PrivateNonPrivateLeafOntologyQueryPairWrapper;
+//import edu.cmu.hcii.sugilite.sharing.PrivateNonPrivateLeafOntologyQueryPairWrapper;
 
 /**
  * Created by Wanling Ding on 15/02/2018.
@@ -110,34 +109,34 @@ public class RelationWeight {
                 qr1 = ((LeafOntologyQuery) q1).getR();
             }
 
-            if (q1 instanceof HashedStringLeafOntologyQuery) {
-                qr1 = ((HashedStringLeafOntologyQuery) q1).getR();
-            }
+//            if (q1 instanceof HashedStringLeafOntologyQuery) {
+//                qr1 = ((HashedStringLeafOntologyQuery) q1).getR();
+//            }
 
             if (q1 instanceof CombinedOntologyQuery) {
                 qr1 = ((CombinedOntologyQuery) q1).getR();
             }
 
-            if (q1 instanceof PrivateNonPrivateLeafOntologyQueryPairWrapper) {
-                return compare(((PrivateNonPrivateLeafOntologyQueryPairWrapper) q1).getQueryInUse(), q2);
-            }
+//            if (q1 instanceof PrivateNonPrivateLeafOntologyQueryPairWrapper) {
+//                return compare(((PrivateNonPrivateLeafOntologyQueryPairWrapper) q1).getQueryInUse(), q2);
+//            }
 
 
             if (q2 instanceof LeafOntologyQuery) {
                 qr2 = ((LeafOntologyQuery) q2).getR();
             }
 
-            if (q2 instanceof HashedStringLeafOntologyQuery) {
-                qr2 = ((HashedStringLeafOntologyQuery) q2).getR();
-            }
+//            if (q2 instanceof HashedStringLeafOntologyQuery) {
+//                qr2 = ((HashedStringLeafOntologyQuery) q2).getR();
+//            }
 
             if (q2 instanceof CombinedOntologyQuery) {
                 qr2 = ((CombinedOntologyQuery) q2).getR();
             }
 
-            if (q2 instanceof PrivateNonPrivateLeafOntologyQueryPairWrapper) {
-                return compare(q1, ((PrivateNonPrivateLeafOntologyQueryPairWrapper) q2).getQueryInUse());
-            }
+//            if (q2 instanceof PrivateNonPrivateLeafOntologyQueryPairWrapper) {
+//                return compare(q1, ((PrivateNonPrivateLeafOntologyQueryPairWrapper) q2).getQueryInUse());
+//            }
 
 
             if (qr1 != null && qr2 != null) {

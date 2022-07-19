@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.speech.tts.TextToSpeech;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -20,7 +21,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import edu.cmu.hcii.sugilite.Const;
@@ -38,7 +42,9 @@ import edu.cmu.hcii.sugilite.ontology.SerializableUISnapshot;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.pumice.dialog.PumiceDialogManager;
 import edu.cmu.hcii.sugilite.recording.RecordingPopUpDialog;
-import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
+import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.OverlayClickedDialog;
+//import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
+import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
 import edu.cmu.hcii.sugilite.ui.dialog.VariableSetValueDialog;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.server_comm.SugiliteVerbalInstructionHTTPQueryManager;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.SugiliteAndroidAPIVoiceRecognitionListener;
@@ -57,6 +63,7 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
     private SugiliteBlock current;
     private int newBlockIndex;
     private Activity activity;
+    private static String script_name;
 
 
     private PumiceDialogManager pumiceDialogManager;
@@ -89,12 +96,15 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
         //load the local script
         if (savedInstanceState == null) {
             this.scriptName = this.getIntent().getStringExtra("scriptName");
+            script_name=this.scriptName;
         } else {
             this.scriptName = savedInstanceState.getString("scriptName");
+            script_name=this.scriptName;
         }
 
         if(scriptName != null) {
             setTitle("View Script: " + PumiceDemonstrationUtil.removeScriptExtension(scriptName));
+
         }
     }
 
@@ -175,7 +185,10 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                         try {
                             //delete the script
                             sugiliteScriptDao.delete(scriptName);
-                            sugiliteData.logUsageData(ScriptUsageLogManager.REMOVE_SCRIPT, scriptName);
+                            (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
+                            (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_prefix"+".txt")).delete();
+                            Boolean success=(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
+//                            sugiliteData.logUsageData(ScriptUsageLogManager.REMOVE_SCRIPT, scriptName);
 
                         }
                         catch (Exception e){
@@ -337,7 +350,7 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                     };
                     RecordingPopUpDialog recordingPopUpDialog = new RecordingPopUpDialog(sugiliteData, this, script, sharedPreferences, (SugiliteOperationBlock)currentBlock, RecordingPopUpDialog.TRIGGERED_BY_EDIT, callback);
                     sugiliteData.initiatedExternally = false;
-                    sugiliteData.logUsageData(ScriptUsageLogManager.EDIT_SCRIPT, scriptName);
+//                    sugiliteData.logUsageData(ScriptUsageLogManager.EDIT_SCRIPT, scriptName);
                     recordingPopUpDialog.show(true);
                     break;
                     //match, pop up the edit
@@ -674,6 +687,9 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
                                     sugiliteScriptDao.delete(scriptName);
+                                    (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
+                                    (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_prefix"+".txt")).delete();
+                                    Boolean success=(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
                                 }
                                 catch (Exception e){
                                     e.printStackTrace();
@@ -807,7 +823,7 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
         }
     }
 
-    public void getScope(String s) {
+    public void getScope(String s) throws IOException {
         System.out.println("GETSCOPE");
         System.out.println(newBlock);
         int i = Integer.parseInt(s);//index of step that scope of if block should go through
@@ -826,7 +842,11 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                 new Exception("unsupported block type").printStackTrace();
             count++;
         }
-        System.out.println(iterBlock);
+//        System.out.println(iterBlock);
+//        BufferedWriter out = new BufferedWriter(new FileWriter("runoob.txt"));
+//        out.write(String.valueOf(iterBlock));
+//        out.close();
+//        System.out.println("文件创建成功！");
         System.out.println(newBlock.getNextBlockToRun());
         SugiliteBlock newBlockNext = newBlock.getNextBlockToRun();
         SugiliteBlock storedNext = iterBlock.getNextBlockToRun();
@@ -1092,5 +1112,9 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
         super.onDestroy();
         sugiliteVoiceRecognitionListener.stopListening();
         sugiliteVoiceRecognitionListener.stopTTS();
+    }
+
+    public static String getScript_name() {
+        return script_name;
     }
 }

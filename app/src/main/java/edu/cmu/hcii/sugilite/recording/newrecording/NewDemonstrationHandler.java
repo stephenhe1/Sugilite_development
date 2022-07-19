@@ -127,8 +127,8 @@ public class NewDemonstrationHandler {
                 SugiliteData.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        PumiceDemonstrationUtil.showSugiliteToast("Ambiguous!", Toast.LENGTH_SHORT);
-                        showAmbiguousPopup(queryScoreList, featurePack);
+//                        PumiceDemonstrationUtil.showSugiliteToast("Ambiguous!", Toast.LENGTH_SHORT);
+//                        showAmbiguousPopup(queryScoreList, featurePack);
                     }
                 });
             }
@@ -208,6 +208,7 @@ public class NewDemonstrationHandler {
         AlertDialog.Builder builder = new AlertDialog.Builder(SugiliteData.getAppContext());
         String newDescription = readableDescriptionGenerator.generateDescriptionForVerbalBlock(block, blockBuildingHelper.stripOntologyQuery(block.getOperation().getDataDescriptionQueryIfAvailable()).toString(), "UTTERANCE");
         builder.setTitle("Save Operation Confirmation").setMessage(Html.fromHtml("Are you sure you want to record the operation: " + newDescription));
+        System.out.println("The description of the operation block is: "+newDescription);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -230,6 +231,6 @@ public class NewDemonstrationHandler {
                 });
         final AlertDialog dialog = builder.create();
         dialog.getWindow().setType(OVERLAY_TYPE);
-        dialog.show();
+//        dialog.show();
     }
 }

@@ -2,6 +2,7 @@ package edu.cmu.hcii.sugilite.dao;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.Rect;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -87,6 +88,7 @@ public class SugiliteScriptFileDao implements SugiliteScriptDao {
 
         try {
             File rootDataDir = context.getFilesDir();
+            System.out.println("The saved file location is: "+context.getFilesDir().getPath()+"/scripts");
             scriptDir = new File(rootDataDir.getPath() + "/scripts");
             if (!scriptDir.exists() || !scriptDir.isDirectory())
                 scriptDir.mkdir();
@@ -205,6 +207,7 @@ public class SugiliteScriptFileDao implements SugiliteScriptDao {
                 fin = new FileInputStream(scriptDir.getPath() + "/" + key);
                 ois = new ObjectInputStream(new BufferedInputStream(fin));
                 sugiliteStartingBlock = (SugiliteStartingBlock) ois.readObject();
+
             } catch (Exception e) {
                 e.printStackTrace();
                 throw e;
@@ -292,6 +295,7 @@ public class SugiliteScriptFileDao implements SugiliteScriptDao {
                 continue;
             }
         }
+        System.out.println("scripts: "+scripts.get(0));
         return scripts;
     }
 
@@ -347,5 +351,9 @@ public class SugiliteScriptFileDao implements SugiliteScriptDao {
         if (currentBlock.getNextBlock() != null) {
             setParentBlockForNextBlocks(currentBlock.getNextBlock());
         }
+    }
+
+    public Context getContext() {
+        return context;
     }
 }

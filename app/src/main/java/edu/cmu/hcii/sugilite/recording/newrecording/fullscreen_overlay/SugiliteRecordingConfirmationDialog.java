@@ -1,10 +1,14 @@
 package edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.os.Environment;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.text.Html;
@@ -17,6 +21,17 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.List;
 
 import edu.cmu.hcii.sugilite.Const;
@@ -38,9 +53,14 @@ import edu.cmu.hcii.sugilite.recording.newrecording.SugiliteBlockBuildingHelper;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogManager;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogSimpleState;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogUtteranceFilter;
+import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
+import tech.gusavila92.websocketclient.WebSocketClient;
 
 import static edu.cmu.hcii.sugilite.Const.OVERLAY_TYPE;
 import static edu.cmu.hcii.sugilite.Const.SQL_SCRIPT_DAO;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * @author toby
@@ -95,7 +115,7 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        Spanned newDescription = ontologyDescriptionGenerator.getSpannedDescriptionForOperation(block.getOperation(), block.getOperation().getDataDescriptionQueryIfAvailable());
+//        Spanned newDescription = ontologyDescriptionGenerator.getSpannedDescriptionForOperation(block.getOperation(), block.getOperation().getDataDescriptionQueryIfAvailable());
         builder.setTitle("Save Operation Confirmation");
 
         dialogView = layoutInflater.inflate(R.layout.dialog_confirmation_popup_spoken, null);
@@ -104,30 +124,28 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
             //TODO: show the source code temporarily
             SpannableStringBuilder text = new SpannableStringBuilder();
             text.append("Are you sure you want to record the operation: ");
-            text.append(newDescription);
+//            text.append(newDescription);
             confirmationPromptTextView.setText(text);
-            // PumiceDemonstrationUtil.showSugiliteToast(block.toString(), Toast.LENGTH_SHORT);
 
-            //confirmationPromptTextView.setText(Html.fromHtml("Are you sure you want to record the operation: " + block.toString()));
 
         }
-        speakButton = (ImageButton) dialogView.findViewById(R.id.button_verbal_instruction_talk);
-
-
-        if(speakButton != null){
-            speakButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // speak button
-                    if (isListening() || (tts != null && tts.isSpeaking())) {
-                        stopASRandTTS();
-                    } else {
-                        initDialogManager();
-                    }
-                }
-            });
-            refreshSpeakButtonStyle(speakButton);
-        }
+//        speakButton = (ImageButton) dialogView.findViewById(R.id.button_verbal_instruction_talk);
+//
+//
+//        if(speakButton != null){
+//            speakButton.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    // speak button
+//                    if (isListening() || (tts != null && tts.isSpeaking())) {
+//                        stopASRandTTS();
+//                    } else {
+//                        initDialogManager();
+//                    }
+//                }
+//            });
+//            refreshSpeakButtonStyle(speakButton);
+//        }
 
         builder.setView(dialogView);
 
@@ -144,10 +162,11 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
                         skipButtonOnClick();
                     }
                 })
-                .setNeutralButton("Modify", new DialogInterface.OnClickListener() {
+                .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        editButtonOnClick();
+//                        editButtonOnClick();
+                        dialog.dismiss();
                     }
                 });
 
@@ -166,7 +185,7 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
     public void show() {
         dialog.getWindow().setType(OVERLAY_TYPE);
         dialog.show();
-        refreshSpeakButtonStyle(speakButton);
+//        refreshSpeakButtonStyle(speakButton);
 
         //initiate the dialog manager when the dialog is shown
         initDialogManager();
@@ -176,6 +195,9 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
         dialog.dismiss();
         if (sharedPreferences.getBoolean("recording_in_process", false)) {
             try {
+//                takeScreenShot(getActivity(context).getWindow().getDecorView().getRootView(),NewScriptDialog.getScript_name());
+                sendNodeInfo(featurePack);
+                writeTestScript(NewScriptDialog.getScript_name(),featurePack);
                 blockBuildingHelper.saveBlock(block, featurePack);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -252,29 +274,29 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
 
     }
 
-    @Override
-    public void speakingStartedCallback() {
-        super.speakingStartedCallback();
-        refreshSpeakButtonStyle(speakButton);
-    }
-
-    @Override
-    public void speakingEndedCallback() {
-        super.speakingEndedCallback();
-        refreshSpeakButtonStyle(speakButton);
-    }
-
-    @Override
-    public void listeningStartedCallback() {
-        super.listeningStartedCallback();
-        refreshSpeakButtonStyle(speakButton);
-    }
-
-    @Override
-    public void listeningEndedCallback() {
-        super.listeningEndedCallback();
-        refreshSpeakButtonStyle(speakButton);
-    }
+//    @Override
+//    public void speakingStartedCallback() {
+//        super.speakingStartedCallback();
+//        refreshSpeakButtonStyle(speakButton);
+//    }
+//
+//    @Override
+//    public void speakingEndedCallback() {
+//        super.speakingEndedCallback();
+//        refreshSpeakButtonStyle(speakButton);
+//    }
+//
+//    @Override
+//    public void listeningStartedCallback() {
+//        super.listeningStartedCallback();
+//        refreshSpeakButtonStyle(speakButton);
+//    }
+//
+//    @Override
+//    public void listeningEndedCallback() {
+//        super.listeningEndedCallback();
+//        refreshSpeakButtonStyle(speakButton);
+//    }
 
     /**
      * initiate the dialog manager
@@ -282,8 +304,8 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
     @Override
     public void initDialogManager() {
         //set the prompt
-        Spanned newDescription = ontologyDescriptionGenerator.getSpannedDescriptionForOperation(block.getOperation(), block.getOperation().getDataDescriptionQueryIfAvailable());
-        askingForConfirmationState.setPrompt(context.getString(R.string.ask_if_record) + newDescription.toString());
+//        Spanned newDescription = ontologyDescriptionGenerator.getSpannedDescriptionForOperation(block.getOperation(), block.getOperation().getDataDescriptionQueryIfAvailable());
+//        askingForConfirmationState.setPrompt(context.getString(R.string.ask_if_record) + newDescription.toString());
        // askingForConfirmationState.setPrompt(R.string.ask_if_record + newDescription.toString());
 
         detailPromptState.setPrompt(context.getString(R.string.expand_ask_if_record));
@@ -333,5 +355,176 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
         setCurrentState(askingForConfirmationState);
         initPrompt();
     }
+
+    private void sendNodeInfo(SugiliteAvailableFeaturePack sugiliteAvailableFeaturePack){
+        //Get the websocket instance
+        WebSocketClient webSocketClient=PumiceDemonstrationUtil.getWebSocketClientInst();
+        JSONObject targetObject=new JSONObject();
+        if(null != sugiliteAvailableFeaturePack){
+            if(null != sugiliteAvailableFeaturePack.text){
+                try {
+                    targetObject.put("text",sugiliteAvailableFeaturePack.text);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != sugiliteAvailableFeaturePack.contentDescription){
+                try {
+                    targetObject.put("content_desc",sugiliteAvailableFeaturePack.contentDescription);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != sugiliteAvailableFeaturePack.className){
+                try {
+                    targetObject.put("class_name",sugiliteAvailableFeaturePack.className);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != sugiliteAvailableFeaturePack.viewId){
+                try {
+                    targetObject.put("resource_id",sugiliteAvailableFeaturePack.viewId);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != sugiliteAvailableFeaturePack.packageName){
+                try {
+                    targetObject.put("pkg_name",sugiliteAvailableFeaturePack.packageName);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                targetObject.put("xpath",sugiliteAvailableFeaturePack.xPath);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            JSONObject clickCommand = new JSONObject();
+            try {
+                clickCommand.put("action","click");
+                clickCommand.put("target",targetObject);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            JSONObject sendCommandSM = new JSONObject();
+            try {
+                sendCommandSM.put("action","SENDCOMMAND");
+                sendCommandSM.put("command",clickCommand);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            webSocketClient.send(String.valueOf(sendCommandSM));
+        }
+    }
+
+    private void writeTestScript(String fileName,SugiliteAvailableFeaturePack sugiliteAvailableFeaturePack){
+        BufferedWriter bw = null;
+        try {
+            bw = new BufferedWriter(new FileWriter(new File(context.getFilesDir().getPath()+"/scripts/" + fileName+".jsonl"),true));
+            JSONObject targetObject=new JSONObject();
+            if(null != sugiliteAvailableFeaturePack) {
+                if (null != sugiliteAvailableFeaturePack.text) {
+                    try {
+                        targetObject.put("text", sugiliteAvailableFeaturePack.text);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (null != sugiliteAvailableFeaturePack.contentDescription) {
+                    try {
+                        targetObject.put("content_desc", sugiliteAvailableFeaturePack.contentDescription);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (null != sugiliteAvailableFeaturePack.className) {
+                    try {
+                        targetObject.put("class_name", sugiliteAvailableFeaturePack.className);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (null != sugiliteAvailableFeaturePack.viewId) {
+                    try {
+                        targetObject.put("resource_id", sugiliteAvailableFeaturePack.viewId);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if (null != sugiliteAvailableFeaturePack.packageName) {
+                    try {
+                        targetObject.put("pkg_name", sugiliteAvailableFeaturePack.packageName);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                try {
+                    targetObject.put("xpath", sugiliteAvailableFeaturePack.xPath);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                JSONObject clickCommand = new JSONObject();
+                try {
+                    clickCommand.put("action", "click");
+                    clickCommand.put("target", targetObject);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                bw.write(clickCommand.toString()+"\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+//    private File takeScreenShot(View view, String fileName) {
+//        Date now = new Date();
+//        CharSequence format=android.text.format.DateFormat.format("yyyy-MM-dd_hh:mm:ss", now);
+//        try{
+//            Path dirPath= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/screenshots");
+//            if (!Files.exists(dirPath)) {
+//                File file1=dirPath.toFile();
+//                file1.mkdir();
+//            }
+//
+//            String path = dirPath + "/" + fileName + "-" + format + ".jpeg";
+//
+//            view.setDrawingCacheEnabled(true);
+//            Bitmap bitmap = Bitmap.createBitmap(view.getDrawingCache());
+//            view.setDrawingCacheEnabled(false);
+//
+//            File imageFile = new File(path);
+//            FileOutputStream fileOutputStream = new FileOutputStream(imageFile);
+//            int quality = 100;
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, fileOutputStream);
+//            fileOutputStream.flush();
+//            fileOutputStream.close();
+//            return imageFile;
+//        }
+//        catch (FileNotFoundException e){
+//            e.printStackTrace();
+//        }
+//        catch (IOException e){
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+//
+//    private Activity getActivity(Context context) {
+//        if (context == null) return null;
+//        if (context instanceof Activity) return (Activity) context;
+//        if (context instanceof ContextWrapper) return getActivity(((ContextWrapper)context).getBaseContext());
+//        return null;
+//    }
 
 }

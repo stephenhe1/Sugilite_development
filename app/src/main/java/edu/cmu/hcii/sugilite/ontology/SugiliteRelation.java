@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.Map;
 
-import edu.cmu.hcii.sugilite.sharing.model.StringInContext;
+//import edu.cmu.hcii.sugilite.sharing.model.StringInContext;
 
 /**
  * @author toby
@@ -61,6 +61,7 @@ public class SugiliteRelation implements Serializable {
     public static final SugiliteRelation HAS_PACKAGE_NAME = new SugiliteRelation(7, "HAS_PACKAGE_NAME");
     public static final SugiliteRelation HAS_CHILD = new SugiliteRelation(8, "HAS_CHILD");
     public static final SugiliteRelation HAS_ACTIVITY_NAME = new SugiliteRelation(41, "HAS_ACTIVITY_NAME");
+    public static final SugiliteRelation HAS_XPATH = new SugiliteRelation(42, "HAS_XPATH");
 
 
     //TODO: new relations to add for flattening the ontology
@@ -177,6 +178,7 @@ public class SugiliteRelation implements Serializable {
         stringRelationMap.put("NEXT_TO", NEXT_TO);
 
         stringRelationMap.put("is", IS);
+        stringRelationMap.put("XPATH",HAS_XPATH);
     }
 
     @Override

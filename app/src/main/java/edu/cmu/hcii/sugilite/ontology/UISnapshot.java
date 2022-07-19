@@ -138,42 +138,6 @@ public class UISnapshot {
         constructFromListOfNodes(allNodes, toAnnotateStringEntities);
     }
 
-    /*
-    private void setActivityNameAndPackageNameFromAllNodes(List<Node> allNodes) {
-        for(Node node : allNodes) {
-            if (node.getPackageName() != null) {
-                if (this.packageName == null) {
-                    this.packageName = node.getPackageName();
-                } else {
-                    if (! node.getPackageName().equals(this.packageName)){
-                        Log.e("UISnapshot", String.format("Inconsistent package name! Had %s, now get %s.", this.packageName, node.getPackageName()));
-                    }
-                }
-
-                if (node.getClassName() != null) {
-                    ComponentName componentName = new ComponentName(
-                            node.getPackageName().toString(),
-                            node.getClassName().toString()
-                    );
-                    try {
-                        ActivityInfo activityInfo = SugiliteData.getAppContext().getPackageManager().getActivityInfo(componentName, 0);
-                        if (activityInfo.name != null) {
-                            if (this.activityName == null) {
-                                this.activityName = activityInfo.name;
-                            } else {
-                                if (! node.getPackageName().equals(this.packageName)){
-                                    Log.e("UISnapshot", String.format("Inconsistent activity name! Had %s, now get %s.", this.activityName, activityInfo.name));
-                                }
-                            }
-                        }
-                    } catch (PackageManager.NameNotFoundException e) {
-                        Log.e("UISnapshot", String.format("Can't find activity name for %s", componentName.flattenToString()));
-                    }
-                }
-            }
-        }
-    }
-    */
 
     public void annotateStringEntitiesIfNeeded(){
         //create a multi-thread executor for parsing strings
@@ -738,4 +702,6 @@ public class UISnapshot {
     public String getActivityName() {
         return activityName;
     }
+
+
 }

@@ -3,7 +3,6 @@ package edu.cmu.hcii.sugilite.model.operation.unary;
 
 import edu.cmu.hcii.sugilite.SugiliteData;
 import edu.cmu.hcii.sugilite.ontology.OntologyQuery;
-import edu.cmu.hcii.sugilite.sovite.SoviteAppNameAppInfoManager;
 
 import static edu.cmu.hcii.sugilite.source_parsing.SugiliteScriptExpression.addQuoteToTokenIfNeeded;
 
@@ -24,11 +23,11 @@ public class SugiliteLaunchAppOperation extends SugiliteUnaryOperation<String> {
         setParameter0(appPackageName);
     }
 
-    @Override
-    public String getPumiceUserReadableDecription() {
-        SoviteAppNameAppInfoManager soviteAppNameAppInfoManager = SoviteAppNameAppInfoManager.getInstance(SugiliteData.getAppContext());
-        return String.format("launch the app %s", soviteAppNameAppInfoManager.getReadableAppNameForPackageName(appPackageName));
-    }
+//    @Override
+//    public String getPumiceUserReadableDecription() {
+//        SoviteAppNameAppInfoManager soviteAppNameAppInfoManager = SoviteAppNameAppInfoManager.getInstance(SugiliteData.getAppContext());
+//        return String.format("launch the app %s", soviteAppNameAppInfoManager.getReadableAppNameForPackageName(appPackageName));
+//    }
 
     @Override
     public void setParameter0(String appPackageName) {
@@ -55,6 +54,11 @@ public class SugiliteLaunchAppOperation extends SugiliteUnaryOperation<String> {
 
     @Override
     public OntologyQuery getDataDescriptionQueryIfAvailable() {
+        return null;
+    }
+
+    @Override
+    public String getPumiceUserReadableDecription() {
         return null;
     }
 

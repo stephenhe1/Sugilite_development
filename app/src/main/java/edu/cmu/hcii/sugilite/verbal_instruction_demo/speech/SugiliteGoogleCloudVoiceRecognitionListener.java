@@ -43,32 +43,32 @@ public class SugiliteGoogleCloudVoiceRecognitionListener implements SugiliteVoic
 
     //initiate voice recorder
     private GoogleVoiceRecorder mVoiceRecorder;
-    private GoogleCloudSpeechService mSpeechService = null;
+//    private GoogleCloudSpeechService mSpeechService = null;
 
     private final GoogleVoiceRecorder.Callback mVoiceCallback = new GoogleVoiceRecorder.Callback() {
 
         @Override
         public void onVoiceStart() {
-            if (mSpeechService != null) {
-                //update the context phrases
-                mSpeechService.setContextPhrases(contextPhrases);
-                mSpeechService.startRecognizing(mVoiceRecorder.getSampleRate());
-            }
+//            if (mSpeechService != null) {
+//                //update the context phrases
+//                mSpeechService.setContextPhrases(contextPhrases);
+//                mSpeechService.startRecognizing(mVoiceRecorder.getSampleRate());
+//            }
         }
 
         @Override
         public void onVoice(byte[] data, int size) {
-            if (mSpeechService != null) {
-                mSpeechService.recognize(data, size);
-            }
+//            if (mSpeechService != null) {
+//                mSpeechService.recognize(data, size);
+//            }
         }
 
         @Override
         public void onVoiceEnd() {
-            stopListening();
-            if (mSpeechService != null) {
-                mSpeechService.finishRecognizing();
-            }
+//            stopListening();
+//            if (mSpeechService != null) {
+//                mSpeechService.finishRecognizing();
+//            }
         }
 
     };
@@ -83,40 +83,40 @@ public class SugiliteGoogleCloudVoiceRecognitionListener implements SugiliteVoic
     private SugiliteVoiceInterface sugiliteVoiceInterface;
 
     //this listener is used when results are ready
-    private final GoogleCloudSpeechService.Listener mSpeechServiceListener =
-            new GoogleCloudSpeechService.Listener() {
-                @Override
-                public void onSpeechRecognized(final String text, final boolean isFinal) {
-                    if (isFinal) {
-                        if (mVoiceRecorder != null) {
-                            mVoiceRecorder.dismiss();
-                        }
-                        if (mSpeechService != null && mSpeechServiceListener != null){
-                            mSpeechService.removeListener(mSpeechServiceListener);
-                        }
-                    }
-                    if (!TextUtils.isEmpty(text)) {
-                        SugiliteData.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                    //return the result
-                                    List<String> results = new ArrayList<>();
-                                    results.add(text);
-                                    if (sugiliteVoiceInterface != null) {
-                                        SugiliteData.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                //this callback is ran on the UI thread because it often involves UI actions
-                                                sugiliteVoiceInterface.resultAvailableCallback(results, isFinal);
-                                            }
-                                        });
-                                    }
-                                    //TODO: add a progress bar
-                            }
-                        });
-                    }
-                }
-            };
+//    private final GoogleCloudSpeechService.Listener mSpeechServiceListener =
+//            new GoogleCloudSpeechService.Listener() {
+//                @Override
+//                public void onSpeechRecognized(final String text, final boolean isFinal) {
+//                    if (isFinal) {
+//                        if (mVoiceRecorder != null) {
+//                            mVoiceRecorder.dismiss();
+//                        }
+//                        if (mSpeechService != null && mSpeechServiceListener != null){
+//                            mSpeechService.removeListener(mSpeechServiceListener);
+//                        }
+//                    }
+//                    if (!TextUtils.isEmpty(text)) {
+//                        SugiliteData.runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                    //return the result
+//                                    List<String> results = new ArrayList<>();
+//                                    results.add(text);
+//                                    if (sugiliteVoiceInterface != null) {
+//                                        SugiliteData.runOnUiThread(new Runnable() {
+//                                            @Override
+//                                            public void run() {
+//                                                //this callback is ran on the UI thread because it often involves UI actions
+//                                                sugiliteVoiceInterface.resultAvailableCallback(results, isFinal);
+//                                            }
+//                                        });
+//                                    }
+//                                    //TODO: add a progress bar
+//                            }
+//                        });
+//                    }
+//                }
+//            };
 
     public SugiliteGoogleCloudVoiceRecognitionListener(Context context, SugiliteData sugiliteData, SugiliteVoiceInterface voiceInterface, TextToSpeech tts) {
         this.context = context;
@@ -124,7 +124,7 @@ public class SugiliteGoogleCloudVoiceRecognitionListener implements SugiliteVoic
         this.sugiliteVoiceInterface = voiceInterface;
         this.tts = tts;
         this.sugiliteGoogleCloudVoiceRecognitionListener = this;
-        this.mSpeechService = sugiliteData.getSpeechService();
+//        this.mSpeechService = sugiliteData.getSpeechService();
 
 
         // Check the permission for recording voices
@@ -160,22 +160,22 @@ public class SugiliteGoogleCloudVoiceRecognitionListener implements SugiliteVoic
             @Override
             public void run() {
                 synchronized (this) {
-                    while (mSpeechService == null) {
-                        try {
-                            sugiliteData.speechServiceLock.wait();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+//                    while (mSpeechService == null) {
+//                        try {
+//                            sugiliteData.speechServiceLock.wait();
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
                 }
                 SugiliteData.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         //only allow ONE listener at a time
                         try {
-                        mSpeechService.clearListener();
-
-                        mSpeechService.addListener(mSpeechServiceListener);
+//                        mSpeechService.clearListener();
+//
+//                        mSpeechService.addListener(mSpeechServiceListener);
                         mVoiceRecorder = new GoogleVoiceRecorder(context, mVoiceCallback);
                         mVoiceRecorder.start(new Runnable() {
                             @Override
@@ -350,11 +350,11 @@ public class SugiliteGoogleCloudVoiceRecognitionListener implements SugiliteVoic
         stopTTS();
 
         // stop Cloud Speech API
-        if (mSpeechServiceListener != null && mSpeechService != null) {
-            mSpeechService.removeListener(mSpeechServiceListener);
-        }
-
-        mSpeechService = null;
+//        if (mSpeechServiceListener != null && mSpeechService != null) {
+//            mSpeechService.removeListener(mSpeechServiceListener);
+//        }
+//
+//        mSpeechService = null;
 
     }
 }

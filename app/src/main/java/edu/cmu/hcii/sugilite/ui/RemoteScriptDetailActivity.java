@@ -13,19 +13,19 @@ import edu.cmu.hcii.sugilite.SugiliteData;
 import edu.cmu.hcii.sugilite.model.OperationBlockDescriptionRegenerator;
 import edu.cmu.hcii.sugilite.ontology.description.OntologyDescriptionGenerator;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
-import edu.cmu.hcii.sugilite.sharing.SugiliteScriptSharingHTTPQueryManager;
+//import edu.cmu.hcii.sugilite.sharing.SugiliteScriptSharingHTTPQueryManager;
 import edu.cmu.hcii.sugilite.ui.main.SugiliteMainActivity;
 
 public class RemoteScriptDetailActivity extends ScriptDetailActivity {
     private Integer repoListingId;
-    private SugiliteScriptSharingHTTPQueryManager sugiliteScriptSharingHTTPQueryManager;
+//    private SugiliteScriptSharingHTTPQueryManager sugiliteScriptSharingHTTPQueryManager;
     private OntologyDescriptionGenerator ontologyDescriptionGenerator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_remote_script_detail);
-        this.sugiliteScriptSharingHTTPQueryManager = SugiliteScriptSharingHTTPQueryManager.getInstance(this);
+//        this.sugiliteScriptSharingHTTPQueryManager = SugiliteScriptSharingHTTPQueryManager.getInstance(this);
         this.ontologyDescriptionGenerator = new OntologyDescriptionGenerator();
 
         //load the local script
@@ -51,7 +51,7 @@ public class RemoteScriptDetailActivity extends ScriptDetailActivity {
                 public void run()
                 {
                     try {
-                        script = sugiliteScriptSharingHTTPQueryManager.downloadScript(String.valueOf(repoListingId));
+//                        script = sugiliteScriptSharingHTTPQueryManager.downloadScript(String.valueOf(repoListingId));
                         OperationBlockDescriptionRegenerator.regenerateScriptDescriptions(script, ontologyDescriptionGenerator);
                     }
                     catch (Exception e){

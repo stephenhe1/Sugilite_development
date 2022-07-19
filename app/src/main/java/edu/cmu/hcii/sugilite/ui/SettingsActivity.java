@@ -46,7 +46,7 @@ import edu.cmu.hcii.sugilite.dao.SugiliteScriptSQLDao;
 import edu.cmu.hcii.sugilite.dao.SugiliteTrackingDao;
 import edu.cmu.hcii.sugilite.model.block.SugiliteStartingBlock;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
-import edu.cmu.hcii.sugilite.tracking.SugiliteTrackingHandler;
+//import edu.cmu.hcii.sugilite.tracking.SugiliteTrackingHandler;
 
 import static edu.cmu.hcii.sugilite.Const.SQL_SCRIPT_DAO;
 
@@ -67,7 +67,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     private static SugiliteData sugiliteData;
     private static SugiliteScriptDao sugiliteScriptDao;
     private static SugiliteTrackingDao sugiliteTrackingDao;
-    private static SugiliteTrackingHandler trackingHandler;
+//    private static SugiliteTrackingHandler trackingHandler;
     private static SugiliteBlockJSONProcessor jsonProcessor;
     private static Context context;
 
@@ -83,7 +83,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         else
             sugiliteScriptDao = new SugiliteScriptFileDao(this, sugiliteData);
         sugiliteTrackingDao = new SugiliteTrackingDao(this);
-        trackingHandler = new SugiliteTrackingHandler(sugiliteData, this);
+//        trackingHandler = new SugiliteTrackingHandler(sugiliteData, this);
         jsonProcessor = new SugiliteBlockJSONProcessor(this);
         this.context = this;
     }
@@ -274,16 +274,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                                     }).show();
                         }
                         else {
-                            String name = trackingHandler.getDefaultTrackingName();
-                            sugiliteData.initiateTracking(name);
-                            try {
-                                sugiliteTrackingDao.save(sugiliteData.getTrackingHead());
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            AlertDialog.Builder builder2 = new AlertDialog.Builder(preference.getContext())
-                                    .setMessage("Starting tracking " + name);
-                            builder2.show();
+//                            String name = trackingHandler.getDefaultTrackingName();
+//                            sugiliteData.initiateTracking(name);
+//                            try {
+//                                sugiliteTrackingDao.save(sugiliteData.getTrackingHead());
+//                            } catch (Exception e) {
+//                                e.printStackTrace();
+//                            }
+//                            AlertDialog.Builder builder2 = new AlertDialog.Builder(preference.getContext())
+//                                    .setMessage("Starting tracking " + name);
+//                            builder2.show();
                         }
                     }
             }

@@ -100,9 +100,9 @@ public class ChooseParsingDialog extends SugiliteDialogManager {
         }
 
         i = 0;
-        for (OntologyQuery query : resultQueries) {
-            stringArray[i++] = ontologyDescriptionGenerator.getSpannedDescriptionForOntologyQuery(query, true).toString();
-        }
+//        for (OntologyQuery query : resultQueries) {
+//            stringArray[i++] = ontologyDescriptionGenerator.getSpannedDescriptionForOntologyQuery(query, true).toString();
+//        }
 
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_list_item_2, stringArray) {

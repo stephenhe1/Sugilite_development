@@ -31,10 +31,7 @@ import edu.cmu.hcii.sugilite.ontology.SugiliteRelation;
 import edu.cmu.hcii.sugilite.ontology.helper.annotator.SugiliteTextParentAnnotator;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.pumice.dialog.intent_handler.PumiceScriptExecutingConfirmationIntentHandler;
-import edu.cmu.hcii.sugilite.pumice.dialog.intent_handler.PumiceUserExplainBoolExpIntentHandler;
 import edu.cmu.hcii.sugilite.pumice.dialog.intent_handler.else_statement.PumiceAskIfNeedElseStatementHandler;
-import edu.cmu.hcii.sugilite.pumice.dialog.intent_handler.PumiceUserExplainProcedureIntentHandler;
-import edu.cmu.hcii.sugilite.pumice.dialog.intent_handler.PumiceUserExplainValueIntentHandler;
 import edu.cmu.hcii.sugilite.pumice.kb.PumiceBooleanExpKnowledge;
 import edu.cmu.hcii.sugilite.pumice.kb.PumiceProceduralKnowledge;
 import edu.cmu.hcii.sugilite.pumice.kb.PumiceValueQueryKnowledge;
@@ -445,9 +442,9 @@ public class PumiceInitInstructionParsingHandler {
                 PumiceProceduralKnowledge resolveProcedureLock = new PumiceProceduralKnowledge();
 
                 //update the dialog manager with a new intent handler
-                PumiceUserExplainProcedureIntentHandler pumiceUserExplainProcedureIntentHandler = new PumiceUserExplainProcedureIntentHandler(pumiceDialogManager, context, sugiliteData, resolveProcedureLock, procedureUtterance);
-                pumiceDialogManager.updateUtteranceIntentHandlerInANewState(pumiceUserExplainProcedureIntentHandler);
-                pumiceUserExplainProcedureIntentHandler.sendPromptForTheIntentHandler();
+//                PumiceUserExplainProcedureIntentHandler pumiceUserExplainProcedureIntentHandler = new PumiceUserExplainProcedureIntentHandler(pumiceDialogManager, context, sugiliteData, resolveProcedureLock, procedureUtterance);
+//                pumiceDialogManager.updateUtteranceIntentHandlerInANewState(pumiceUserExplainProcedureIntentHandler);
+//                pumiceUserExplainProcedureIntentHandler.sendPromptForTheIntentHandler();
 
                 //wait for the user to explain the bool exp
                 synchronized (resolveProcedureLock) {
@@ -481,9 +478,9 @@ public class PumiceInitInstructionParsingHandler {
                 PumiceValueQueryKnowledge resolveValueLock = new PumiceValueQueryKnowledge();
 
                 //update the dialog manager with a new intent handler
-                PumiceUserExplainValueIntentHandler pumiceUserExplainValueIntentHandler = new PumiceUserExplainValueIntentHandler(pumiceDialogManager, context, sugiliteData, resolveValueLock, valueUtterance, resolveValueQueryOperationSugiliteRelationType);
-                pumiceDialogManager.updateUtteranceIntentHandlerInANewState(pumiceUserExplainValueIntentHandler);
-                pumiceUserExplainValueIntentHandler.sendPromptForTheIntentHandler();
+//                PumiceUserExplainValueIntentHandler pumiceUserExplainValueIntentHandler = new PumiceUserExplainValueIntentHandler(pumiceDialogManager, context, sugiliteData, resolveValueLock, valueUtterance, resolveValueQueryOperationSugiliteRelationType);
+//                pumiceDialogManager.updateUtteranceIntentHandlerInANewState(pumiceUserExplainValueIntentHandler);
+//                pumiceUserExplainValueIntentHandler.sendPromptForTheIntentHandler();
 
                 //wait for the user to explain the bool exp
                 synchronized (resolveValueLock) {
@@ -514,9 +511,9 @@ public class PumiceInitInstructionParsingHandler {
 
 
                 //update the dialog manager with a new intent handler
-                PumiceUserExplainBoolExpIntentHandler pumiceUserExplainBoolExpIntentHandler = new PumiceUserExplainBoolExpIntentHandler(pumiceDialogManager, context, sugiliteData, resolveBoolExpLock, boolUtterance, failureCount);
-                pumiceDialogManager.updateUtteranceIntentHandlerInANewState(pumiceUserExplainBoolExpIntentHandler);
-                pumiceUserExplainBoolExpIntentHandler.sendPromptForTheIntentHandler();
+//                PumiceUserExplainBoolExpIntentHandler pumiceUserExplainBoolExpIntentHandler = new PumiceUserExplainBoolExpIntentHandler(pumiceDialogManager, context, sugiliteData, resolveBoolExpLock, boolUtterance, failureCount);
+//                pumiceDialogManager.updateUtteranceIntentHandlerInANewState(pumiceUserExplainBoolExpIntentHandler);
+//                pumiceUserExplainBoolExpIntentHandler.sendPromptForTheIntentHandler();
 
                 //wait for the user to explain the bool exp
                 synchronized (resolveBoolExpLock) {

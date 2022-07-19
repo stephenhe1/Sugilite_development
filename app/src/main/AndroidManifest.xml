@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INJECT_EVENTS" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
 
     <application
         android:name=".SugiliteData"
@@ -51,7 +52,7 @@
             </intent-filter>
         </service>
 
-        <service android:name=".verbal_instruction_demo.speech.GoogleCloudSpeechService"/>
+<!--        <service android:name=".verbal_instruction_demo.speech.GoogleCloudSpeechService"/>-->
 
 
         <activity
@@ -130,4 +131,9 @@
         </activity>
     </application>
 
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
 </manifest>

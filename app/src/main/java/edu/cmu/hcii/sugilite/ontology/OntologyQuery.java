@@ -1,9 +1,9 @@
 package edu.cmu.hcii.sugilite.ontology;
 
 import edu.cmu.hcii.sugilite.SugiliteData;
-import edu.cmu.hcii.sugilite.sharing.SugiliteScriptSharingHTTPQueryManager;
-import edu.cmu.hcii.sugilite.sharing.model.HashedString;
-import edu.cmu.hcii.sugilite.sharing.StringAlternativeGenerator;
+//import edu.cmu.hcii.sugilite.sharing.SugiliteScriptSharingHTTPQueryManager;
+//import edu.cmu.hcii.sugilite.sharing.model.HashedString;
+//import edu.cmu.hcii.sugilite.sharing.StringAlternativeGenerator;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -75,14 +75,15 @@ public abstract class OntologyQuery implements Serializable {
             }
 
             else {
-                if (firstWord.equals("privateMatch")) {
-                    String[] parts = s.split(" ");
-                    query = new HashedStringLeafOntologyQuery(SugiliteRelation.getRelationFromString(parts[1]), HashedString.fromEncodedString(parts[2], true));
-                } else if (firstWord.equals("patternMatch")) {
-                    String[] parts = s.split(" ", 3);
-                    StringAlternativeGenerator.StringAlternative alt = new StringAlternativeGenerator.StringAlternative(OntologyQueryUtils.removeQuoteSigns(parts[2]), -1, StringAlternativeGenerator.PATTERN_MATCH_TYPE);
-                    query = new StringAlternativeOntologyQuery(SugiliteRelation.getRelationFromString(parts[1]), alt);
-                } else {
+//                if (firstWord.equals("privateMatch")) {
+//                    String[] parts = s.split(" ");
+//                    query = new HashedStringLeafOntologyQuery(SugiliteRelation.getRelationFromString(parts[1]), HashedString.fromEncodedString(parts[2], true));
+//                } else if (firstWord.equals("patternMatch")) {
+//                    String[] parts = s.split(" ", 3);
+//                    StringAlternativeGenerator.StringAlternative alt = new StringAlternativeGenerator.StringAlternative(OntologyQueryUtils.removeQuoteSigns(parts[2]), -1, StringAlternativeGenerator.PATTERN_MATCH_TYPE);
+//                    query = new StringAlternativeOntologyQuery(SugiliteRelation.getRelationFromString(parts[1]), alt);
+//                } else
+                {
                     // base case: simple relation
                     // note: the object will never be an accessbility node info (since this is directly from user)
                     String predicateString = firstWord;
@@ -139,9 +140,9 @@ public abstract class OntologyQuery implements Serializable {
     public Set<SugiliteEntity> executeOn(UISnapshot graph){
         // fetch the remote salt graph
         Set<String> stringsForServerQuery = getStringsNeededForServerSaltedHashing(graph);
-        if (SugiliteData.getScreenStringSaltedHashMap() != null && stringsForServerQuery.size() > 0) {
-            SugiliteData.getScreenStringSaltedHashMap().putAll(SugiliteScriptSharingHTTPQueryManager.getInstance(SugiliteData.getAppContext()).getServerSaltedHash(stringsForServerQuery));
-        }
+//        if (SugiliteData.getScreenStringSaltedHashMap() != null && stringsForServerQuery.size() > 0) {
+//            SugiliteData.getScreenStringSaltedHashMap().putAll(SugiliteScriptSharingHTTPQueryManager.getInstance(SugiliteData.getAppContext()).getServerSaltedHash(stringsForServerQuery));
+//        }
 
         Set<SugiliteEntity> results = new HashSet<SugiliteEntity>();
         // for each node in the graph, follow the if statements in notes
@@ -163,19 +164,20 @@ public abstract class OntologyQuery implements Serializable {
 
     private Set<String> getStringsNeededForServerSaltedHashing (UISnapshot graph) {
         Set<String> result = new HashSet<>();
-        if (this instanceof HashedStringLeafOntologyQuery) {
-            if (((HashedStringLeafOntologyQuery)this).hashedString.isServerSalted()) {
-                Set<SugiliteTriple> sugiliteTriples = graph.getPredicateTriplesMap().get(((HashedStringLeafOntologyQuery) this).getR().getRelationId());
-                if (sugiliteTriples != null) {
-                    for (SugiliteTriple triple : sugiliteTriples) {
-                        if (SugiliteData.getScreenStringSaltedHashMap() != null && SugiliteData.getScreenStringSaltedHashMap().containsKey(new HashedString(triple.getObjectStringValue()).toString())) {
-                            continue;
-                        }
-                        result.add(new HashedString(triple.getObjectStringValue()).toString());
-                    }
-                }
-            }
-        } else if (this instanceof OntologyQueryWithSubQueries) {
+//        if (this instanceof HashedStringLeafOntologyQuery) {
+////            if (((HashedStringLeafOntologyQuery)this).hashedString.isServerSalted()) {
+////                Set<SugiliteTriple> sugiliteTriples = graph.getPredicateTriplesMap().get(((HashedStringLeafOntologyQuery) this).getR().getRelationId());
+////                if (sugiliteTriples != null) {
+////                    for (SugiliteTriple triple : sugiliteTriples) {
+////                        if (SugiliteData.getScreenStringSaltedHashMap() != null && SugiliteData.getScreenStringSaltedHashMap().containsKey(new HashedString(triple.getObjectStringValue()).toString())) {
+////                            continue;
+////                        }
+////                        result.add(new HashedString(triple.getObjectStringValue()).toString());
+////                    }
+////                }
+////            }
+//        } else
+            if (this instanceof OntologyQueryWithSubQueries) {
             for (OntologyQuery q : ((OntologyQueryWithSubQueries)this).getSubQueries()) {
                 result.addAll(q.getStringsNeededForServerSaltedHashing(graph));
             }

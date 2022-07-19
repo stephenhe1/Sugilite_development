@@ -1,5 +1,7 @@
 package edu.cmu.hcii.sugilite;
 
+import static java.util.Locale.US;
+
 import android.app.AlertDialog;
 import android.app.Application;
 import android.app.Dialog;
@@ -28,7 +30,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
@@ -36,23 +37,15 @@ import java.util.Set;
 import edu.cmu.hcii.sugilite.automation.ErrorHandler;
 import edu.cmu.hcii.sugilite.communication.SugiliteCommunicationController;
 import edu.cmu.hcii.sugilite.communication.SugiliteEventBroadcastingActivity;
-import edu.cmu.hcii.sugilite.model.Node;
 import edu.cmu.hcii.sugilite.model.block.SugiliteBlock;
 import edu.cmu.hcii.sugilite.model.block.SugiliteOperationBlock;
 import edu.cmu.hcii.sugilite.model.block.SugiliteStartingBlock;
 import edu.cmu.hcii.sugilite.model.variable.VariableValue;
-import edu.cmu.hcii.sugilite.ontology.SugiliteEntity;
 import edu.cmu.hcii.sugilite.ontology.SugiliteRelation;
-import edu.cmu.hcii.sugilite.ontology.UISnapshot;
 import edu.cmu.hcii.sugilite.pumice.dialog.PumiceDialogManager;
 import edu.cmu.hcii.sugilite.recording.RecordingPopUpDialog;
-import edu.cmu.hcii.sugilite.sharing.ObfuscatedScriptReconstructor;
-import edu.cmu.hcii.sugilite.sharing.model.HashedString;
-import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
 import edu.cmu.hcii.sugilite.ui.StatusIconManager;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.VerbalInstructionIconManager;
-import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.GoogleCloudSpeechService;
-import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.GoogleVoiceRecorder;
 
 import static edu.cmu.hcii.sugilite.Const.OVERLAY_TYPE;
 
@@ -65,15 +58,15 @@ import static edu.cmu.hcii.sugilite.Const.OVERLAY_TYPE;
 public class SugiliteData extends Application {
     //the static application context
     private static Context applicationContext;
-    private static Map<String, HashedString> screenStringSaltedHashMap;
+//    private static Map<String, HashedString> screenStringSaltedHashMap;
 
     //used to store the current active script
     private SugiliteStartingBlock scriptHead, trackingHead;
     private SugiliteBlock currentScriptBlock, currentTrackingBlock;
-    private ScriptUsageLogManager usageLogManager;
+//    private ScriptUsageLogManager usageLogManager;
 
-    //used to reconstruct obfuscated scripts
-    private ObfuscatedScriptReconstructor obfuscatedScriptReconstructor;
+//    //used to reconstruct obfuscated scripts
+//    private ObfuscatedScriptReconstructor obfuscatedScriptReconstructor;
 
     //the queue used for execution. the system should be in the execution mode whenever the queue is non-empty
     private Queue<SugiliteBlock> instructionQueue = new ArrayDeque<>();
@@ -117,7 +110,6 @@ public class SugiliteData extends Application {
     public boolean testRun = false;
 
     //Google speech service
-    private GoogleCloudSpeechService mSpeechService;
     public Object speechServiceLock = new Object();
 
     public String valueDemonstrationVariableName = "";
@@ -138,15 +130,15 @@ public class SugiliteData extends Application {
         super.onCreate();
         //initiate a static copy of application context
         SugiliteData.applicationContext = getApplicationContext();
-        SugiliteData.screenStringSaltedHashMap = new HashMap<>();
+//        SugiliteData.screenStringSaltedHashMap = new HashMap<>();
 
         //initiate TTS
         tts = new TextToSpeech(applicationContext, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                tts.setLanguage(Locale.US);
             }
         });
+        tts.setLanguage(US);
         setTTS(tts);
 
         //initiate ASR
@@ -154,20 +146,20 @@ public class SugiliteData extends Application {
             @Override
             public void onServiceConnected(ComponentName componentName, IBinder binder) {
                 // use a service ready callback to ensure that the service is ready
-                mSpeechService = GoogleCloudSpeechService.from(binder);
-                synchronized (speechServiceLock) {
-                    speechServiceLock.notifyAll();
-                }
+//                mSpeechService = GoogleCloudSpeechService.from(binder);
+//                synchronized (speechServiceLock) {
+//                    speechServiceLock.notifyAll();
+//                }
             }
             @Override
             public void onServiceDisconnected(ComponentName componentName) {
-                mSpeechService = null;
+//                mSpeechService = null;
             }
         };
         // Prepare Cloud Speech API
-        Intent bindIntent = new Intent(applicationContext, GoogleCloudSpeechService.class);
-        ComponentName serviceComponentName = applicationContext.startService(bindIntent);
-        applicationContext.bindService(bindIntent, mServiceConnection, BIND_AUTO_CREATE);
+//        Intent bindIntent = new Intent(applicationContext, GoogleCloudSpeechService.class);
+//        ComponentName serviceComponentName = applicationContext.startService(bindIntent);
+//        applicationContext.bindService(bindIntent, mServiceConnection, BIND_AUTO_CREATE);
 
 
         //disable StrictMode for file access
@@ -181,9 +173,9 @@ public class SugiliteData extends Application {
         return SugiliteData.applicationContext;
     }
 
-    public static Map<String, HashedString> getScreenStringSaltedHashMap() {
-        return screenStringSaltedHashMap;
-    }
+//    public static Map<String, HashedString> getScreenStringSaltedHashMap() {
+//        return screenStringSaltedHashMap;
+//    }
 
     public static void runOnUiThread(Runnable runnable) {
         if (applicationContext != null) {
@@ -220,22 +212,22 @@ public class SugiliteData extends Application {
         this.trackingHead = trackingHead;
     }
 
-    public void handleReconstructObfuscatedScript(SugiliteOperationBlock blockToMatch, SugiliteEntity<Node> matchedNode, UISnapshot uiSnapshot) {
-        if (obfuscatedScriptReconstructor == null) {
-            obfuscatedScriptReconstructor = new ObfuscatedScriptReconstructor(applicationContext, this);
-        }
-        obfuscatedScriptReconstructor.replaceBlockInScript(blockToMatch, matchedNode, uiSnapshot);
-    }
-
-    public ObfuscatedScriptReconstructor getObfuscatedScriptReconstructor() {
-        return obfuscatedScriptReconstructor;
-    }
-
-    public void logUsageData(int type, String scriptName){
-        if(usageLogManager == null)
-            usageLogManager = new ScriptUsageLogManager(getBaseContext());
-        usageLogManager.addLog(type, scriptName);
-    }
+//    public void handleReconstructObfuscatedScript(SugiliteOperationBlock blockToMatch, SugiliteEntity<Node> matchedNode, UISnapshot uiSnapshot) {
+//        if (obfuscatedScriptReconstructor == null) {
+//            obfuscatedScriptReconstructor = new ObfuscatedScriptReconstructor(applicationContext, this);
+//        }
+//        obfuscatedScriptReconstructor.replaceBlockInScript(blockToMatch, matchedNode, uiSnapshot);
+//    }
+//
+//    public ObfuscatedScriptReconstructor getObfuscatedScriptReconstructor() {
+//        return obfuscatedScriptReconstructor;
+//    }
+//
+//    public void logUsageData(int type, String scriptName){
+//        if(usageLogManager == null)
+//            usageLogManager = new ScriptUsageLogManager(getBaseContext());
+//        usageLogManager.addLog(type, scriptName);
+//    }
 
     //the current pumiceDialogManager
     public PumiceDialogManager pumiceDialogManager;
@@ -251,7 +243,7 @@ public class SugiliteData extends Application {
         this.setCurrentScriptBlock(scriptHead);
         this.afterRecordingCallback = afterRecordingCallback;
 
-        logUsageData(ScriptUsageLogManager.CREATE_SCRIPT, scriptName);
+//        logUsageData(ScriptUsageLogManager.CREATE_SCRIPT, scriptName);
     }
 
     public synchronized void initiateTracking(String trackingName){
@@ -271,14 +263,14 @@ public class SugiliteData extends Application {
             errorHandler.reportSuccess(Calendar.getInstance().getTimeInMillis());
         }
 
-        if (obfuscatedScriptReconstructor == null) {
-            obfuscatedScriptReconstructor = new ObfuscatedScriptReconstructor(applicationContext, this);
-        }
-        if(isReconstructing) {
-            obfuscatedScriptReconstructor.setScriptInProcess(startingBlock);
-        } else {
-            obfuscatedScriptReconstructor.setScriptInProcess(null);
-        }
+//        if (obfuscatedScriptReconstructor == null) {
+//            obfuscatedScriptReconstructor = new ObfuscatedScriptReconstructor(applicationContext, this);
+//        }
+//        if(isReconstructing) {
+//            obfuscatedScriptReconstructor.setScriptInProcess(startingBlock);
+//        } else {
+//            obfuscatedScriptReconstructor.setScriptInProcess(null);
+//        }
 
 
         List<SugiliteBlock> blocks = traverseBlock(startingBlock);
@@ -490,7 +482,7 @@ public class SugiliteData extends Application {
         tts = new TextToSpeech(applicationContext, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                tts.setLanguage(Locale.US);
+                tts.setLanguage(US);
             }
         });
         setTTS(tts);
@@ -523,7 +515,7 @@ public class SugiliteData extends Application {
         this.screenshotMediaProjectionManager = screenshotMediaProjectionManager;
     }
 
-    public GoogleCloudSpeechService getSpeechService() {
-        return mSpeechService;
-    }
+//    public GoogleCloudSpeechService getSpeechService() {
+//        return mSpeechService;
+//    }
 }

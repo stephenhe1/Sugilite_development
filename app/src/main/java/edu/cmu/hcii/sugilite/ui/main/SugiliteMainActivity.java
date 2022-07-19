@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -45,12 +46,13 @@ import edu.cmu.hcii.sugilite.model.variable.VariableValue;
 import edu.cmu.hcii.sugilite.ontology.description.OntologyDescriptionGenerator;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.pumice.ui.PumiceDialogActivity;
-import edu.cmu.hcii.sugilite.sharing.SugiliteScriptSharingHTTPQueryManager;
-import edu.cmu.hcii.sugilite.sharing.model.SugiliteRepoListing;
-import edu.cmu.hcii.sugilite.sovite.visual.text_selection.SoviteSetTextParameterDialog;
-import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
-import edu.cmu.hcii.sugilite.study.StudyConst;
-import edu.cmu.hcii.sugilite.study.StudyDataUploadManager;
+//import edu.cmu.hcii.sugilite.sharing.SugiliteScriptSharingHTTPQueryManager;
+//import edu.cmu.hcii.sugilite.sharing.model.SugiliteRepoListing;
+//import edu.cmu.hcii.sugilite.sovite.visual.text_selection.SoviteSetTextParameterDialog;
+//import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
+//import edu.cmu.hcii.sugilite.study.StudyConst;
+//import edu.cmu.hcii.sugilite.study.StudyDataUploadManager;
+import edu.cmu.hcii.sugilite.ui.LocalScriptDetailActivity;
 import edu.cmu.hcii.sugilite.ui.SettingsActivity;
 import edu.cmu.hcii.sugilite.ui.dialog.AddTriggerDialog;
 import edu.cmu.hcii.sugilite.ui.dialog.SugiliteProgressDialog;
@@ -69,8 +71,8 @@ public class SugiliteMainActivity extends AppCompatActivity {
     private SugiliteTriggerDao sugiliteTriggerDao;
     private SugiliteData sugiliteData;
     private SugiliteProgressDialog progressDialog;
-    private StudyDataUploadManager uploadManager;
-    private SugiliteScriptSharingHTTPQueryManager sugiliteScriptSharingHTTPQueryManager;
+//    private StudyDataUploadManager uploadManager;
+//    private SugiliteScriptSharingHTTPQueryManager sugiliteScriptSharingHTTPQueryManager;
     private Context context;
     private MediaProjectionManager mMediaProjectionManager;
 
@@ -80,9 +82,14 @@ public class SugiliteMainActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean("EXIT", false)) {
-            finish();
-            return;
+//        if (getIntent().getExtras() != null && getIntent().getExtras().getBoolean("EXIT", false)) {
+//            finish();
+//            return;
+//        }
+        if (getIntent().getBooleanExtra("EXIT",false)){
+            super.finish();
+            finishAndRemoveTask();
+            android.os.Process.killProcess(android.os.Process.myPid());
         }
 
 
@@ -90,9 +97,9 @@ public class SugiliteMainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         this.mMediaProjectionManager = (MediaProjectionManager)getApplication().getSystemService(Context.MEDIA_PROJECTION_SERVICE);
-        this.uploadManager = new StudyDataUploadManager(this, sugiliteData);
+//        this.uploadManager = new StudyDataUploadManager(this, sugiliteData);
         this.sugiliteData = getApplication() instanceof SugiliteData? (SugiliteData)getApplication() : new SugiliteData();
-        this.sugiliteScriptSharingHTTPQueryManager = SugiliteScriptSharingHTTPQueryManager.getInstance(this);
+//        this.sugiliteScriptSharingHTTPQueryManager = SugiliteScriptSharingHTTPQueryManager.getInstance(this);
         if(Const.DAO_TO_USE == SQL_SCRIPT_DAO) {
             this.sugiliteScriptDao = new SugiliteScriptSQLDao(this);
         }
@@ -164,10 +171,19 @@ public class SugiliteMainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+
+        android.os.Process.killProcess(android.os.Process.myPid());
+        // This above line close correctly
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         startScreenshotCaptureIntent();
     }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -223,7 +239,27 @@ public class SugiliteMainActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
                                     sugiliteScriptDao.clear();
-                                    sugiliteData.logUsageData(ScriptUsageLogManager.CLEAR_ALL_SCRIPTS, "N/A");
+//                                    File rootFile=new File(Environment.getExternalStorageDirectory().getAbsolutePath());
+//                                    for (File file : rootFile.listFiles()){
+//                                        if(file.getName().contains("_xpath.txt"))
+//                                            file.delete();
+//                                    }
+                                    File rootFile2=new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts");
+                                    for (File file : rootFile2.listFiles()){
+                                        if(file.getName().contains(".jsonl"))
+                                            file.delete();
+                                    }
+                                    File rootFile3=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/");
+                                    for (File file : rootFile3.listFiles()){
+                                        if(file.getName().contains(".jsonl"))
+                                            file.delete();
+                                    }
+                                    File rootFile4=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/");
+                                    for (File file : rootFile4.listFiles()){
+                                        if(file.getName().contains(".txt"))
+                                            file.delete();
+                                    }
+//                                    sugiliteData.logUsageData(ScriptUsageLogManager.CLEAR_ALL_SCRIPTS, "N/A");
                                     if (fragmentScriptListTab instanceof FragmentScriptListTab)
                                         ((FragmentScriptListTab) fragmentScriptListTab).setUpScriptList();
                                 }
@@ -280,64 +316,64 @@ public class SugiliteMainActivity extends AppCompatActivity {
         }
 
         if (id == R.id.clear_hash_cache) {
-            int size = SugiliteData.getScreenStringSaltedHashMap().size();
-            SugiliteData.getScreenStringSaltedHashMap().clear();
-            PumiceDemonstrationUtil.showSugiliteAlertDialog(String.format("Cleared %d entries in the hash cache!", size));
+//            int size = SugiliteData.getScreenStringSaltedHashMap().size();
+//            SugiliteData.getScreenStringSaltedHashMap().clear();
+//            PumiceDemonstrationUtil.showSugiliteAlertDialog(String.format("Cleared %d entries in the hash cache!", size));
         }
 
-        if(id == R.id.upload_scripts){
-            //progress dialog for loading the script
-            new Thread(new Runnable() {
-                @Override
-                public void run()
-                {
-                    List<SugiliteStartingBlock> scripts = null;
-                    int uploadJSONCount = 0, uploadFileCount = 0;
-                    try {
-                        scripts = sugiliteScriptDao.getAllScripts();
-                        if(scripts != null && uploadManager != null){
-                            //upload JSON first
-                            for(SugiliteStartingBlock script : scripts) {
-                                uploadManager.uploadScriptJSON(script);
-                                uploadJSONCount ++;
-                                if (sugiliteScriptDao instanceof SugiliteScriptFileDao) {
-                                    //upload script file only if SugiliteScriptFileDao is in use
-                                    String scriptPath = ((SugiliteScriptFileDao) sugiliteScriptDao).getScriptPath(script.getScriptName());
-                                    uploadManager.uploadScript(scriptPath, script.getCreatedTime());
-                                    uploadFileCount ++;
-                                }
-
-                            }
-                            String directoryPath = context.getFilesDir().getPath().toString();
-
-                            //start uploading the usage log
-                            File usageLog = new File(directoryPath + "/" + StudyConst.SCRIPT_USAGE_LOG_FILE_NAME);
-                            if(usageLog.exists()) {
-                                uploadManager.uploadScript(usageLog.getPath(), Calendar.getInstance().getTimeInMillis());
-                                System.out.println("USAGE LOG UPLOADED");
-                            }
-                            else {
-                                System.out.println("usage log doesn't exist!");
-                            }
-                            //finish uploading the usage log
-                        }
-                    }
-                    catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    final int finalJSONCount = uploadJSONCount, finalFileCount = uploadFileCount;
-                }
-            }).start();
-            return true;
-        }
-
-        if(id == R.id.test_feature){
-            SoviteSetTextParameterDialog soviteSetTextParameterDialog = new SoviteSetTextParameterDialog(context, sugiliteData, new VariableValue<>("parameter1", "chicken sandwich"), "can you help me order a chicken sandwich from KFC", null, null, null, false);
-            //SoviteSetTextParameterDialog soviteSetTextParameterDialog = new SoviteSetTextParameterDialog(context, new Variable("parameter1"),"world", "hello world");
-            soviteSetTextParameterDialog.show();
-            //new ScriptUsageLogManager(context).clearLog();
-            return true;
-        }
+//        if(id == R.id.upload_scripts){
+//            //progress dialog for loading the script
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run()
+//                {
+//                    List<SugiliteStartingBlock> scripts = null;
+//                    int uploadJSONCount = 0, uploadFileCount = 0;
+//                    try {
+//                        scripts = sugiliteScriptDao.getAllScripts();
+//                        if(scripts != null && uploadManager != null){
+//                            //upload JSON first
+//                            for(SugiliteStartingBlock script : scripts) {
+//                                uploadManager.uploadScriptJSON(script);
+//                                uploadJSONCount ++;
+//                                if (sugiliteScriptDao instanceof SugiliteScriptFileDao) {
+//                                    //upload script file only if SugiliteScriptFileDao is in use
+//                                    String scriptPath = ((SugiliteScriptFileDao) sugiliteScriptDao).getScriptPath(script.getScriptName());
+//                                    uploadManager.uploadScript(scriptPath, script.getCreatedTime());
+//                                    uploadFileCount ++;
+//                                }
+//
+//                            }
+//                            String directoryPath = context.getFilesDir().getPath().toString();
+//
+//                            //start uploading the usage log
+//                            File usageLog = new File(directoryPath + "/" + StudyConst.SCRIPT_USAGE_LOG_FILE_NAME);
+//                            if(usageLog.exists()) {
+//                                uploadManager.uploadScript(usageLog.getPath(), Calendar.getInstance().getTimeInMillis());
+//                                System.out.println("USAGE LOG UPLOADED");
+//                            }
+//                            else {
+//                                System.out.println("usage log doesn't exist!");
+//                            }
+//                            //finish uploading the usage log
+//                        }
+//                    }
+//                    catch (Exception e){
+//                        e.printStackTrace();
+//                    }
+//                    final int finalJSONCount = uploadJSONCount, finalFileCount = uploadFileCount;
+//                }
+//            }).start();
+//            return true;
+//        }
+//
+//        if(id == R.id.test_feature){
+//            SoviteSetTextParameterDialog soviteSetTextParameterDialog = new SoviteSetTextParameterDialog(context, sugiliteData, new VariableValue<>("parameter1", "chicken sandwich"), "can you help me order a chicken sandwich from KFC", null, null, null, false);
+//            //SoviteSetTextParameterDialog soviteSetTextParameterDialog = new SoviteSetTextParameterDialog(context, new Variable("parameter1"),"world", "hello world");
+//            soviteSetTextParameterDialog.show();
+//            //new ScriptUsageLogManager(context).clearLog();
+//            return true;
+//        }
         if(id == R.id.launch_pumice){
             //launch pumice
             Intent intent = new Intent(this, PumiceDialogActivity.class);

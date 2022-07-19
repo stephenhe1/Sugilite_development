@@ -1,20 +1,35 @@
 package edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Fragment;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Rect;
+import android.os.Environment;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Toast;
 
+import org.apache.commons.collections.map.HashedMap;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import edu.cmu.hcii.sugilite.Const;
 import edu.cmu.hcii.sugilite.model.Node;
@@ -27,6 +42,10 @@ import edu.cmu.hcii.sugilite.ontology.SugiliteEntity;
 import edu.cmu.hcii.sugilite.ontology.UISnapshot;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.recording.newrecording.SugiliteBlockBuildingHelper;
+import edu.cmu.hcii.sugilite.ui.AppCompatPreferenceActivity;
+import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
+import edu.cmu.hcii.sugilite.ui.main.FragmentScriptListTab;
+import tech.gusavila92.websocketclient.WebSocketClient;
 
 
 /**
@@ -38,7 +57,7 @@ import edu.cmu.hcii.sugilite.recording.newrecording.SugiliteBlockBuildingHelper;
 /**
  * dummy dialog -> will lead to either RecordingAmbiguousPopupDialog or SugiliteRecordingConfirmationDialog
  */
-public class OverlayClickedDialog {
+public class OverlayClickedDialog{
     private Context context;
     private SugiliteEntity<Node> node;
     private UISnapshot uiSnapshot;
@@ -54,6 +73,7 @@ public class OverlayClickedDialog {
     private SugiliteData sugiliteData;
     private boolean isLongClick;
     private File screenshot;
+
 
 
     public OverlayClickedDialog(Context context, SugiliteEntity<Node> node, UISnapshot uiSnapshot, File screenshot, float x, float y, FullScreenRecordingOverlayManager recordingOverlayManager, View overlay, SugiliteData sugiliteData, SharedPreferences sharedPreferences, TextToSpeech tts, boolean isLongClick) {
@@ -109,32 +129,181 @@ public class OverlayClickedDialog {
         dialog = builder.create();
     }
 
+//    private List<Node> getParentalNode(Node nodeEntity){
+//        List<Node> nodesList=new ArrayList<>();
+//        while (nodeEntity!=null){
+//            nodesList.add(nodeEntity);
+//            nodeEntity=nodeEntity.getParent();
+//        }
+//        return nodesList;
+//    }
+
+
+
+
+//    private int getNodeIndex(Node nodeInfo) {
+//        if  (null!=nodeInfo) {
+//            if (null!=nodeInfo.getParent()) {
+//                AccessibilityNodeInfo  parent = nodeInfo.getParentalNode();
+//                int childCount = parent.getChildCount();
+//                if (childCount > 1) {
+//                    int count=0;
+//                    int length=0;
+//                    int invisibleNumber=0;
+//                    for (int i = 0; i < childCount; i++) {
+//                        if(null!=parent.getChild(i)){
+//                            try {
+//                                if(parent.getChild(i).equals(nodeInfo.getThisNode())){
+//                                    length=count-invisibleNumber;
+//                                    if (hasMoreThanOneSibling(parent, nodeInfo.getClassName())){
+//                                        return length+1;
+//                                    }
+//                                    else{
+//                                        return length;
+//                                    }
+//                                }
+//                                if (parent.getChild(i).getClassName().toString().equals(nodeInfo.getClassName())) {
+//                                    count++;
+//
+//                                }
+//                            }
+//                            catch (NullPointerException e){
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//
+//                } else {
+//                    return 0;
+//                }
+//            }
+//            return 0;
+//        }
+//        return -1;
+//    }
+
+//    private boolean hasMoreThanOneSibling(AccessibilityNodeInfo parent, String className) {
+//        int sameCount=0;
+//        for (int i = 0; i < parent.getChildCount(); i++) {
+//            if (sameCount>1)
+//                return true;
+//            if(null!=parent.getChild(i)){
+//                if (parent.getChild(i).getClassName().toString().equals(className))
+//                    sameCount++;
+//            }
+//        }
+//        if (sameCount<2)
+//            return false;
+//        else
+//            return true;
+//    }
+
+    private void writeXPATH(String fileName,String XPATH){
+        BufferedWriter bw = null;
+        try {
+//            System.out.println("The saved file path is: "+sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+fileName+"_xpath.txt");
+            bw = new BufferedWriter(new FileWriter(new File(context.getFilesDir().getPath()+"/scripts/" + fileName+"_xpath.txt"),true));
+            bw.write(XPATH+"\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private void sendNodeInfo(Node nodeInfo, String xpath){
+        //Get the websocket instance
+        WebSocketClient webSocketClient=PumiceDemonstrationUtil.getWebSocketClientInst();
+        JSONObject jsonObject=new JSONObject();
+        if(nodeInfo != null){
+            if(null != nodeInfo.getText()){
+                try {
+                    jsonObject.put("Text",nodeInfo.getText());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != nodeInfo.getContentDescription()){
+                try {
+                    jsonObject.put("Content_Desc",nodeInfo.getContentDescription());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != nodeInfo.getClassName()){
+                try {
+                    jsonObject.put("Class_Name",nodeInfo.getClassName());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != nodeInfo.getViewId()){
+                try {
+                    jsonObject.put("Resource_ID",nodeInfo.getViewId());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(null != nodeInfo.getPackageName()){
+                try {
+                    jsonObject.put("Package_Name",nodeInfo.getPackageName());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                jsonObject.put("Xpath",xpath);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            webSocketClient.send(String.valueOf(jsonObject));
+        }
+    }
+
+
+
+
+
     /**
      * handle when the operation is to be recorded
      */
     private void handleRecording() {
         List<Pair<OntologyQuery, Double>> queryScoreList = SugiliteBlockBuildingHelper.newGenerateDefaultQueries(uiSnapshot, node);
+//        List<Node> nodesList=getParentalNode(node.getEntityValue());
+//
+//        String xpath="(HAS_XPATH /hierarchy";
+//        Collections.reverse(nodesList);
+//        for (Node simpleNode:nodesList){
+//            int ownIndex=getNodeIndex(simpleNode);
+//            if (ownIndex>0) {
+//                xpath=xpath+"/"+simpleNode.getClassName() + "[" + ownIndex +"]";
+//            }
+//            else{
+//                xpath=xpath+"/"+simpleNode.getClassName();
+//            }
+//        }
+//        xpath=xpath+")";
+
+        System.out.println("scriptName is:"+ NewScriptDialog.getScript_name());
+//        writeXPATH(NewScriptDialog.getScript_name(),xpath);
+//        writeXPATH(NewScriptDialog.getScript_name(),"");
+
+        //Send Xpath and the corresponding information to the server
+//        sendNodeInfo(node.getEntityValue(),xpath);
+
         if (queryScoreList.size() > 0) {
-            System.out.println("Query Score List: " + queryScoreList);
-
-            //threshold for determine whether the results are ambiguous
-            /*
-            if (queryScoreList.size() <= 1 || (queryScoreList.get(1).second.doubleValue() - queryScoreList.get(0).second.doubleValue() >= 2)) {
-                //not ambiguous, show the confirmation popup
-                SugiliteOperationBlock block = blockBuildingHelper.getUnaryOperationBlockWithOntologyQueryFromQuery(queryScoreList.get(0).first, isLongClick ? SugiliteOperation.LONG_CLICK : SugiliteOperation.CLICK, featurePack);
-                showConfirmation(block, featurePack, queryScoreList);
-
-            } else {
-                //ask for clarification if ambiguous
-                //need to run on ui thread
-                showAmbiguousPopup(queryScoreList, featurePack, node);
-            }
-            */
+            System.out.println("Query Score List in OverlayClickedDialog: " + queryScoreList);
 
             //TODO: 19/03/11 temporarily disable the ambiguous pop-up for PUMICE study
 
             //generate alternative query
-            SugiliteOperationBlock block = blockBuildingHelper.getUnaryOperationBlockWithOntologyQueryFromQuery(queryScoreList.get(0).first, isLongClick ? SugiliteOperation.LONG_CLICK : SugiliteOperation.CLICK, featurePack, SugiliteBlockBuildingHelper.getFirstNonTextQuery(queryScoreList));
+            SugiliteOperationBlock block = blockBuildingHelper.getUnaryOperationBlockWithOntologyQueryFromQuery(queryScoreList.get(0).first, isLongClick ? SugiliteOperation.LONG_CLICK : SugiliteOperation.CLICK, featurePack, SugiliteBlockBuildingHelper.getFirstNonTextQuery(queryScoreList),SugiliteBlockBuildingHelper.getFirstViewIDQuery(queryScoreList));
             block.setScreenshot(screenshot);
             showConfirmation(block, featurePack, queryScoreList);
         } else {

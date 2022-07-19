@@ -255,7 +255,8 @@ public class SugiliteScriptSQLDao implements SugiliteScriptDao {
         }
     }
 
-
-
-
+    @Override
+    public Context getContext() {
+        return null;
+    }
 }

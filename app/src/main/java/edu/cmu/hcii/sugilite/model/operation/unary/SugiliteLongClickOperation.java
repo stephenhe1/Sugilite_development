@@ -12,6 +12,7 @@ import static edu.cmu.hcii.sugilite.source_parsing.SugiliteScriptExpression.addQ
 public class SugiliteLongClickOperation extends SugiliteUnaryOperation<OntologyQuery> {
     private OntologyQuery targetUIElementDataDescriptionQuery;
     private OntologyQuery alternativeTargetUIElementDataDescriptionQuery;
+    private OntologyQuery alternativeTargetUIElementDataDescriptionQuery2;
 
     public SugiliteLongClickOperation(){
         super();
@@ -58,5 +59,16 @@ public class SugiliteLongClickOperation extends SugiliteUnaryOperation<OntologyQ
     @Override
     public String getPumiceUserReadableDecription() {
         return String.format("long click on %s", targetUIElementDataDescriptionQuery);
+    }
+
+    public OntologyQuery getAlternativeTargetUIElementDataDescriptionQuery2() {
+        if (alternativeTargetUIElementDataDescriptionQuery2!=null) {
+            return alternativeTargetUIElementDataDescriptionQuery2;
+        }
+        return alternativeTargetUIElementDataDescriptionQuery;
+    }
+
+    public void setAlternativeTargetUIElementDataDescriptionQuery2(OntologyQuery alternativeTargetUIElementDataDescriptionQuery2) {
+        this.alternativeTargetUIElementDataDescriptionQuery2 = alternativeTargetUIElementDataDescriptionQuery2;
     }
 }

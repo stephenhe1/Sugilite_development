@@ -3,6 +3,7 @@ package edu.cmu.hcii.sugilite.pumice.visualization;
 import android.content.Context;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
+import android.os.Build;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.util.Pair;
@@ -152,11 +153,17 @@ public class PumiceDemoVisualizationManager {
         //create an overlay view for the node
         Rect boundsInScreen = Rect.unflattenFromString(matchedNode.getBoundsInScreen());
         View rectOverlayView = VerbalInstructionOverlayManager.getRectangleOverlay(context, 0x80FF0000, boundsInScreen.width(), boundsInScreen.height());
+        int LAYOUT_FLAG;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            LAYOUT_FLAG = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        } else {
+            LAYOUT_FLAG = WindowManager.LayoutParams.TYPE_PHONE;
+        }
 
         WindowManager.LayoutParams iconParams = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
-                OVERLAY_TYPE,
+                LAYOUT_FLAG,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
                 PixelFormat.TRANSLUCENT);
 

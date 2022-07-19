@@ -4,7 +4,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.LightingColorFilter;
 import android.speech.tts.TextToSpeech;
 import android.view.KeyEvent;
@@ -12,8 +15,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import edu.cmu.hcii.sugilite.R;
@@ -24,12 +30,17 @@ import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogManager;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogSimpleState;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogUtteranceFilter;
+import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.OverlayClickedDialog;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.VerbalInstructionIconManager;
 
 import static edu.cmu.hcii.sugilite.Const.MUL_ZEROS;
 import static edu.cmu.hcii.sugilite.Const.OVERLAY_TYPE;
 import static edu.cmu.hcii.sugilite.Const.RECORDING_DARK_GRAY_COLOR;
 import static edu.cmu.hcii.sugilite.Const.RECORDING_OFF_BUTTON_COLOR;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author toby
@@ -52,9 +63,14 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
     private SugiliteDialogSimpleState askingForScriptNameConfirmationState = new SugiliteDialogSimpleState("ASKING_FOR_SCRIPT_NAME_CONFIRMATION", this, true);
     private VerbalInstructionIconManager verbalInstructionIconManager;
     private View dialogView;
+    private static String script_name;
 
     private ImageButton mySpeakButton;
     private EditText scriptNameEditText;
+    private Spinner appPackagesSpinner;
+    private PackageManager packageManager;
+    private EditText ipAddressEditText;
+    private static String serverAddress = null;
 
     public NewScriptDialog(Context context, SugiliteScriptDao sugiliteScriptDao, ServiceStatusManager serviceStatusManager,
                            SharedPreferences sharedPreferences, SugiliteData sugiliteData, boolean isSystemAlert, final Dialog.OnClickListener positiveCallback, final Dialog.OnClickListener negativeCallback){
@@ -66,41 +82,71 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
         this.sharedPreferences = sharedPreferences;
         this.sugiliteData = sugiliteData;
         this.verbalInstructionIconManager = sugiliteData.verbalInstructionIconManager;
+        this.packageManager=context.getPackageManager();
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         sugiliteData.clearInstructionQueue();
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         dialogView = layoutInflater.inflate(R.layout.dialog_new_script, null);
         scriptNameEditText = (EditText) dialogView.findViewById(R.id.edittext_instruction_content);
+        this.ipAddressEditText=(EditText) dialogView.findViewById(R.id.edittext_ip_address);
         scriptNameEditText.setText(sugiliteScriptDao.getNextAvailableDefaultName());
+        appPackagesSpinner = (Spinner) dialogView.findViewById(R.id.spinner1);
+        List<ApplicationInfo> applicationInfos = getInstalledPackageName();
+        List<String> appNames=new ArrayList<>();
+        for(ApplicationInfo applicationInfo : applicationInfos){
+            appNames.add(packageManager.getApplicationLabel(applicationInfo).toString());
+        }
+
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, appNames);
+        appPackagesSpinner.setAdapter(adapter);
 
         //initiate the speak button
-        mySpeakButton = (ImageButton) dialogView.findViewById(R.id.button_verbal_instruction_talk);
-        mySpeakButton.getBackground().setColorFilter(new LightingColorFilter(MUL_ZEROS, RECORDING_OFF_BUTTON_COLOR));
-        mySpeakButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // speak button
-                if(tts != null) {
-                    if (isListening() || tts.isSpeaking()) {
-                        stopASRandTTS();
-                    } else {
-                        initDialogManager();
-                    }
-                }
-            }
-        });
-        mySpeakButton.setImageDrawable(notListeningDrawable);
-        mySpeakButton.getDrawable().setColorFilter(new LightingColorFilter(MUL_ZEROS, RECORDING_DARK_GRAY_COLOR));
-        setSpeakButton(mySpeakButton);
+//        mySpeakButton = (ImageButton) dialogView.findViewById(R.id.button_verbal_instruction_talk);
+//        mySpeakButton.getBackground().setColorFilter(new LightingColorFilter(MUL_ZEROS, RECORDING_OFF_BUTTON_COLOR));
+//        mySpeakButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                // speak button
+//                if(tts != null) {
+//                    if (isListening() || tts.isSpeaking()) {
+//                        stopASRandTTS();
+//                    } else {
+//                        initDialogManager();
+//                    }
+//                }
+//            }
+//        });
+//        mySpeakButton.setImageDrawable(notListeningDrawable);
+//        mySpeakButton.getDrawable().setColorFilter(new LightingColorFilter(MUL_ZEROS, RECORDING_DARK_GRAY_COLOR));
+//        setSpeakButton(mySpeakButton);
 
 
-        builder.setMessage("Specify the name for your new script")
+        builder.setMessage("Specify the name for your new script, the app you want to record and the IP address for the server")
                 .setView(dialogView)
                 .setPositiveButton("Start Recording", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String scriptName = scriptNameEditText.getText().toString();
-                        PumiceDemonstrationUtil.initiateDemonstration(context, serviceStatusManager, sharedPreferences, scriptName, sugiliteData, null, sugiliteScriptDao, verbalInstructionIconManager);
+                        script_name=scriptName;
+//                        context.startActivity(packageManager.getLaunchIntentForPackage(applicationInfos.get(0).packageName));  //Start the specified application
+                        String appName=appPackagesSpinner.getSelectedItem().toString();
+                        int index = -1;
+                        for(ApplicationInfo applicationInfo : applicationInfos){
+                            if(appName.equals(packageManager.getApplicationLabel(applicationInfo).toString())){
+                                index += 1;
+                                break;
+                            }
+                            index++;
+                        }
+
+                        serverAddress=ipAddressEditText.getText().toString();
+
+//                        Intent intent=new Intent(context,OverlayClickedDialog.class);
+//                        intent.putExtra("scriptName",scriptName);
+//                        context.startActivity(intent);
+//                        Tabdetail.putExtra("Marker", marker.getTitle().toString());
+                        PumiceDemonstrationUtil.initiateDemonstration(context, serviceStatusManager, sharedPreferences, scriptName, sugiliteData, null, sugiliteScriptDao, verbalInstructionIconManager, applicationInfos.get(index).packageName);
 
                         //Toast.makeText(v.getContext(), "Changed script name to " + sharedPreferences.getString("scriptName", "NULL"), Toast.LENGTH_SHORT).show();
                         if(positiveCallback != null) {
@@ -202,6 +248,31 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
         initPrompt();
     }
 
+    public static String getScript_name() {
+        return script_name;
+    }
+
+    private List<ApplicationInfo> getInstalledPackageName(){
+        List<ApplicationInfo> installedApplications = packageManager.getInstalledApplications(PackageManager.GET_META_DATA);
+
+        // Remove system apps
+        Iterator<ApplicationInfo> it = installedApplications.iterator();
+        while (it.hasNext()) {
+            ApplicationInfo appInfo = it.next();
+            if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 0) {
+                it.remove();
+            }
+        }
 
 
+        // Return installed applications
+        return installedApplications;
+    }
+
+    public static String getServerAddress(){
+        if (serverAddress == null || serverAddress.equals("")){
+            return "10.0.2.2";
+        }
+        return serverAddress;
+    }
 }

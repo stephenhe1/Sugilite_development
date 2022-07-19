@@ -24,7 +24,7 @@ import edu.cmu.hcii.sugilite.SugiliteData;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.pumice.communication.PumiceInstructionPacket;
 import edu.cmu.hcii.sugilite.pumice.communication.SkipPumiceJSONSerialization;
-import edu.cmu.hcii.sugilite.sovite.communication.SoviteAppResolutionQueryPacket;
+//import edu.cmu.hcii.sugilite.sovite.communication.SoviteAppResolutionQueryPacket;
 import edu.cmu.hcii.sugilite.ui.dialog.SugiliteProgressDialog;
 
 /**
@@ -115,26 +115,26 @@ public class SugiliteVerbalInstructionHTTPQueryManager {
         };
         thread.start();
     }
-    public void sendSoviteAppResolutionPacketOnASeparateThread(SoviteAppResolutionQueryPacket soviteAppResolutionQueryPacket, SugiliteVerbalInstructionHTTPQueryInterface caller) throws Exception {
-        sendSoviteAppResolutionPacketOnASeparateThread(soviteAppResolutionQueryPacket, caller, bertEmbeddingServerUrl);
-    }
-
-
-    public void sendSoviteAppResolutionPacketOnASeparateThread(SoviteAppResolutionQueryPacket soviteAppResolutionQueryPacket, SugiliteVerbalInstructionHTTPQueryInterface caller, URL url) throws Exception {
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                try {
-                    String content = gson.toJson(soviteAppResolutionQueryPacket);
-                    sendRequest(content, url, caller, true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    PumiceDemonstrationUtil.showSugiliteAlertDialog(e.getMessage());
-                }
-            }
-        };
-        thread.start();
-    }
+//    public void sendSoviteAppResolutionPacketOnASeparateThread(SoviteAppResolutionQueryPacket soviteAppResolutionQueryPacket, SugiliteVerbalInstructionHTTPQueryInterface caller) throws Exception {
+//        sendSoviteAppResolutionPacketOnASeparateThread(soviteAppResolutionQueryPacket, caller, bertEmbeddingServerUrl);
+//    }
+//
+//
+//    public void sendSoviteAppResolutionPacketOnASeparateThread(SoviteAppResolutionQueryPacket soviteAppResolutionQueryPacket, SugiliteVerbalInstructionHTTPQueryInterface caller, URL url) throws Exception {
+//        Thread thread = new Thread() {
+//            @Override
+//            public void run() {
+//                try {
+//                    String content = gson.toJson(soviteAppResolutionQueryPacket);
+//                    sendRequest(content, url, caller, true);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                    PumiceDemonstrationUtil.showSugiliteAlertDialog(e.getMessage());
+//                }
+//            }
+//        };
+//        thread.start();
+//    }
 
     public void sendQueryRequestOnASeparateThread(VerbalInstructionServerQuery query, URL url, SugiliteVerbalInstructionHTTPQueryInterface caller) throws Exception {
 

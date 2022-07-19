@@ -11,11 +11,11 @@ public class OperationBlockDescriptionRegenerator {
     private static void regenerateBlockDescription(SugiliteBlock block, OntologyDescriptionGenerator ontologyDescriptionGenerator) {
         if (block instanceof SugiliteOperationBlock) {
             SugiliteOperationBlock sob = (SugiliteOperationBlock) block;
-            if (sob.getOperation().getDataDescriptionQueryIfAvailable() != null) {
-                block.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sob.getOperation(), sob.getOperation().getDataDescriptionQueryIfAvailable()));
-            } else {
-                block.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperationTypesWithoutOntologyQuery(sob.getOperation()));
-            }
+//            if (sob.getOperation().getDataDescriptionQueryIfAvailable() != null) {
+//                block.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(sob.getOperation(), sob.getOperation().getDataDescriptionQueryIfAvailable()));
+//            } else {
+//                block.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperationTypesWithoutOntologyQuery(sob.getOperation()));
+//            }
         } else if (block instanceof SugiliteStartingBlock) {
           block.setDescription(Html.fromHtml("<b>START SCRIPT</b>"));
         } else if (block.getPlainDescription() != null) {

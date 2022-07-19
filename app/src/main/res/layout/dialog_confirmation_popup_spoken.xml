@@ -29,24 +29,24 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
-        android:orientation="horizontal">
-        <ImageButton
-            android:id="@+id/button_verbal_instruction_talk"
-            style="@style/Widget.AppCompat.ImageButton"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="0.2"
-            android:adjustViewBounds="false"
-            android:cropToPadding="true"
-            android:elevation="2dp"
-            android:scaleType="fitCenter"
-            android:src="@mipmap/tap_to_talk" />
-    </LinearLayout>
+<!--    <LinearLayout-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginLeft="20dp"-->
+<!--        android:layout_marginRight="20dp"-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        android:orientation="horizontal">-->
+<!--&lt;!&ndash;        <ImageButton&ndash;&gt;-->
+<!--&lt;!&ndash;            android:id="@+id/button_verbal_instruction_talk"&ndash;&gt;-->
+<!--&lt;!&ndash;            style="@style/Widget.AppCompat.ImageButton"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_width="0dp"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_height="50dp"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:layout_weight="0.2"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:adjustViewBounds="false"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:cropToPadding="true"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:elevation="2dp"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:scaleType="fitCenter"&ndash;&gt;-->
+<!--&lt;!&ndash;            android:src="@mipmap/tap_to_talk" />&ndash;&gt;-->
+<!--    </LinearLayout>-->
 
 </LinearLayout>

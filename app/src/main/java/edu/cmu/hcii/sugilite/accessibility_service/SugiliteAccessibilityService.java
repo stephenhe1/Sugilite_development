@@ -1,14 +1,17 @@
 package edu.cmu.hcii.sugilite.accessibility_service;
 
 import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.GestureDescription;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,7 +57,7 @@ import edu.cmu.hcii.sugilite.model.trigger.SugiliteTriggerHandler;
 import edu.cmu.hcii.sugilite.recording.TextChangedEventHandler;
 import edu.cmu.hcii.sugilite.recording.newrecording.NewDemonstrationHandler;
 import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.FullScreenRecordingOverlayManager;
-import edu.cmu.hcii.sugilite.tracking.SugiliteTrackingHandler;
+//import edu.cmu.hcii.sugilite.tracking.SugiliteTrackingHandler;
 import edu.cmu.hcii.sugilite.ui.StatusIconManager;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.VerbalInstructionIconManager;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.study.SugiliteStudyHandler;
@@ -88,7 +91,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
     private Set<Integer> accessibilityEventSetToHandle, accessibilityEventSetToSend, accessibilityEventSetToTrack;
 
     private SugiliteAccessibilityService context;
-    private SugiliteTrackingHandler sugilteTrackingHandler;
+//    private SugiliteTrackingHandler sugilteTrackingHandler;
     private SugiliteAppVocabularyDao vocabularyDao;
     private SugiliteTriggerHandler triggerHandler;
     private TextChangedEventHandler textChangedEventHandler;
@@ -146,7 +149,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
         screenshotManager = SugiliteScreenshotManager.getInstance(sharedPreferences, sugiliteData);
         sugiliteTextParentAnnotator = SugiliteTextParentAnnotator.getInstance();
         automator = new Automator(sugiliteData, this, statusIconManager, sharedPreferences, sugiliteTextParentAnnotator, sugiliteData.getTTS());
-        sugilteTrackingHandler = new SugiliteTrackingHandler(sugiliteData, getApplicationContext());
+//        sugilteTrackingHandler = new SugiliteTrackingHandler(sugiliteData, getApplicationContext());
         availableAlternatives = new HashSet<>();
         availableAlternativeNodes = new HashSet<>();
         trackingPackageVocabs = new HashSet<>();
@@ -214,7 +217,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
             sugiliteData.errorHandler = new ErrorHandler(this, sugiliteData, sharedPreferences);
         }
         if (sugiliteData.trackingName != null && sugiliteData.trackingName.contentEquals("default")) {
-            sugiliteData.initiateTracking(sugilteTrackingHandler.getDefaultTrackingName());
+//            sugiliteData.initiateTracking(sugilteTrackingHandler.getDefaultTrackingName());
         }
 
         errorHandlingHandler = new Handler();
@@ -282,7 +285,6 @@ public class SugiliteAccessibilityService extends AccessibilityService {
         List<AccessibilityNodeInfo> preOrderTraverseSourceNode = null;
         List<AccessibilityNodeInfo> preOrderTraverseRootNode = null;
         List<AccessibilityNodeInfo> preOrderTraverseSibNode = null;
-
 
         //Type of accessibility events to handle in this function
         //return if the event is not among the accessibilityEventArrayToHandle
@@ -673,9 +675,9 @@ public class SugiliteAccessibilityService extends AccessibilityService {
                 @Override
                 public void run() {
                     //background tracking in progress
-                    if (accessibilityEventSetToTrack.contains(eventType) && (!trackingExcludedPackages.contains(eventPackageName))) {
-                        sugilteTrackingHandler.handle(event, sourceNode, generateFeaturePack(event, sourceNode, rootNodeForTracking, null, null, preOrderTraverseSourceNodeForTracking, preOrderTracerseRootNodeForTracking, preOrderTraverseSibNodeForTracking, null));
-                    }
+//                    if (accessibilityEventSetToTrack.contains(eventType) && (!trackingExcludedPackages.contains(eventPackageName))) {
+//                        sugilteTrackingHandler.handle(event, sourceNode, generateFeaturePack(event, sourceNode, rootNodeForTracking, null, null, preOrderTraverseSourceNodeForTracking, preOrderTracerseRootNodeForTracking, preOrderTraverseSibNodeForTracking, null));
+//                    }
 
                     //add all seen clickable nodes to package vocab DB
                     if (BUILDING_VOCAB) {
@@ -908,6 +910,53 @@ public class SugiliteAccessibilityService extends AccessibilityService {
             refreshIconHandler.removeMessages(0);
         }
 
+    }
+
+    public boolean performTap(int x, int y, int startTime, int duration){
+        if(x < 0 || y < 0)
+            return false;
+        GestureDescription.Builder gestureBuilder = new GestureDescription.Builder();
+        Path swipePath = new Path();
+        swipePath.moveTo(x, y);
+        gestureBuilder.addStroke(new GestureDescription.StrokeDescription(swipePath, startTime, duration));
+        GestureDescription gestureDescription = gestureBuilder.build();
+        verbalInstructionIconManager.turnOffCatOverlay();
+        boolean result= dispatchGesture(gestureDescription, new AccessibilityService.GestureResultCallback() {
+            @Override
+            public void onCompleted(GestureDescription gestureDescription) {
+                System.out.println("The gesture completed");
+//                super.onCompleted(gestureDescription);
+                new Handler(Looper.getMainLooper()).post(new Runnable(){
+                    @Override
+                    public void run() {
+                        verbalInstructionIconManager.turnOnCatOverlay();  // TODO: What does it do?
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(GestureDescription gestureDescription) {
+                System.out.println("The gesture has been cancelled");
+                super.onCancelled(gestureDescription);
+            }
+        },null);
+
+//        new Handler(Looper.getMainLooper()).post(new Runnable(){
+//            @Override
+//            public void run() {
+//                verbalInstructionIconManager.turnOnCatOverlay();
+//
+//
+//            }
+//        });
+
+        try {
+            Thread.sleep(1200);  // TODO: Why?
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }
 

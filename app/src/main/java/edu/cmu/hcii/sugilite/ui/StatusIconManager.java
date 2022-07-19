@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.Settings;
 import android.text.Html;
 import android.text.SpannableString;
@@ -29,6 +30,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -439,30 +449,30 @@ public class StatusIconManager {
                     }
                     else{
                         if(recordingInProcess){
-                            operationList.add("View Current Recording");
-                            operationList.add("Add GO_HOME Operation Block");
-                            operationList.add("Add Running a Subscript");
-                            if(Const.KEEP_ALL_TEXT_LABEL_LIST)
-                                operationList.add("Get a Text Element on the Screen");
-                            operationList.add("Add a Delay");
+//                            operationList.add("View Current Recording");
+//                            operationList.add("Add GO_HOME Operation Block");
+//                            operationList.add("Add Running a Subscript");
+//                            if(Const.KEEP_ALL_TEXT_LABEL_LIST)
+//                                operationList.add("Get a Text Element on the Screen");
+//                            operationList.add("Add a Delay");
                             operationList.add("End Recording");
                         }
                         else{
-                            operationList.add("View Last Recording");
-                            operationList.add("Resume Last Recording");
+//                            operationList.add("View Last Recording");
+//                            operationList.add("Resume Last Recording");
                             operationList.add("New Recording");
                         }
                     }
 
                     if(verbalInstructionIconManager != null) {
                         if(verbalInstructionIconManager.isShowingIcon()) {
-                            operationList.add("Turn off verbal instruction");
+//                            operationList.add("Turn off verbal instruction");
                         }
                         else{
-                            operationList.add("Turn on verbal instruction");
+//                            operationList.add("Turn on verbal instruction");
                         }
                     }
-                    operationList.add("Hide Duck Icon");
+//                    operationList.add("Hide Duck Icon");
                     operationList.add("Quit Sugilite");
                     String[] operations = new String[operationList.size()];
                     operations = operationList.toArray(operations);
@@ -481,18 +491,18 @@ public class StatusIconManager {
                                         sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
                                     break;
                                 //bring the user to the script list activity
-                                case "View Last Recording":
-                                case "View Current Recording":
-                                    Intent intent = new Intent(context, LocalScriptDetailActivity.class);
-                                    if(startingBlock != null && startingBlock.getScriptName() != null) {
-                                        intent.putExtra("scriptName", startingBlock.getScriptName());
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        context.startActivity(intent);
-                                    }
-                                    PumiceDemonstrationUtil.showSugiliteToast("view current script", Toast.LENGTH_SHORT);
-                                    if(runningInProgress)
-                                        sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
-                                    break;
+//                                case "View Last Recording":
+//                                case "View Current Recording":
+//                                    Intent intent = new Intent(context, LocalScriptDetailActivity.class);
+//                                    if(startingBlock != null && startingBlock.getScriptName() != null) {
+//                                        intent.putExtra("scriptName", startingBlock.getScriptName());
+//                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                                        context.startActivity(intent);
+//                                    }
+//                                    PumiceDemonstrationUtil.showSugiliteToast("view current script", Toast.LENGTH_SHORT);
+//                                    if(runningInProgress)
+//                                        sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
+//                                    break;
                                 case "End Recording":
                                     //end recording
                                     PumiceDemonstrationUtil.endRecording(context, sugiliteData, sharedPreferences, sugiliteScriptDao);
@@ -502,19 +512,19 @@ public class StatusIconManager {
                                     NewScriptDialog newScriptDialog = new NewScriptDialog(v.getContext(), sugiliteScriptDao, serviceStatusManager, sharedPreferences, sugiliteData, true, null, null);
                                     newScriptDialog.show();
                                     break;
-                                case "Resume Last Recording":
-                                    //resume the recording of an existing script
-                                    sugiliteData.initiatedExternally = false;
-                                    SharedPreferences.Editor prefEditor2 = sharedPreferences.edit();
-                                    prefEditor2.putBoolean("recording_in_process", true);
-                                    prefEditor2.apply();
-                                    PumiceDemonstrationUtil.showSugiliteToast("resume recording", Toast.LENGTH_SHORT);
-                                    sugiliteData.setCurrentSystemState(SugiliteData.RECORDING_STATE);
-                                    break;
-                                case "Hide Duck Icon":
-                                    //step: remove the duck and the status view
-                                    removeStatusIcon();
-                                    break;
+//                                case "Resume Last Recording":
+//                                    //resume the recording of an existing script
+//                                    sugiliteData.initiatedExternally = false;
+//                                    SharedPreferences.Editor prefEditor2 = sharedPreferences.edit();
+//                                    prefEditor2.putBoolean("recording_in_process", true);
+//                                    prefEditor2.apply();
+//                                    PumiceDemonstrationUtil.showSugiliteToast("resume recording", Toast.LENGTH_SHORT);
+//                                    sugiliteData.setCurrentSystemState(SugiliteData.RECORDING_STATE);
+//                                    break;
+//                                case "Hide Duck Icon":
+//                                    //step: remove the duck and the status view
+//                                    removeStatusIcon();
+//                                    break;
                                 case "Quit Sugilite":
                                     PumiceDemonstrationUtil.showSugiliteToast("quit sugilite", Toast.LENGTH_SHORT);
 
@@ -546,6 +556,37 @@ public class StatusIconManager {
 
                                     //step 3: remove the duck and the status view
                                     removeStatusIcon();
+
+                                    try(BufferedReader in = new BufferedReader(new FileReader(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name().split("\\.")[0]+"_xpath.txt")))){
+                                        String testScript="";
+                                        String str;
+                                        for(SugiliteBlock block:sugiliteData.getScriptHead().getFollowingBlocks()){
+                                            if ((str=in.readLine())!=null){
+                                                testScript=testScript+block+str+"\n";
+                                            }
+                                        }
+                                        System.out.println(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name()+".txt");
+                                        try(BufferedWriter bw = new BufferedWriter(new FileWriter(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name()+".txt")))){
+                                            bw.write(testScript);
+                                        }
+                                        Path path= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/");
+                                        if (!Files.exists(path)){
+                                            File file=path.toFile();
+                                            file.mkdir();
+                                            File file1=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts");
+                                            file1.mkdir();
+                                        }
+                                        System.out.println("Whether directory exists or not: "+Files.exists(path));
+                                        try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/"+NewScriptDialog.getScript_name()+".txt")))){
+                                            bw1.write(testScript);
+                                        }
+                                        catch (IOException exception){
+                                            exception.printStackTrace();
+                                        }
+                                    }
+                                    catch (IOException exception){
+                                        exception.printStackTrace();
+                                    }
 
                                     //step 4: kill Sugilite app
                                     Intent first_activity_intent = new Intent(context, SugiliteMainActivity.class);

@@ -2,6 +2,7 @@
 package edu.cmu.hcii.sugilite.model;
 
 import android.graphics.Rect;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 //import com.microsoft.userappaccessibilityactiontracer.Const;
@@ -10,6 +11,8 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,6 +22,7 @@ import java.util.Objects;
 
 public class Node implements Serializable {
 
+    private int ownIndex;
     private String text;
     private String contentDescription;
     private String viewId;
@@ -27,6 +31,7 @@ public class Node implements Serializable {
     private String className;
     private String boundsInScreen;
     private String boundsInParent;
+//    private Rect bounds;
 //    private List<Node> childNodes;
     private Integer rootNodeDescendantsCount = 0;
     private Boolean isClickable = false;
@@ -42,12 +47,17 @@ public class Node implements Serializable {
     private String eventManagerId; //unique view identifier added to AccessibilityNodeInfo
     private String TAG = Node.class.getCanonicalName();
 
+//    private List<Node> childNodes;
+    private transient AccessibilityNodeInfo parentalNode=null;
+    private transient AccessibilityNodeInfo thisNode=null;
+
 //    private List<TextDistancePair> childrenTextLabels, nearbyTextLabels, holisticTextLabels;
     private Integer windowZIndex;
     private List<Integer> nodeZIndexSequence = new ArrayList<>();
 
 
     public Node(AccessibilityNodeInfo nodeInfo, Integer windowZIndex, List<Integer> parentNodeZIndexSequence, String activityName){
+
         this(nodeInfo, activityName);
         this.windowZIndex = windowZIndex;
         this.nodeZIndexSequence = new ArrayList<>(parentNodeZIndexSequence);
@@ -55,6 +65,8 @@ public class Node implements Serializable {
         //NOTE: AccessibilityNodeInfo.getDrawingOrder requires API Level 24 (Android 7.0)
         this.nodeZIndexSequence.add(nodeInfo.getDrawingOrder());
     }
+
+
 
     public Node(AccessibilityNodeInfo nodeInfo, String activityName){
         if(nodeInfo == null){
@@ -77,8 +89,7 @@ public class Node implements Serializable {
         if(nodeInfo.getClassName() != null) {
             className = nodeInfo.getClassName().toString();
         }
-//        if(nodeInfo.getEventManagerId() != null)
-//            eventManagerId = nodeInfo.getEventManagerId();
+
 
         Rect boundsInScreen = new Rect();
         Rect boundsInParent = new Rect();
@@ -95,24 +106,15 @@ public class Node implements Serializable {
         this.isChecked = nodeInfo.isChecked();
         this.isCheckable = nodeInfo.isCheckable();
         this.isScrollable = nodeInfo.isScrollable();
-        // currently this causes a infinite loop constructor
 
-//        childNodes = new ArrayList<>();
-//        int childCount = nodeInfo.getChildCount();
-//        for(int i = 0; i < childCount; i ++){
-//            if(nodeInfo.getChild(i) != null)
-//            childNodes.add(new Node(nodeInfo.getChild(i)));
-//        }
+        if (nodeInfo.getParent() != null){
+            this.parentalNode=nodeInfo.getParent();
+        }  // TODO: Merge with the lines below
+
         if(nodeInfo.getParent() != null) {
             parent = new Node(nodeInfo.getParent(), activityName);
         }
-//        TextLabelManager textLabelManager = new TextLabelManager();
-//        this.childrenTextLabels = textLabelManager.getChildrenTextLabels(this);
-//        if(rootNode != null) {
-//            this.nearbyTextLabels = textLabelManager.getNearbyTextLabels(this, rootNode, Const.NEARBY_TEXT_LABEL_LIMIT);
-//            rootNodeDescendantsCount = textLabelManager.traverseNode(rootNode).size();
-//        }
-//        holisticTextLabels = textLabelManager.getHolisticTextLabels(this);
+        thisNode=nodeInfo;
     }
 
     public String getText(){
@@ -150,6 +152,11 @@ public class Node implements Serializable {
 //    public List<Node> getChildNodes() {
 //        return childNodes;
 //    }
+
+
+    public AccessibilityNodeInfo getParentalNode() {
+        return parentalNode;
+    }
 
     public Boolean getClickable() {
         return isClickable;
@@ -206,13 +213,16 @@ public class Node implements Serializable {
     public Node getParent() {
         return parent;
     }
-//    public List<TextDistancePair> getChildrenTextLabels() {
-//        return childrenTextLabels;
-//    }
-//
-//    public List<TextDistancePair> getNearbyTextLabels() {
-//        return nearbyTextLabels;
-//    }
+
+    public AccessibilityNodeInfo getThisNode() {
+        return thisNode;
+    }
+
+    public int getOwnIndex() {
+        return ownIndex;
+    }
+
+
 
     @Deprecated
     public boolean sameNode(Node obj) {

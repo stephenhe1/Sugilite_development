@@ -38,8 +38,8 @@ import edu.cmu.hcii.sugilite.pumice.dialog.intent_handler.PumiceUtteranceIntentH
 import edu.cmu.hcii.sugilite.pumice.kb.PumiceKnowledgeManager;
 import edu.cmu.hcii.sugilite.pumice.ui.PumiceDialogActivity;
 import edu.cmu.hcii.sugilite.pumice.ui.util.PumiceDialogUIHelper;
-import edu.cmu.hcii.sugilite.sovite.conversation_state.SoviteConversationState;
-import edu.cmu.hcii.sugilite.sovite.conversation_state.SoviteSerializableRecoverableIntentHanlder;
+//import edu.cmu.hcii.sugilite.sovite.conversation_state.SoviteConversationState;
+//import edu.cmu.hcii.sugilite.sovite.conversation_state.SoviteSerializableRecoverableIntentHanlder;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.server_comm.SugiliteVerbalInstructionHTTPQueryManager;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.SugiliteVoiceRecognitionListener;
 
@@ -496,24 +496,24 @@ public class PumiceDialogManager{
         return pumiceDialogState;
     }
 
-    public void loadSoviteConversationState(SoviteConversationState conversationState) {
-        List<PumiceUtterance> utterances = conversationState.getUtteranceHistory();
-        if (utterances.get(1) != null && utterances.get(1).getSender().equals(USER)) {
-            pumiceDialogView.addMessage(utterances.get(1));
-        }
-        SoviteSerializableRecoverableIntentHanlder intentHanlder = conversationState.getSoviteSerializableRecoverableIntentHanlder();
-        intentHanlder.inflateFromDeserializedInstance(context, this, sugiliteData, new PumiceDefaultUtteranceIntentHandler(this, context, sugiliteData));
-        this.updateUtteranceIntentHandlerInANewState(conversationState.getSoviteSerializableRecoverableIntentHanlder());
-        this.stateHistoryList.clear();
-
-        /*
-        for (PumiceUtterance utterance : utterances) {
-            //TODO: display those utterances
-            pumiceDialogView.addMessage(utterance);
-        }
-        */
-
-    }
+//    public void loadSoviteConversationState(SoviteConversationState conversationState) {
+//        List<PumiceUtterance> utterances = conversationState.getUtteranceHistory();
+//        if (utterances.get(1) != null && utterances.get(1).getSender().equals(USER)) {
+//            pumiceDialogView.addMessage(utterances.get(1));
+//        }
+//        SoviteSerializableRecoverableIntentHanlder intentHanlder = conversationState.getSoviteSerializableRecoverableIntentHanlder();
+//        intentHanlder.inflateFromDeserializedInstance(context, this, sugiliteData, new PumiceDefaultUtteranceIntentHandler(this, context, sugiliteData));
+//        this.updateUtteranceIntentHandlerInANewState(conversationState.getSoviteSerializableRecoverableIntentHanlder());
+//        this.stateHistoryList.clear();
+//
+//        /*
+//        for (PumiceUtterance utterance : utterances) {
+//            //TODO: display those utterances
+//            pumiceDialogView.addMessage(utterance);
+//        }
+//        */
+//
+//    }
 
 
 }

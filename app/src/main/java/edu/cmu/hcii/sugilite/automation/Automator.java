@@ -1,10 +1,13 @@
 package edu.cmu.hcii.sugilite.automation;
 
+import android.accessibilityservice.AccessibilityService;
+import android.accessibilityservice.GestureDescription;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.text.Html;
@@ -287,6 +290,7 @@ public class Automator {
 
                                 //!!!execute on node
                                 boolean retVal = performAction(node, operationBlock);
+                                System.out.println("Whether is success or not: "+retVal);
                                 if (retVal) {
                                     //the action is performed successfully
                                     if (!succeeded) {
@@ -339,23 +343,25 @@ public class Automator {
                     if (e.getEntityValue() instanceof Node) {
                         AccessibilityNodeInfo accessibilityNodeInfo = uiSnapshot.getNodeAccessibilityNodeInfoMap().get(e.getEntityValue());
 
-                        if (operationBlock.getOperation() instanceof SugiliteClickOperation) {
-                            if (!accessibilityNodeInfo.isClickable()) {
-                                continue;
-                            }
-                        }
-
-                        if (operationBlock.getOperation() instanceof SugiliteLongClickOperation) {
-                            if (!accessibilityNodeInfo.isLongClickable()) {
-                                continue;
-                            }
-                        }
-
-                        if (operationBlock.getOperation() instanceof SugiliteSetTextOperation) {
-                            if (!accessibilityNodeInfo.isEditable()) {
-                                continue;
-                            }
-                        }
+                        // TODO: Add a configurable check instead of commenting out.
+                        // These are commented because in some inaccessible UI, although the element is not clickable, it can be clicked
+//                        if (operationBlock.getOperation() instanceof SugiliteClickOperation) {
+//                            if (!accessibilityNodeInfo.isClickable()) {
+//                                continue;
+//                            }
+//                        }
+//
+//                        if (operationBlock.getOperation() instanceof SugiliteLongClickOperation) {
+//                            if (!accessibilityNodeInfo.isLongClickable()) {
+//                                continue;
+//                            }
+//                        }
+//
+//                        if (operationBlock.getOperation() instanceof SugiliteSetTextOperation) {
+//                            if (!accessibilityNodeInfo.isEditable()) {
+//                                continue;
+//                            }
+//                        }
 
                         preFilteredNodes.add(accessibilityNodeInfo);
                         accessibilityNodeInfoNodeMap.put(accessibilityNodeInfo, e);
@@ -365,31 +371,31 @@ public class Automator {
                 if (preFilteredNodes.size() == 0) {
                     //couldn't find a matched node in the current UISnapshot using the OntologyQuery
                     //check if an alternative query is useful in reconstructing mode
-                    if (sugiliteData.getObfuscatedScriptReconstructor() != null && sugiliteData.getObfuscatedScriptReconstructor().getScriptInProcess() != null) {
-                        //in reconstructing mode
-                        OntologyQuery alternativeQuery = null;
-                        if (operationBlock.getOperation() instanceof SugiliteClickOperation) {
-                            alternativeQuery = ((SugiliteClickOperation) operationBlock.getOperation()).getAlternativeTargetUIElementDataDescriptionQuery();
-                        }
-                        if (operationBlock.getOperation() instanceof SugiliteLongClickOperation) {
-                            alternativeQuery = ((SugiliteLongClickOperation) operationBlock.getOperation()).getAlternativeTargetUIElementDataDescriptionQuery();
-                        }
-                        if (alternativeQuery != null) {
-                            alternativeQuery = alternativeQuery.clone();
-                            Set<SugiliteEntity> alternativeQuerySet = q.executeOn(uiSnapshot);
-                            for (SugiliteEntity e : alternativeQuerySet) {
-                                if (e.getEntityValue() instanceof Node) {
-                                    AccessibilityNodeInfo accessibilityNodeInfo = uiSnapshot.getNodeAccessibilityNodeInfoMap().get(e.getEntityValue());
-                                    preFilteredNodes.add(accessibilityNodeInfo);
-                                    accessibilityNodeInfoNodeMap.put(accessibilityNodeInfo, e);
-                                }
-                            }
-                        }
-                        if (preFilteredNodes.size() == 0) {
-                            //alternative query can't match anything either
-                            return false;
-                        }
-                    }
+//                    if (sugiliteData.getObfuscatedScriptReconstructor() != null && sugiliteData.getObfuscatedScriptReconstructor().getScriptInProcess() != null) {
+//                        //in reconstructing mode
+//                        OntologyQuery alternativeQuery = null;
+//                        if (operationBlock.getOperation() instanceof SugiliteClickOperation) {
+//                            alternativeQuery = ((SugiliteClickOperation) operationBlock.getOperation()).getAlternativeTargetUIElementDataDescriptionQuery();
+//                        }
+//                        if (operationBlock.getOperation() instanceof SugiliteLongClickOperation) {
+//                            alternativeQuery = ((SugiliteLongClickOperation) operationBlock.getOperation()).getAlternativeTargetUIElementDataDescriptionQuery();
+//                        }
+//                        if (alternativeQuery != null) {
+//                            alternativeQuery = alternativeQuery.clone();
+//                            Set<SugiliteEntity> alternativeQuerySet = q.executeOn(uiSnapshot);
+//                            for (SugiliteEntity e : alternativeQuerySet) {
+//                                if (e.getEntityValue() instanceof Node) {
+//                                    AccessibilityNodeInfo accessibilityNodeInfo = uiSnapshot.getNodeAccessibilityNodeInfoMap().get(e.getEntityValue());
+//                                    preFilteredNodes.add(accessibilityNodeInfo);
+//                                    accessibilityNodeInfoNodeMap.put(accessibilityNodeInfo, e);
+//                                }
+//                            }
+//                        }
+//                        if (preFilteredNodes.size() == 0) {
+//                            //alternative query can't match anything either
+//                            return false;
+//                        }
+//                    }
                     Log.v("Automator", "couldn't find a matched node for query " + q.toString());
                     return false;
                 }
@@ -450,6 +456,7 @@ public class Automator {
                 for (AccessibilityNodeInfo node : filteredNodes) {
                     //TODO: scrolling to find more nodes -- not only the ones displayed on the current screen
                     boolean retVal = performAction(node, operationBlock);
+                    System.out.println("Whether is success or not: "+retVal);
                     if (retVal) {
                         if (!succeeded) {
                             //report success
@@ -457,7 +464,7 @@ public class Automator {
                             addNextBlockToQueue(operationBlock);
 
                             //report ReconstructObfuscatedScript
-                            sugiliteData.handleReconstructObfuscatedScript(operationBlock, accessibilityNodeInfoNodeMap.get(node), uiSnapshot);
+//                            sugiliteData.handleReconstructObfuscatedScript(operationBlock, accessibilityNodeInfoNodeMap.get(node), uiSnapshot);
                             if (sugiliteData.getInstructionQueueSize() > 0) {
                                 synchronized (this) {
                                     if (sugiliteData.peekInstructionQueue() != null && sugiliteData.peekInstructionQueue().equals(blockToMatch)) {
@@ -501,9 +508,18 @@ public class Automator {
     private boolean performAction(AccessibilityNodeInfo node, SugiliteOperationBlock block) {
 
         AccessibilityNodeInfo nodeToAction = node;
+        Rect rect=new Rect();
+        node.getBoundsInScreen(rect);
 
         if (block.getOperation().getOperationType() == SugiliteOperation.CLICK) {
-            return nodeToAction.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+            if (null!=nodeToAction){
+                if (null!=nodeToAction.getContentDescription()&&nodeToAction.getContentDescription().equals("Apps list")){
+                    return nodeToAction.performAction(AccessibilityNodeInfo.ACTION_CLICK);
+                }
+            }
+            return serviceContext.performTap(rect.centerX(),rect.centerY(),0,20);
+
+
         }
 
         if (block.getOperation().getOperationType() == SugiliteOperation.SET_TEXT) {
@@ -627,7 +643,6 @@ public class Automator {
         return false;
     }
 
-
     private void addNextBlockToQueue(final SugiliteBlock block) {
         if (block instanceof SugiliteStartingBlock) {
             sugiliteData.addInstruction(block.getNextBlockToRun());
@@ -683,5 +698,4 @@ public class Automator {
             throw new RuntimeException("Unsupported Block Type!");
         }
     }
-
 }

@@ -1,11 +1,13 @@
 package edu.cmu.hcii.sugilite.model.block.util;
 
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.io.File;
 import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -55,6 +57,23 @@ public class SugiliteAvailableFeaturePack implements Serializable{
         if(node.getBoundsInScreen() != null) {
             this.boundsInScreen = new String(node.getBoundsInScreen());
         }
+        //Add Xpath;
+        List<Node> nodesList= getAncestors(node);
+        String xpath="/hierarchy";
+        Collections.reverse(nodesList);
+        for (Node simpleNode:nodesList){
+            int ownIndex=getNodeIndex(simpleNode);
+            if (ownIndex>0) {
+                xpath=xpath+"/"+simpleNode.getClassName() + "[" + ownIndex +"]";
+            }
+            else{
+                xpath=xpath+"/"+simpleNode.getClassName();
+            }
+        }
+        this.xPath=xpath;
+
+
+
         this.isEditable = node.getEditable();
         //TODO: fix timestamp
         this.time = -1;
@@ -100,6 +119,7 @@ public class SugiliteAvailableFeaturePack implements Serializable{
         this.serializableUISnapshot = featurePack.serializableUISnapshot;
         this.targetNodeEntity = featurePack.targetNodeEntity;
 
+
         if(Const.KEEP_ALL_NODES_IN_THE_FEATURE_PACK) {
             this.parentNode = featurePack.parentNode;
             this.childNodes = new ArrayList<>(featurePack.childNodes);
@@ -127,7 +147,7 @@ public class SugiliteAvailableFeaturePack implements Serializable{
             this.alternativeTextList = new HashSet<>();
         }
     }
-    public String packageName, className, text, contentDescription, viewId, boundsInParent, boundsInScreen;
+    public String packageName, className, text, contentDescription, viewId, boundsInParent, boundsInScreen, xPath;
     public boolean isEditable;
     public long time;
     public int eventType;
@@ -155,4 +175,73 @@ public class SugiliteAvailableFeaturePack implements Serializable{
 
     public SerializableUISnapshot serializableUISnapshot;
     public SugiliteSerializableEntity<Node> targetNodeEntity;
+
+
+    private int getNodeIndex(Node nodeInfo) {
+        // TODO: Refactor
+        if  (null!=nodeInfo) {
+            if (null!=nodeInfo.getParent()) {
+                AccessibilityNodeInfo parent = nodeInfo.getParentalNode();
+                int childCount = parent.getChildCount();
+                if (childCount > 1) {
+                    int count=0;
+                    int length=0;
+                    int invisibleNumber=0;
+                    for (int i = 0; i < childCount; i++) {
+                        if(null!=parent.getChild(i)){
+                            try {
+                                if(parent.getChild(i).equals(nodeInfo.getThisNode())){
+                                    length=count-invisibleNumber;
+                                    if (hasMoreThanOneSibling(parent, nodeInfo.getClassName())){
+                                        return length+1;
+                                    }
+                                    else{
+                                        return length;
+                                    }
+                                }
+                                if (parent.getChild(i).getClassName().toString().equals(nodeInfo.getClassName())) {
+                                    count++;
+
+                                }
+                            }
+                            catch (NullPointerException e){
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+
+                } else {
+                    return 0;
+                }
+            }
+            return 0;
+        }
+        return -1;
+    }
+
+    private boolean hasMoreThanOneSibling(AccessibilityNodeInfo parent, String className) {
+        // TODO: Refactor
+        int sameCount=0;
+        for (int i = 0; i < parent.getChildCount(); i++) {
+            if (sameCount>1)
+                return true;
+            if(null!=parent.getChild(i)){
+                if (parent.getChild(i).getClassName().toString().equals(className))
+                    sameCount++;
+            }
+        }
+        if (sameCount<2)
+            return false;
+        else
+            return true;
+    }
+
+    private List<Node> getAncestors(Node nodeEntity){
+        List<Node> nodesList=new ArrayList<>();
+        while (nodeEntity!=null){
+            nodesList.add(nodeEntity);
+            nodeEntity=nodeEntity.getParent();
+        }
+        return nodesList;
+    }
 }

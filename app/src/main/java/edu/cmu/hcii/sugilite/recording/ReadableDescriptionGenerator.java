@@ -25,7 +25,7 @@ import edu.cmu.hcii.sugilite.model.operation.trinary.SugiliteLoadVariableOperati
 import edu.cmu.hcii.sugilite.model.operation.SugiliteOperation;
 import edu.cmu.hcii.sugilite.model.operation.binary.SugiliteReadoutOperation;
 import edu.cmu.hcii.sugilite.model.operation.binary.SugiliteSetTextOperation;
-import edu.cmu.hcii.sugilite.sovite.SoviteAppNameAppInfoManager;
+//import edu.cmu.hcii.sugilite.sovite.SoviteAppNameAppInfoManager;
 
 
 /**
@@ -34,9 +34,9 @@ import edu.cmu.hcii.sugilite.sovite.SoviteAppNameAppInfoManager;
  * @time 4:03 PM
  */
 public class ReadableDescriptionGenerator {
-    private static SoviteAppNameAppInfoManager soviteAppNameAppInfoManager;
+//    private static SoviteAppNameAppInfoManager soviteAppNameAppInfoManager;
     public ReadableDescriptionGenerator(Context applicationContext){
-        this.soviteAppNameAppInfoManager = SoviteAppNameAppInfoManager.getInstance(SugiliteData.getAppContext());
+//        this.soviteAppNameAppInfoManager = SoviteAppNameAppInfoManager.getInstance(SugiliteData.getAppContext());
     }
 
     public String generateDescriptionForVerbalBlock(SugiliteOperationBlock block, String formula, String utterance){
@@ -314,8 +314,8 @@ public class ReadableDescriptionGenerator {
                 message += "at the parent location (" + getHTMLColor((sugiliteOperationBlock.getElementMatchingFilter().getBoundsInParent()), Const.SCRIPT_IDENTIFYING_FEATURE_COLOR) + ") ";
             }
 
-            if(sugiliteOperationBlock.getElementMatchingFilter().getPackageName() != null)
-                message += "in the " + getHTMLColor(soviteAppNameAppInfoManager.getReadableAppNameForPackageName(sugiliteOperationBlock.getElementMatchingFilter().getPackageName()), Const.SCRIPT_WITHIN_APP_COLOR) + " app ";
+//            if(sugiliteOperationBlock.getElementMatchingFilter().getPackageName() != null)
+//                message += "in the " + getHTMLColor(soviteAppNameAppInfoManager.getReadableAppNameForPackageName(sugiliteOperationBlock.getElementMatchingFilter().getPackageName()), Const.SCRIPT_WITHIN_APP_COLOR) + " app ";
             return message;
 
 

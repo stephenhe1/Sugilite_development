@@ -12,7 +12,6 @@ import edu.cmu.hcii.sugilite.model.operation.binary.SugiliteGetBoolExpOperation;
 import edu.cmu.hcii.sugilite.model.value.SugiliteValue;
 import edu.cmu.hcii.sugilite.pumice.dialog.PumiceDialogManager;
 import edu.cmu.hcii.sugilite.pumice.dialog.PumiceInitInstructionParsingHandler;
-import edu.cmu.hcii.sugilite.pumice.dialog.intent_handler.PumiceUserExplainValueIntentHandler;
 import edu.cmu.hcii.sugilite.pumice.kb.PumiceBooleanExpKnowledge;
 import edu.cmu.hcii.sugilite.pumice.kb.PumiceValueQueryKnowledge;
 
@@ -128,8 +127,8 @@ public class PumiceBooleanExpKnowledgeGeneralizationTask implements Callable<Sug
         String valueUtterance = String.format("new threshold for \"%s\"", matchedBooleanExpKnowledge.getExpName());
 
         //update the dialog manager with a new intent handler
-        PumiceUserExplainValueIntentHandler pumiceUserExplainValueIntentHandler = new PumiceUserExplainValueIntentHandler(dialogManager, context, sugiliteData, resolveValueLock, valueUtterance, null);
-        dialogManager.updateUtteranceIntentHandlerInANewState(pumiceUserExplainValueIntentHandler);
+//        PumiceUserExplainValueIntentHandler pumiceUserExplainValueIntentHandler = new PumiceUserExplainValueIntentHandler(dialogManager, context, sugiliteData, resolveValueLock, valueUtterance, null);
+//        dialogManager.updateUtteranceIntentHandlerInANewState(pumiceUserExplainValueIntentHandler);
         dialogManager.sendAgentMessage(String.format("What's the new threshold for determining whether %s to %s? You can explain, or say \"demonstrate\" to demonstrate", matchedBooleanExpKnowledge.getExpName(), newProcedureScenario), true, true);
         //pumiceUserExplainValueIntentHandler.sendPromptForTheIntentHandler();
 

@@ -12,6 +12,12 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -208,6 +214,7 @@ public class SugiliteCommunicationController {
         for(String name : allNames) {
             try {
                 startingBlocks.add(sugiliteScriptDao.read(name));
+                System.out.println("NSML NMSL: "+startingBlocks.get(0));
             }
             catch (Exception e){
                 e.printStackTrace();
@@ -216,8 +223,12 @@ public class SugiliteCommunicationController {
         return startingBlocks;
     }
 
-    public boolean sendAllTrackings(){
+    public boolean sendAllTrackings() throws IOException {
         Log.d(TAG, "Sending All Tracking Scripts");
+        BufferedWriter out = new BufferedWriter(new FileWriter("json.txt"));
+        out.write(jsonProcessor.scriptsToJson( getTrackingScripts()));
+        out.close();
+        System.out.println("File created successfully");
         return sendMessage( SugiliteCommunicationHelper.RESPONSE, SugiliteCommunicationHelper.GET_ALL_TRACKING_SCRIPTS, jsonProcessor
                 .scriptsToJson( getTrackingScripts() ));
     }

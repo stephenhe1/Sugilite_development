@@ -196,7 +196,7 @@ public class NewScriptGeneralizer {
 
                                         //edit the original data description query to reflect the new parameters
                                         replaceParametersInOntologyQuery(ontologyQuery, textLabel, variableName);
-                                        operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(operationBlock.getOperation(), operationBlock.getOperation().getDataDescriptionQueryIfAvailable()));
+//                                        operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(operationBlock.getOperation(), operationBlock.getOperation().getDataDescriptionQueryIfAvailable()));
 
                                         //replace the occurrence of parameter default values in the script name
                                         sugiliteStartingBlock.setScriptName(sugiliteStartingBlock.getScriptName().replaceAll("(?i)" + Pattern.quote(textLabel.toLowerCase()), "[" + variableName + "]"));
@@ -271,7 +271,7 @@ public class NewScriptGeneralizer {
 
                             //edit the original parameter in the SugiliteOperation to reflect the new parameters
                             ((SugiliteSetTextOperation) operation).setParameter0("[" + variableName + "]");
-                            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(operation, operation.getDataDescriptionQueryIfAvailable()));
+//                            operationBlock.setDescription(ontologyDescriptionGenerator.getSpannedDescriptionForOperation(operation, operation.getDataDescriptionQueryIfAvailable()));
 
 
                             //replace the occurrence of parameter default values in the script name
