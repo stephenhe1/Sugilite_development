@@ -103,8 +103,9 @@ public class FullScreenRecordingOverlayManager {
         this.sugiliteScreenshotManager = SugiliteScreenshotManager.getInstance(sharedPreferences, sugiliteData);
         this.tts = tts;
 
-        displayMetrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+//        displayMetrics = new DisplayMetrics();
+//        windowManager.getDefaultDisplay().getMetrics(displayMetrics);
+        displayMetrics = context.getResources().getDisplayMetrics();
         this.overlayCurrentHeight = displayMetrics.heightPixels;
         //hack -- leave 1px at the right end of the screen so the input method window becomes visible
         this.overlayCurrentWidth = displayMetrics.widthPixels - 1;
@@ -123,11 +124,11 @@ public class FullScreenRecordingOverlayManager {
         SugiliteData.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                int newHeightPixels = displayMetrics.heightPixels - inputMethodWindowBoundsInScreen.height() - navigationBarUtil.getStatusBarHeight(context);
-                if (newHeightPixels > overlayCurrentHeight && windowsContainsInputMethod == false) {
-                    textChangedEventHandler.flush();
-                }
-                overlayCurrentHeight = newHeightPixels;
+//                int newHeightPixels = displayMetrics.heightPixels - inputMethodWindowBoundsInScreen.height() - navigationBarUtil.getStatusBarHeight(context);
+//                if (newHeightPixels > overlayCurrentHeight && windowsContainsInputMethod == false) {
+//                    textChangedEventHandler.flush();
+//                }
+//                overlayCurrentHeight = newHeightPixels;
                 if (overlay.isShown()) {
                     try {
                         windowManager.updateViewLayout(overlay, updateLayoutParams(overlayCurrentFlag, overlayCurrentWidth, overlayCurrentHeight));

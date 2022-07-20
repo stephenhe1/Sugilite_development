@@ -100,27 +100,25 @@ public abstract class ScriptDetailActivity extends AppCompatActivity {
                 SugiliteBlock iterBlock = script;
                 String iterBlockString="";
                 System.out.println("scriptName is:"+ LocalScriptDetailActivity.getScript_name());
-                BufferedReader in=null;
-                try {
-                    in = new BufferedReader(new FileReader(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_xpath.txt")));
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+//                BufferedReader in=null;
+//                try {
+//                    in = new BufferedReader(new FileReader(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_xpath.txt")));
+//
+//                } catch (FileNotFoundException e) {
+//                    e.printStackTrace();
+//                }
                 while(iterBlock != null){
-//                    System.out.println("iterBlock: " + iterBlock+"hahaha");
-                    String str;
-                    try {
-                        if (!(iterBlock instanceof SugiliteStartingBlock)) {
-                            if ((str=in.readLine())!=null){
-                                iterBlockString = iterBlockString + String.valueOf(iterBlock) + str+"\n";
-                            }
-                        }
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-//                    iterBlockString = iterBlockString + String.valueOf(iterBlock) +"\n";
+//                    String str;
+//                    try {
+//                        if (!(iterBlock instanceof SugiliteStartingBlock)) {
+//                            if ((str=in.readLine())!=null){
+//                                iterBlockString = iterBlockString + String.valueOf(iterBlock) + str+"\n";
+//                            }
+//                        }
+//
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
 
                     operationStepList.addView(getViewForBlock(iterBlock));
                     if (iterBlock instanceof SugiliteStartingBlock) {
@@ -142,11 +140,11 @@ public abstract class ScriptDetailActivity extends AppCompatActivity {
                         new Exception("unsupported block type").printStackTrace();
                 }
                 System.out.println(iterBlockString);
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    in.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 //                System.out.println(Environment.getExternalStorageDirectory().getAbsolutePath());
 //                BufferedWriter bw=null;
 //                try {
