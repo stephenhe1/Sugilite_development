@@ -43,7 +43,7 @@ public class SugiliteGoogleCloudVoiceRecognitionListener implements SugiliteVoic
 
     //initiate voice recorder
     private GoogleVoiceRecorder mVoiceRecorder;
-    private GoogleCloudSpeechService mSpeechService = null;
+//    private GoogleCloudSpeechService mSpeechService = null;
 
     private final GoogleVoiceRecorder.Callback mVoiceCallback = new GoogleVoiceRecorder.Callback() {
 
@@ -83,40 +83,40 @@ public class SugiliteGoogleCloudVoiceRecognitionListener implements SugiliteVoic
     private SugiliteVoiceInterface sugiliteVoiceInterface;
 
     //this listener is used when results are ready
-    private final GoogleCloudSpeechService.Listener mSpeechServiceListener =
-            new GoogleCloudSpeechService.Listener() {
-                @Override
-                public void onSpeechRecognized(final String text, final boolean isFinal) {
-                    if (isFinal) {
-                        if (mVoiceRecorder != null) {
-                            mVoiceRecorder.dismiss();
-                        }
-                        if (mSpeechService != null && mSpeechServiceListener != null){
-                            mSpeechService.removeListener(mSpeechServiceListener);
-                        }
-                    }
-                    if (!TextUtils.isEmpty(text)) {
-                        SugiliteData.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                    //return the result
-                                    List<String> results = new ArrayList<>();
-                                    results.add(text);
-                                    if (sugiliteVoiceInterface != null) {
-                                        SugiliteData.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                //this callback is ran on the UI thread because it often involves UI actions
-                                                sugiliteVoiceInterface.resultAvailableCallback(results, isFinal);
-                                            }
-                                        });
-                                    }
-                                    //TODO: add a progress bar
-                            }
-                        });
-                    }
-                }
-            };
+//    private final GoogleCloudSpeechService.Listener mSpeechServiceListener =
+//            new GoogleCloudSpeechService.Listener() {
+//                @Override
+//                public void onSpeechRecognized(final String text, final boolean isFinal) {
+//                    if (isFinal) {
+//                        if (mVoiceRecorder != null) {
+//                            mVoiceRecorder.dismiss();
+//                        }
+//                        if (mSpeechService != null && mSpeechServiceListener != null){
+//                            mSpeechService.removeListener(mSpeechServiceListener);
+//                        }
+//                    }
+//                    if (!TextUtils.isEmpty(text)) {
+//                        SugiliteData.runOnUiThread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                    //return the result
+//                                    List<String> results = new ArrayList<>();
+//                                    results.add(text);
+//                                    if (sugiliteVoiceInterface != null) {
+//                                        SugiliteData.runOnUiThread(new Runnable() {
+//                                            @Override
+//                                            public void run() {
+//                                                //this callback is ran on the UI thread because it often involves UI actions
+//                                                sugiliteVoiceInterface.resultAvailableCallback(results, isFinal);
+//                                            }
+//                                        });
+//                                    }
+//                                    //TODO: add a progress bar
+//                            }
+//                        });
+//                    }
+//                }
+//            };
 
     public SugiliteGoogleCloudVoiceRecognitionListener(Context context, SugiliteData sugiliteData, SugiliteVoiceInterface voiceInterface, TextToSpeech tts) {
         this.context = context;
@@ -349,12 +349,12 @@ public class SugiliteGoogleCloudVoiceRecognitionListener implements SugiliteVoic
         // stop TTS
         stopTTS();
 
-        // stop Cloud Speech API
-        if (mSpeechServiceListener != null && mSpeechService != null) {
-            mSpeechService.removeListener(mSpeechServiceListener);
-        }
+//        // stop Cloud Speech API
+//        if (mSpeechServiceListener != null && mSpeechService != null) {
+//            mSpeechService.removeListener(mSpeechServiceListener);
+//        }
 
-        mSpeechService = null;
+//        mSpeechService = null;
 
     }
 }

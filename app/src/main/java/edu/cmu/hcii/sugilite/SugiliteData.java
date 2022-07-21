@@ -53,7 +53,7 @@ import edu.cmu.hcii.sugilite.sharing.model.HashedString;
 import edu.cmu.hcii.sugilite.study.ScriptUsageLogManager;
 import edu.cmu.hcii.sugilite.ui.StatusIconManager;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.VerbalInstructionIconManager;
-import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.GoogleCloudSpeechService;
+//import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.GoogleCloudSpeechService;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.speech.GoogleVoiceRecorder;
 
 import static edu.cmu.hcii.sugilite.Const.OVERLAY_TYPE;
@@ -121,7 +121,7 @@ public class SugiliteData extends Application {
     public boolean testRun = false;
 
     //Google speech service
-    private GoogleCloudSpeechService mSpeechService;
+//    private GoogleCloudSpeechService mSpeechService;
     public Object speechServiceLock = new Object();
 
     public String valueDemonstrationVariableName = "";
@@ -165,13 +165,14 @@ public class SugiliteData extends Application {
             }
             @Override
             public void onServiceDisconnected(ComponentName componentName) {
-                mSpeechService = null;
+//                mSpeechService = null;
             }
         };
         // Prepare Cloud Speech API
-        Intent bindIntent = new Intent(applicationContext, GoogleCloudSpeechService.class);
-        ComponentName serviceComponentName = applicationContext.startService(bindIntent);
-        applicationContext.bindService(bindIntent, mServiceConnection, BIND_AUTO_CREATE);
+//        Intent bindIntent = new Intent(applicationContext, GoogleCloudSpeechService.class);
+//        Intent bindIntent = new Intent(applicationContext);
+//        ComponentName serviceComponentName = applicationContext.startService(bindIntent);
+//        applicationContext.bindService(bindIntent, mServiceConnection, BIND_AUTO_CREATE);
 
 
         //disable StrictMode for file access
@@ -527,7 +528,7 @@ public class SugiliteData extends Application {
         this.screenshotMediaProjectionManager = screenshotMediaProjectionManager;
     }
 
-    public GoogleCloudSpeechService getSpeechService() {
-        return mSpeechService;
-    }
+//    public GoogleCloudSpeechService getSpeechService() {
+//        return mSpeechService;
+//    }
 }
