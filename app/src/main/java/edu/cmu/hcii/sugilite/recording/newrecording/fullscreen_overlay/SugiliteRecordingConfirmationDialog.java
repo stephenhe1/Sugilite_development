@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.List;
 
 import edu.cmu.hcii.sugilite.Const;
+import edu.cmu.hcii.sugilite.accessibility_service.SugiliteAccessibilityService;
 import edu.cmu.hcii.sugilite.dao.SugiliteScriptDao;
 import edu.cmu.hcii.sugilite.dao.SugiliteScriptFileDao;
 import edu.cmu.hcii.sugilite.dao.SugiliteScriptSQLDao;
@@ -49,6 +50,7 @@ import edu.cmu.hcii.sugilite.ontology.SugiliteEntity;
 import edu.cmu.hcii.sugilite.ontology.UISnapshot;
 import edu.cmu.hcii.sugilite.ontology.description.OntologyDescriptionGenerator;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
+import edu.cmu.hcii.sugilite.recording.RecordingUtils;
 import edu.cmu.hcii.sugilite.recording.SugiliteScreenshotManager;
 import edu.cmu.hcii.sugilite.recording.newrecording.SugiliteBlockBuildingHelper;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogManager;
@@ -86,6 +88,7 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
     private ImageButton speakButton;
     private SugiliteScriptDao sugiliteScriptDao;
     private SugiliteScreenshotManager screenshotManager;
+    private static int step = 0;
 
 
     //construct the 2 states
@@ -141,6 +144,7 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
             public void onClick(DialogInterface dialog, int which) {
                 //save the block
                 positiveButtonOnClick();
+                step++;
             }
         })
                 .setNegativeButton("Skip", new DialogInterface.OnClickListener() {
@@ -183,9 +187,16 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
         if (sharedPreferences.getBoolean("recording_in_process", false)) {
             try {
 //                takeScreenShot(getActivity(context).getWindow().getDecorView().getRootView(),NewScriptDialog.getScript_name());
-                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, screenshotManager.getFileNameFromDate());
-                sendNodeInfo(featurePack);
-                writeTestScript(NewScriptDialog.getScript_name(),featurePack);
+                Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
+                if (! Files.exists(outputPath)){
+                    outputPath.toFile().mkdirs();
+                }
+                screenshotManager.setDirectoryPath(outputPath.toString() + "/");
+                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_"+step + ".png");
+                SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
+                sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_"+step+".xml");
+                RecordingUtils.sendNodeInfo(featurePack, "click");
+                RecordingUtils.writeTestScript(context,NewScriptDialog.getScript_name(),featurePack, "click");
                 blockBuildingHelper.saveBlock(block, featurePack);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -321,135 +332,13 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
         initPrompt();
     }
 
-    private void sendNodeInfo(SugiliteAvailableFeaturePack sugiliteAvailableFeaturePack){
-        //Get the websocket instance
-        WebSocketClient webSocketClient=PumiceDemonstrationUtil.getWebSocketClientInst();
-        JSONObject targetObject=new JSONObject();
-        if(null != sugiliteAvailableFeaturePack){
-            if(null != sugiliteAvailableFeaturePack.text){
-                try {
-                    targetObject.put("text",sugiliteAvailableFeaturePack.text);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            if(null != sugiliteAvailableFeaturePack.contentDescription){
-                try {
-                    targetObject.put("content_desc",sugiliteAvailableFeaturePack.contentDescription);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            if(null != sugiliteAvailableFeaturePack.className){
-                try {
-                    targetObject.put("class_name",sugiliteAvailableFeaturePack.className);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            if(null != sugiliteAvailableFeaturePack.viewId){
-                try {
-                    targetObject.put("resource_id",sugiliteAvailableFeaturePack.viewId);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            if(null != sugiliteAvailableFeaturePack.packageName){
-                try {
-                    targetObject.put("pkg_name",sugiliteAvailableFeaturePack.packageName);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            try {
-                targetObject.put("xpath",sugiliteAvailableFeaturePack.xPath);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            JSONObject clickCommand = new JSONObject();
-            try {
-                clickCommand.put("action","click");
-                clickCommand.put("target",targetObject);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            JSONObject sendCommandSM = new JSONObject();
-            try {
-                sendCommandSM.put("action","SENDCOMMAND");
-                sendCommandSM.put("command",clickCommand);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            webSocketClient.send(String.valueOf(sendCommandSM));
-        }
+
+
+    public static int getStep() {
+        return step;
     }
 
-    private void writeTestScript(String fileName,SugiliteAvailableFeaturePack sugiliteAvailableFeaturePack){
-        BufferedWriter bw = null;
-        try {
-            bw = new BufferedWriter(new FileWriter(new File(context.getFilesDir().getPath()+"/scripts/" + fileName+".jsonl"),true));
-            JSONObject targetObject=new JSONObject();
-            if(null != sugiliteAvailableFeaturePack) {
-                if (null != sugiliteAvailableFeaturePack.text) {
-                    try {
-                        targetObject.put("text", sugiliteAvailableFeaturePack.text);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (null != sugiliteAvailableFeaturePack.contentDescription) {
-                    try {
-                        targetObject.put("content_desc", sugiliteAvailableFeaturePack.contentDescription);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (null != sugiliteAvailableFeaturePack.className) {
-                    try {
-                        targetObject.put("class_name", sugiliteAvailableFeaturePack.className);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (null != sugiliteAvailableFeaturePack.viewId) {
-                    try {
-                        targetObject.put("resource_id", sugiliteAvailableFeaturePack.viewId);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                if (null != sugiliteAvailableFeaturePack.packageName) {
-                    try {
-                        targetObject.put("pkg_name", sugiliteAvailableFeaturePack.packageName);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-                try {
-                    targetObject.put("xpath", sugiliteAvailableFeaturePack.xPath);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                JSONObject clickCommand = new JSONObject();
-                try {
-                    clickCommand.put("action", "click");
-                    clickCommand.put("target", targetObject);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                bw.write(clickCommand.toString()+"\n");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (bw != null) {
-                try {
-                    bw.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    public static void setStep(int step) {
+        SugiliteRecordingConfirmationDialog.step = step;
     }
-
 }

@@ -64,21 +64,21 @@
         </LinearLayout>
 
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:orientation="horizontal">-->
 
-            <EditText
-                android:id="@+id/edittext_ip_address"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.8"
-                android:ems="10"
-                android:hint="Enter the IP address here"
-                android:inputType="textMultiLine"
-                android:scrollHorizontally="false" />
-        </LinearLayout>
+<!--            <EditText-->
+<!--                android:id="@+id/edittext_ip_address"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="0.8"-->
+<!--                android:ems="10"-->
+<!--                android:hint="Enter the IP address here"-->
+<!--                android:inputType="textMultiLine"-->
+<!--                android:scrollHorizontally="false" />-->
+<!--        </LinearLayout>-->
 
     </LinearLayout>
 

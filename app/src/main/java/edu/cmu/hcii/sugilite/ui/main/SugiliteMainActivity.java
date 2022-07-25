@@ -8,10 +8,12 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -55,6 +57,7 @@ import edu.cmu.hcii.sugilite.study.StudyDataUploadManager;
 import edu.cmu.hcii.sugilite.ui.LocalScriptDetailActivity;
 import edu.cmu.hcii.sugilite.ui.SettingsActivity;
 import edu.cmu.hcii.sugilite.ui.dialog.AddTriggerDialog;
+import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
 import edu.cmu.hcii.sugilite.ui.dialog.SugiliteProgressDialog;
 
 import static edu.cmu.hcii.sugilite.Const.OVERLAY_TYPE;
@@ -108,6 +111,14 @@ public class SugiliteMainActivity extends AppCompatActivity {
         }
         this.sugiliteTriggerDao = new SugiliteTriggerDao(this);
         this.context = this;
+
+        if(! checkPermissionForReadExtertalStorage()){
+            try {
+                requestPermissionForReadExtertalStorage();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(Const.appNameUpperCase);
@@ -239,26 +250,17 @@ public class SugiliteMainActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
                                     sugiliteScriptDao.clear();
-//                                    File rootFile=new File(Environment.getExternalStorageDirectory().getAbsolutePath());
-//                                    for (File file : rootFile.listFiles()){
-//                                        if(file.getName().contains("_xpath.txt"))
-//                                            file.delete();
-//                                    }
                                     File rootFile2=new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts");
                                     for (File file : rootFile2.listFiles()){
                                         if(file.getName().contains(".jsonl"))
                                             file.delete();
                                     }
-                                    File rootFile3=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/");
-                                    for (File file : rootFile3.listFiles()){
-                                        if(file.getName().contains(".jsonl"))
-                                            file.delete();
-                                    }
-                                    File rootFile4=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/");
-                                    for (File file : rootFile4.listFiles()){
-                                        if(file.getName().contains(".txt"))
-                                            file.delete();
-                                    }
+                                    File rootFile3=new File(String.valueOf(sugiliteScriptDao.getContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)));
+                                    deleteAllFiles(rootFile3);
+//                                    for (File file : rootFile3.listFiles()){
+//                                        if(file.getName().contains(".jsonl"))
+//                                            file.delete();
+//                                    }
                                     sugiliteData.logUsageData(ScriptUsageLogManager.CLEAR_ALL_SCRIPTS, "N/A");
                                     if (fragmentScriptListTab instanceof FragmentScriptListTab)
                                         ((FragmentScriptListTab) fragmentScriptListTab).setUpScriptList();
@@ -411,6 +413,39 @@ public class SugiliteMainActivity extends AppCompatActivity {
                 sugiliteData.setScreenshotIntent(data);
             }
         }
+    }
+
+    private static final int READ_STORAGE_PERMISSION_REQUEST_CODE = 41;
+    public boolean checkPermissionForReadExtertalStorage() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            int result = context.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE);
+            return result == PackageManager.PERMISSION_GRANTED;
+        }
+        return false;
+    }
+
+    public void requestPermissionForReadExtertalStorage() throws Exception {
+        try {
+            ActivityCompat.requestPermissions((Activity) context, new String[]{android.Manifest.permission.READ_EXTERNAL_STORAGE},
+                    READ_STORAGE_PERMISSION_REQUEST_CODE);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public void deleteAllFiles(File rootDirectory) {
+
+        // Get all files from a directory.
+        File[] fList = rootDirectory.listFiles();
+        if(fList != null)
+            for (File file : fList) {
+                if (file.isFile() && file.getName().contains(".jsonl")) {
+                    file.delete();
+                } else if (file.isDirectory()) {
+                    deleteAllFiles(new File(file.getAbsolutePath()));
+                }
+            }
     }
 
 

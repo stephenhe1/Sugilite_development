@@ -185,8 +185,7 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                         try {
                             //delete the script
                             sugiliteScriptDao.delete(scriptName);
-                            (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
-                            (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_prefix"+".txt")).delete();
+                            (new File(sugiliteScriptDao.getContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/"+NewScriptDialog.getPackageName() + "/" + "RECORDER/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
                             Boolean success=(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
                             sugiliteData.logUsageData(ScriptUsageLogManager.REMOVE_SCRIPT, scriptName);
 
@@ -687,8 +686,7 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
                                     sugiliteScriptDao.delete(scriptName);
-                                    (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
-                                    (new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+"_prefix"+".txt")).delete();
+                                    (new File(sugiliteScriptDao.getContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/"+NewScriptDialog.getPackageName() + "/" + "RECORDER/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
                                     Boolean success=(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
                                 }
                                 catch (Exception e){
@@ -721,9 +719,6 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
         speakButton = (ImageButton) findViewById(R.id.button5);
         pumiceDialogManager.sendAgentMessage("You are adding a step to do different things in different cases. What should I check to figure out what case we're in? Please say something like check if it's cold or check if it's before 5pm.", true, true);
 
-
-        //PumiceConditionalIntentHandler ih = new PumiceConditionalIntentHandler(context);
-        //pumiceDialogManager = new PumiceDialogManager(this, new PumiceConditionalIntentHandler(pumiceDialogManager, this));
 
     }
 

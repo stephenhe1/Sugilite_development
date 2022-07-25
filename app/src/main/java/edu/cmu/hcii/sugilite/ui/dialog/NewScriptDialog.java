@@ -1,5 +1,8 @@
 package edu.cmu.hcii.sugilite.ui.dialog;
 
+import static android.content.Context.ACTIVITY_SERVICE;
+
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -9,9 +12,15 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.LightingColorFilter;
+import android.os.Build;
+import android.os.Bundle;
+import android.preference.EditTextPreference;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
@@ -31,6 +40,7 @@ import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDi
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogSimpleState;
 import edu.cmu.hcii.sugilite.recording.newrecording.dialog_management.SugiliteDialogUtteranceFilter;
 import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.OverlayClickedDialog;
+import edu.cmu.hcii.sugilite.ui.SettingsActivity;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.VerbalInstructionIconManager;
 
 import static edu.cmu.hcii.sugilite.Const.MUL_ZEROS;
@@ -38,6 +48,8 @@ import static edu.cmu.hcii.sugilite.Const.OVERLAY_TYPE;
 import static edu.cmu.hcii.sugilite.Const.RECORDING_DARK_GRAY_COLOR;
 import static edu.cmu.hcii.sugilite.Const.RECORDING_OFF_BUTTON_COLOR;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -69,8 +81,9 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
     private EditText scriptNameEditText;
     private Spinner appPackagesSpinner;
     private PackageManager packageManager;
-    private EditText ipAddressEditText;
+//    private EditText ipAddressEditText;
     private static String serverAddress = null;
+    private static String packageName = null;
 
     public NewScriptDialog(Context context, SugiliteScriptDao sugiliteScriptDao, ServiceStatusManager serviceStatusManager,
                            SharedPreferences sharedPreferences, SugiliteData sugiliteData, boolean isSystemAlert, final Dialog.OnClickListener positiveCallback, final Dialog.OnClickListener negativeCallback){
@@ -88,7 +101,7 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
         LayoutInflater layoutInflater = LayoutInflater.from(context);
         dialogView = layoutInflater.inflate(R.layout.dialog_new_script, null);
         scriptNameEditText = (EditText) dialogView.findViewById(R.id.edittext_instruction_content);
-        this.ipAddressEditText=(EditText) dialogView.findViewById(R.id.edittext_ip_address);
+//        this.ipAddressEditText=(EditText) dialogView.findViewById(R.id.edittext_ip_address);
         scriptNameEditText.setText(sugiliteScriptDao.getNextAvailableDefaultName());
         appPackagesSpinner = (Spinner) dialogView.findViewById(R.id.spinner1);
         List<ApplicationInfo> applicationInfos = getInstalledPackageName();
@@ -101,28 +114,9 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_dropdown_item, appNames);
         appPackagesSpinner.setAdapter(adapter);
 
-        //initiate the speak button
-//        mySpeakButton = (ImageButton) dialogView.findViewById(R.id.button_verbal_instruction_talk);
-//        mySpeakButton.getBackground().setColorFilter(new LightingColorFilter(MUL_ZEROS, RECORDING_OFF_BUTTON_COLOR));
-//        mySpeakButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                // speak button
-//                if(tts != null) {
-//                    if (isListening() || tts.isSpeaking()) {
-//                        stopASRandTTS();
-//                    } else {
-//                        initDialogManager();
-//                    }
-//                }
-//            }
-//        });
-//        mySpeakButton.setImageDrawable(notListeningDrawable);
-//        mySpeakButton.getDrawable().setColorFilter(new LightingColorFilter(MUL_ZEROS, RECORDING_DARK_GRAY_COLOR));
-//        setSpeakButton(mySpeakButton);
 
 
-        builder.setMessage("Specify the name for your new script, the app you want to record and the IP address for the server")
+        builder.setMessage("Specify the name for your new script and the app you want to record")
                 .setView(dialogView)
                 .setPositiveButton("Start Recording", new DialogInterface.OnClickListener() {
                     @Override
@@ -139,16 +133,15 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
                             }
                             index++;
                         }
+                        packageName = applicationInfos.get(index).packageName;
+                        serverAddress = PreferenceManager.getDefaultSharedPreferences(context).getString("remote_server_address", "ws://10.0.2.2:8765/");
+//                        try {
+//                            Runtime.getRuntime().exec("pm clear com.colpit.diamondcoming.isavemoney");
+//                        } catch (IOException exception) {
+//                            exception.printStackTrace();
+//                        }
+                        PumiceDemonstrationUtil.initiateDemonstration(context, serviceStatusManager, sharedPreferences, scriptName, sugiliteData, null, sugiliteScriptDao, verbalInstructionIconManager, packageName);
 
-                        serverAddress=ipAddressEditText.getText().toString();
-
-//                        Intent intent=new Intent(context,OverlayClickedDialog.class);
-//                        intent.putExtra("scriptName",scriptName);
-//                        context.startActivity(intent);
-//                        Tabdetail.putExtra("Marker", marker.getTitle().toString());
-                        PumiceDemonstrationUtil.initiateDemonstration(context, serviceStatusManager, sharedPreferences, scriptName, sugiliteData, null, sugiliteScriptDao, verbalInstructionIconManager, applicationInfos.get(index).packageName);
-
-                        //Toast.makeText(v.getContext(), "Changed script name to " + sharedPreferences.getString("scriptName", "NULL"), Toast.LENGTH_SHORT).show();
                         if(positiveCallback != null) {
                             positiveCallback.onClick(dialog, 0);
                         }
@@ -270,9 +263,15 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
     }
 
     public static String getServerAddress(){
-        if (serverAddress == null || serverAddress.equals("")){
-            return "10.0.2.2";
-        }
+//        if (serverAddress == null || serverAddress.equals("")){
+//            return "10.0.2.2";
+//        }
         return serverAddress;
     }
+
+    public static String getPackageName(){
+        return packageName;
+    }
+
+
 }

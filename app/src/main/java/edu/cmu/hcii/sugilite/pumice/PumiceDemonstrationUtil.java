@@ -14,9 +14,12 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.EditTextPreference;
+import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -24,6 +27,8 @@ import android.util.ArraySet;
 import android.widget.Toast;
 import android.util.Log;
 
+import edu.cmu.hcii.sugilite.accessibility_service.SugiliteAccessibilityService;
+import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.SugiliteRecordingConfirmationDialog;
 import tech.gusavila92.websocketclient.WebSocketClient;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -35,6 +40,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.apache.commons.io.FileUtils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -48,9 +54,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -148,20 +157,6 @@ public class PumiceDemonstrationUtil {
                 e.printStackTrace();
             }
 
-            //create the prefix file
-            Path path= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/");
-            if (!Files.exists(path)){
-                File file=path.toFile();
-                file.mkdir();
-            }
-            File file1=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix");
-            file1.mkdir();
-            try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/"+NewScriptDialog.getScript_name()+"_prefix"+".txt")))){
-                bw1.write("Started");
-            }
-            catch (IOException exception){
-                exception.printStackTrace();
-            }
 
             //send the phone back to the home screen
             Intent startMain = new Intent(Intent.ACTION_MAIN);
@@ -230,26 +225,6 @@ public class PumiceDemonstrationUtil {
                 e.printStackTrace();
             }
 
-            //create the prefix file
-            Path path= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/");
-            if (!Files.exists(path)){
-                File file=path.toFile();
-                file.mkdir();
-            }
-            File file1=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix");
-            file1.mkdir();
-            try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/prefix/"+NewScriptDialog.getScript_name()+"_prefix"+".txt")))){
-                bw1.write("Started");
-            }
-            catch (IOException exception){
-                exception.printStackTrace();
-            }
-
-            //send the phone back to the home screen
-//            Intent startMain = new Intent(Intent.ACTION_MAIN);
-//            startMain.addCategory(Intent.CATEGORY_HOME);
-//            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//            context.startActivity(startMain);
             context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packageName));  //Start the specified application
 
             //turn on the cat overlay to prepare for demonstration
@@ -348,6 +323,7 @@ public class PumiceDemonstrationUtil {
         prefEditor.putBoolean("recording_in_process", false);
         prefEditor.apply();
         JSONObject endRecordSM=new JSONObject();
+        SugiliteRecordingConfirmationDialog.setStep(0);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -362,7 +338,11 @@ public class PumiceDemonstrationUtil {
                                     latestUISnapshot.annotateStringEntitiesIfNeeded();
                                 }
                                 sugiliteData.getScriptHead().uiSnapshotOnEnd = new SerializableUISnapshot(latestUISnapshot);
-                                sugiliteData.getScriptHead().screenshotOnEnd = sugiliteScreenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, sugiliteScreenshotManager.getFileNameFromDate());
+                                String outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)),NewScriptDialog.getPackageName(),"RECORDER").toString();
+                                sugiliteScreenshotManager.setDirectoryPath(outputPath + "/");
+                                sugiliteData.getScriptHead().screenshotOnEnd = sugiliteScreenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_END.png");
+                                SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
+                                sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_END.xml");
                                 try {
                                     endRecordSM.put("action","ENDRECORD");
                                 } catch (JSONException e) {
@@ -372,39 +352,42 @@ public class PumiceDemonstrationUtil {
                                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                                     @Override
                                     public void run() {
-                                        List<Path> relevantPaths = getRelevantScreenShot(NewScriptDialog.getScript_name());
-                                        String outputPath = "/edu.cmu.hcii.sugilite/ScreenShot/output.tar.gz";
+//                                        List<Path> relevantPaths = getRelevantScreenShot(NewScriptDialog.getScript_name());
+//                                        String outputPath = "/edu.cmu.hcii.sugilite/ScreenShot/output.tar.gz";
                                         try {
-                                            createTarGzipFiles(relevantPaths, Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + outputPath));
+//                                            createTarGzipFiles(relevantPaths, Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + outputPath));
+                                            createTarGzipFolder(Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName()));
                                             //TODO : send tar.gz file via websocket
-                                            File tarFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + outputPath);
+                                            File tarFile = new File(String.valueOf(Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName()+".tar.gz")));
                                             webSocketClient.send(Files.readAllBytes(tarFile.toPath()));
                                             if(null != webSocketClient){
                                                 webSocketClient.close();
                                             }
-                                            tarFile.delete();
+                                            File rootFile = context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS);
+                                            for(File file : rootFile.listFiles() ){
+                                                if (file.isDirectory()) {
+                                                    FileUtils.deleteDirectory(file);
+                                                }
+                                                else if (file.isFile()){
+                                                    file.delete();
+                                                }
+                                            }
+//                                            tarFile.delete();
+//                                            deleteAllFiles(Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS))).toFile());
+
                                         } catch (IOException exception) {
                                             exception.printStackTrace();
                                         }
-                                        for (Path path : relevantPaths){
-                                            path.toFile().delete();
-                                        }
+
                                     }
                                 },1500);
                             }
 
-//                            System.out.println("The following blocks of the scriptHead is: ");
-                            Path path= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/");
-                            if (!Files.exists(path)) {
-                                File file = path.toFile();
-                                file.mkdir();
+                            Path jsonScriptPath;
+                            jsonScriptPath = Paths.get(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/"+NewScriptDialog.getPackageName() + "/RECORDER");
+                            if (!Files.exists(jsonScriptPath)){
+                                jsonScriptPath.toFile().mkdirs();
                             }
-                            Path path1= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts");
-                            if (!Files.exists(path1)) {
-                                File file1=path1.toFile();
-                                file1.mkdir();
-                            }
-
                             String testScript="";
                             try(BufferedReader in = new BufferedReader(new FileReader(new File(sugiliteScriptDao.getContext().getFilesDir().getAbsolutePath()+"/scripts/" + NewScriptDialog.getScript_name()+".jsonl")))){
                                 String str;
@@ -415,13 +398,13 @@ public class PumiceDemonstrationUtil {
                             catch (IOException exception){
                                 exception.printStackTrace();
                             }
-
-                            try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/"+NewScriptDialog.getScript_name()+".jsonl")))){
+                            try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(jsonScriptPath.toString() + "/" + NewScriptDialog.getScript_name() + ".jsonl")))){
                                 bw1.write(testScript);
                             }
                             catch (IOException exception){
                                 exception.printStackTrace();
                             }
+
 
                             sugiliteScriptDao.save(sugiliteData.getScriptHead());
                         }
@@ -602,10 +585,10 @@ public class PumiceDemonstrationUtil {
     private static void createWebSocketClient() {
         URI uri;
         try {
-            // Connect to local host
             String serverAddress = NewScriptDialog.getServerAddress();
             System.out.println("serverAddress is : "+serverAddress);
-            uri = new URI("ws://"+ serverAddress + ":8765");
+//            uri = new URI("ws://"+ serverAddress + ":8765");
+            uri = new URI(serverAddress);
         }
         catch (URISyntaxException e) {
             e.printStackTrace();
@@ -697,6 +680,56 @@ public class PumiceDemonstrationUtil {
         }
         return relevantPaths;
     }
+
+    public static void createTarGzipFolder(Path source) throws IOException {
+
+
+        String tarFileName = source.toFile()+".tar.gz";
+
+        try (OutputStream fOut = Files.newOutputStream(Paths.get(tarFileName));
+             BufferedOutputStream buffOut = new BufferedOutputStream(fOut);
+             GzipCompressorOutputStream gzOut = new GzipCompressorOutputStream(buffOut);
+             TarArchiveOutputStream tOut = new TarArchiveOutputStream(gzOut)) {
+
+            Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
+
+
+                public FileVisitResult visitFile(Path file,
+                                                 BasicFileAttributes attributes) {
+
+                    if (attributes.isSymbolicLink()) {
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                    Path targetFile = source.getParent().relativize(file);
+
+                    try {
+                        TarArchiveEntry tarEntry = new TarArchiveEntry(
+                                file.toFile(), targetFile.toString());
+
+                        tOut.putArchiveEntry(tarEntry);
+
+                        Files.copy(file, tOut);
+
+                        tOut.closeArchiveEntry();
+
+                    } catch (IOException e) {
+
+                    }
+
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+            tOut.finish();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+
 
 
 }

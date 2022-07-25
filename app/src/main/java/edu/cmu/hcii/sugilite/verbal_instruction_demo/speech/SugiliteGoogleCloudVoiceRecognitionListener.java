@@ -133,8 +133,8 @@ public class SugiliteGoogleCloudVoiceRecognitionListener implements SugiliteVoic
             //good to go!
         } else {
             if (context instanceof Activity) {
-                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.RECORD_AUDIO},
-                        REQUEST_RECORD_AUDIO_PERMISSION);
+//                ActivityCompat.requestPermissions((Activity) context, new String[]{Manifest.permission.RECORD_AUDIO},
+//                        REQUEST_RECORD_AUDIO_PERMISSION);
             } else {
 //                PumiceDemonstrationUtil.showSugiliteToast("Need to enable the audio recording permission!", Toast.LENGTH_SHORT);
 

@@ -7,6 +7,7 @@
     android:accessibilityFeedbackType="feedbackAllMask"
     android:notificationTimeout="0"
     android:canRetrieveWindowContent="true"
+    android:canRequestFilterKeyEvents="true"
     android:canPerformGestures="true"
     android:settingsActivity="edu.cmu.hcii.sugilite.SettingsActivity"
     />

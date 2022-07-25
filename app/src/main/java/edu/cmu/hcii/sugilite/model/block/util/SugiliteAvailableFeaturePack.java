@@ -105,11 +105,11 @@ public class SugiliteAvailableFeaturePack implements Serializable{
     }
 
     public SugiliteAvailableFeaturePack(SugiliteAvailableFeaturePack featurePack){
-        this.packageName = new String(featurePack.packageName);
-        this.className = new String(featurePack.className);
-        this.text = new String(featurePack.text);
-        this.contentDescription = new String(featurePack.contentDescription);
-        this.viewId = new String(featurePack.viewId);
+//        this.packageName = new String(featurePack.packageName);
+//        this.className = new String(featurePack.className);
+//        this.text = new String(featurePack.text);
+//        this.contentDescription = new String(featurePack.contentDescription);
+//        this.viewId = new String(featurePack.viewId);
         this.boundsInParent = new String(featurePack.boundsInParent);
         this.boundsInScreen = new String(featurePack.boundsInScreen);
         this.isEditable = featurePack.isEditable;
@@ -118,6 +118,36 @@ public class SugiliteAvailableFeaturePack implements Serializable{
         this.screenshot = featurePack.screenshot;
         this.serializableUISnapshot = featurePack.serializableUISnapshot;
         this.targetNodeEntity = featurePack.targetNodeEntity;
+        Node node = targetNodeEntity.getEntityValue();
+        if(node.getPackageName() != null) {
+            this.packageName = new String(node.getPackageName());
+        }
+        if(node.getClassName() != null) {
+            this.className = new String(node.getClassName());
+        }
+        if(node.getText() != null) {
+            this.text = new String(node.getText());
+        }
+        if(node.getContentDescription() != null) {
+            this.contentDescription = new String(node.getContentDescription());
+        }
+        if(node.getViewId() != null) {
+            this.viewId = new String(node.getViewId());
+        }
+
+        List<Node> nodesList=getParentalNode(node);
+        String xpath="/hierarchy";
+        Collections.reverse(nodesList);
+        for (Node simpleNode:nodesList){
+            int ownIndex=getNodeIndex(simpleNode);
+            if (ownIndex>0) {
+                xpath=xpath+"/"+simpleNode.getClassName() + "[" + ownIndex +"]";
+            }
+            else{
+                xpath=xpath+"/"+simpleNode.getClassName();
+            }
+        }
+        this.xPath=xpath;
 
 
         if(Const.KEEP_ALL_NODES_IN_THE_FEATURE_PACK) {
@@ -146,6 +176,8 @@ public class SugiliteAvailableFeaturePack implements Serializable{
             this.alternativeChildTextList = new HashSet<>();
             this.alternativeTextList = new HashSet<>();
         }
+
+
     }
     public String packageName, className, text, contentDescription, viewId, boundsInParent, boundsInScreen, xPath;
     public boolean isEditable;
@@ -242,4 +274,21 @@ public class SugiliteAvailableFeaturePack implements Serializable{
         }
         return nodesList;
     }
+
+    public void setXPathBasedOnNode(Node node){
+        List<Node> nodesList=getParentalNode(node);
+        String xpath="/hierarchy";
+        Collections.reverse(nodesList);
+        for (Node simpleNode:nodesList){
+            int ownIndex=getNodeIndex(simpleNode);
+            if (ownIndex>0) {
+                xpath=xpath+"/"+simpleNode.getClassName() + "[" + ownIndex +"]";
+            }
+            else{
+                xpath=xpath+"/"+simpleNode.getClassName();
+            }
+        }
+        this.xPath=xpath;
+    }
+
 }

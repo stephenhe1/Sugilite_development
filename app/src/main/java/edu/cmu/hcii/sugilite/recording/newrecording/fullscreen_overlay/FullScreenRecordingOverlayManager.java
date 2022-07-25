@@ -796,7 +796,9 @@ public class FullScreenRecordingOverlayManager {
         }
     }
 
-
+    public SugiliteAccessibilityService getSugiliteAccessibilityService(){
+        return sugiliteAccessibilityService;
+    }
 
 
 }

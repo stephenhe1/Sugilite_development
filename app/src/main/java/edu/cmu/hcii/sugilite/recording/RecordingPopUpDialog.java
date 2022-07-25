@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.graphics.Rect;
+import android.os.Environment;
 import android.text.Editable;
 import android.text.Html;
 import android.text.Spanned;
@@ -31,6 +32,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
@@ -46,6 +50,7 @@ import java.util.TimeZone;
 import edu.cmu.hcii.sugilite.Const;
 import edu.cmu.hcii.sugilite.R;
 import edu.cmu.hcii.sugilite.SugiliteData;
+import edu.cmu.hcii.sugilite.accessibility_service.SugiliteAccessibilityService;
 import edu.cmu.hcii.sugilite.communication.SugiliteBlockJSONProcessor;
 import edu.cmu.hcii.sugilite.dao.SugiliteScriptDao;
 import edu.cmu.hcii.sugilite.dao.SugiliteScriptFileDao;
@@ -71,9 +76,11 @@ import edu.cmu.hcii.sugilite.model.variable.VariableHelper;
 import edu.cmu.hcii.sugilite.model.variable.VariableValue;
 import edu.cmu.hcii.sugilite.ontology.*;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
+import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.SugiliteRecordingConfirmationDialog;
 import edu.cmu.hcii.sugilite.sovite.SoviteAppNameAppInfoManager;
 import edu.cmu.hcii.sugilite.ui.dialog.AbstractSugiliteDialog;
 import edu.cmu.hcii.sugilite.ui.dialog.ChooseVariableDialog;
+import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
 
 import static edu.cmu.hcii.sugilite.Const.OVERLAY_TYPE;
 import static edu.cmu.hcii.sugilite.Const.SQL_SCRIPT_DAO;
@@ -426,6 +433,21 @@ public class RecordingPopUpDialog implements AbstractSugiliteDialog {
                     }
                 }
                 saveBlock(operationBlock, dialogRootView.getContext());
+                featurePack.setXPathBasedOnNode(featurePack.targetNodeEntity.getEntityValue());
+                featurePack.text = operationBlock.getPlainDescription().split(" ")[3];
+                RecordingUtils.sendNodeInfo(operationBlock.getFeaturePack(), "type");
+                RecordingUtils.writeTestScript(context, NewScriptDialog.getScript_name(), operationBlock.getFeaturePack(), "type");
+                Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
+                if (! Files.exists(outputPath)){
+                    outputPath.toFile().mkdirs();
+                }
+                screenshotManager.setDirectoryPath(outputPath.toString() + "/");
+                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_"+ SugiliteRecordingConfirmationDialog.getStep() + ".png", 70);
+
+                SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
+                sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_"+SugiliteRecordingConfirmationDialog.getStep()+".xml");
+                SugiliteRecordingConfirmationDialog.setStep(SugiliteRecordingConfirmationDialog.getStep() + 1);
+
                 /*
                 //fill in the text box if the operation is of SET_TEXT type
                 if (operationBlock.getOperation().getOperationType() == SugiliteOperation.SET_TEXT && triggerMode == TRIGGERED_BY_NEW_EVENT) {

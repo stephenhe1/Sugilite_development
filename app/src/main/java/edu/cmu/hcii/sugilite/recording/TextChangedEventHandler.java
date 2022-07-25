@@ -2,14 +2,21 @@ package edu.cmu.hcii.sugilite.recording;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
 
 import edu.cmu.hcii.sugilite.SugiliteData;
+import edu.cmu.hcii.sugilite.accessibility_service.SugiliteAccessibilityService;
 import edu.cmu.hcii.sugilite.model.block.util.SugiliteAvailableFeaturePack;
+import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.SugiliteRecordingConfirmationDialog;
+import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
 
 /**
  * @author toby
@@ -66,7 +73,17 @@ public class TextChangedEventHandler {
             }
             aggregatedFeaturePack = featurePack;
             if (aggregatedFeaturePack.screenshot == null) {
-                aggregatedFeaturePack.screenshot = screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, screenshotManager.getFileNameFromDate(), 0);
+//                Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
+//                if (! Files.exists(outputPath)){
+//                    outputPath.toFile().mkdirs();
+//                }
+//                screenshotManager.setDirectoryPath(outputPath.toString() + "/");
+//                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_"+ SugiliteRecordingConfirmationDialog.getStep() + ".png");
+//                SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
+//                sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_"+SugiliteRecordingConfirmationDialog.getStep()+".xml");
+//                SugiliteRecordingConfirmationDialog.setStep(SugiliteRecordingConfirmationDialog.getStep() + 1);
+//                screenshotManager.setDirectoryPath(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/"+ NewScriptDialog.getPackageName() + "/RECORDER/");
+//                aggregatedFeaturePack.screenshot = screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, screenshotManager.getFileNameFromDate(), 0);
             }
             lastAvailableAlternatives = availableAlternatives;
         }
@@ -87,7 +104,17 @@ public class TextChangedEventHandler {
             }
             aggregatedFeaturePack = featurePack;
             if (aggregatedFeaturePack.screenshot == null) {
-                aggregatedFeaturePack.screenshot = screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, screenshotManager.getFileNameFromDate(), 0);
+//                Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
+//                if (! Files.exists(outputPath)){
+//                    outputPath.toFile().mkdirs();
+//                }
+//                screenshotManager.setDirectoryPath(outputPath.toString() + "/");
+//                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_"+ SugiliteRecordingConfirmationDialog.getStep() + ".png");
+//                SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
+//                sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_"+SugiliteRecordingConfirmationDialog.getStep()+".xml");
+//                SugiliteRecordingConfirmationDialog.setStep(SugiliteRecordingConfirmationDialog.getStep() + 1);
+//                screenshotManager.setDirectoryPath(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/"+NewScriptDialog.getPackageName() + "/RECORDER/");
+//                aggregatedFeaturePack.screenshot = screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, screenshotManager.getFileNameFromDate(), 0);
             }
             lastAvailableAlternatives = availableAlternatives;
         }

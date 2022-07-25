@@ -73,7 +73,7 @@ public class SugiliteScreenshotManager {
 
 
     public static final int REQUEST_MEDIA_PROJECTION = 1;
-    public static final String DIRECTORY_PATH = Environment.getExternalStorageDirectory().getPath()+"/edu.cmu.hcii.sugilite/ScreenShot/";
+    public static String DIRECTORY_PATH = "";
 
 
     public static SugiliteScreenshotManager getInstance(SharedPreferences sharedPreferences, SugiliteData sugiliteData){
@@ -112,6 +112,7 @@ public class SugiliteScreenshotManager {
     public File takeScreenshot(String directoryPath, String fileName) {
         return takeScreenshot(directoryPath, fileName, 100);
     }
+
     public File takeScreenshot(String directoryPath, String fileName, long delay) {
         if (! Files.exists(Paths.get(directoryPath))){
             File file = Paths.get(directoryPath).toFile();
@@ -152,7 +153,6 @@ public class SugiliteScreenshotManager {
             return null;
         }
     }
-
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void startVirtualDisplay(){
@@ -303,6 +303,12 @@ public class SugiliteScreenshotManager {
         String fileName = "sugilite_debug_screenshot_" + dateFormat.format(date) + ".png";
         return fileName;
     }
+
+    public void setDirectoryPath(String directoryPath){
+        DIRECTORY_PATH = directoryPath;
+    }
+
+
 
 
 }

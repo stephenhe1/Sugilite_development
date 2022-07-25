@@ -9,11 +9,17 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Path;
+import android.graphics.Point;
 import android.graphics.Rect;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.text.Spanned;
 import android.util.Log;
+import android.util.Xml;
+import android.view.Display;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
@@ -25,6 +31,7 @@ import android.widget.Toast;
 import com.google.gson.*;
 
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -35,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import edu.cmu.hcii.sugilite.Const;
 import edu.cmu.hcii.sugilite.SugiliteData;
@@ -55,10 +63,12 @@ import edu.cmu.hcii.sugilite.model.block.SugiliteBlock;
 import edu.cmu.hcii.sugilite.model.block.SugiliteOperationBlock;
 import edu.cmu.hcii.sugilite.model.trigger.SugiliteTriggerHandler;
 import edu.cmu.hcii.sugilite.recording.TextChangedEventHandler;
+import edu.cmu.hcii.sugilite.recording.newrecording.BackButtonConfirmationDialog;
 import edu.cmu.hcii.sugilite.recording.newrecording.NewDemonstrationHandler;
 import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.FullScreenRecordingOverlayManager;
 import edu.cmu.hcii.sugilite.tracking.SugiliteTrackingHandler;
 import edu.cmu.hcii.sugilite.ui.StatusIconManager;
+import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.VerbalInstructionIconManager;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.study.SugiliteStudyHandler;
 
@@ -71,6 +81,8 @@ import static edu.cmu.hcii.sugilite.accessibility_service.SugiliteAccessibilityS
 import static edu.cmu.hcii.sugilite.accessibility_service.SugiliteAccessibilityServiceUtil.getAllNodesWithText;
 import static edu.cmu.hcii.sugilite.accessibility_service.SugiliteAccessibilityServiceUtil.getAlternativeLabels;
 import static edu.cmu.hcii.sugilite.accessibility_service.SugiliteAccessibilityServiceUtil.getAvailableAlternativeNodes;
+
+import org.xmlpull.v1.XmlSerializer;
 
 /**
  * the background service for Sugilite
@@ -99,9 +111,14 @@ public class SugiliteAccessibilityService extends AccessibilityService {
     private NewDemonstrationHandler newDemonstrationHandler;
     private SugiliteTextParentAnnotator sugiliteTextParentAnnotator;
     private FullScreenRecordingOverlayManager recordingOverlayManager;
+    private BackButtonConfirmationDialog backButtonConfirmationDialog;
 
     //this thread is for executing automation
     private static final int AUTOMATOR_THREAD_EXECUTOR_THREAD_COUNT = 3;
+    private static final String[] NAF_EXCLUDED_CLASSES = new String[] {
+            android.widget.GridView.class.getName(), android.widget.GridLayout.class.getName(),
+            android.widget.ListView.class.getName(), android.widget.TableLayout.class.getName()
+    };
     private ExecutorService automatorThreadExecutor = Executors.newFixedThreadPool(AUTOMATOR_THREAD_EXECUTOR_THREAD_COUNT);
 
     //this exectuor is for handling onAccessibilityEvent events
@@ -158,6 +175,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
 
         triggerHandler = new SugiliteTriggerHandler(context, sugiliteData, sharedPreferences);
         textChangedEventHandler = new TextChangedEventHandler(sugiliteData, context, sharedPreferences, new Handler());
+        backButtonConfirmationDialog = new BackButtonConfirmationDialog(context, screenshotManager);
 
 
         try {
@@ -291,6 +309,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
         if (!accessibilityEventSetToHandle.contains(eventType)) {
             return;
         }
+
 
         //update currentAppActivityName and currentPackageName on TYPE_WINDOW_STATE_CHANGED events
         if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
@@ -591,18 +610,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
 
                 }
             }
-            /*
-            else if(sugiliteStudyHandler.isToRecordNextOperation()){
-                executor.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        UISnapshot uiSnapshot = new UISnapshot(final_root, true, sugiliteTextAnnotator);
-                        SugiliteAvailableFeaturePack featurePack = generateFeaturePack(event, sourceNode, rootNodeForRecording, null, availableAlternativeNodes, preOrderTraverseSourceNodeForRecording, preOrderTracerseRootNodeForRecording, preOrderTraverseSibNodeForRecording);
-                        sugiliteStudyHandler.handleEventInOldAccessiblityRecording(featurePack, uiSnapshot);
-                    }
-                });
-            }
-            */
+
 
         }
 
@@ -762,7 +770,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
             if (windows.size() > 0) {
                 Set<String> rootNodePackageNames = new HashSet<>();
                 for (AccessibilityWindowInfo window : windows) {
-                    if (window.getRoot() != null && window.getRoot().getPackageName() != null) {
+                    if (window.getRoot() != null && null != window.getRoot().getPackageName()) {
                         AccessibilityNodeInfo rootViewNode = window.getRoot();
                         rootNodePackageNames.add(rootViewNode.getPackageName().toString());
                         if (PumiceDemonstrationUtil.isInputMethodPackageName(rootViewNode.getPackageName().toString())) {
@@ -913,14 +921,6 @@ public class SugiliteAccessibilityService extends AccessibilityService {
     }
 
     public boolean performTap(int x, int y, int startTime, int duration) {
-//        new Handler(Looper.getMainLooper()).post(new Runnable() {
-//            @Override
-//            public void run() {
-//                verbalInstructionIconManager.turnOffCatOverlay();
-//            }
-//        });
-//        return true;
-
 
         if (x < 0 || y < 0)
             return false;
@@ -956,18 +956,6 @@ public class SugiliteAccessibilityService extends AccessibilityService {
                 verbalInstructionIconManager.turnOnCatOverlay();
             }
         },2000);
-//        try {
-//            Thread.sleep(3500);
-////            Handler handler = new Handler(Looper.getMainLooper());
-////            handler.post(new Runnable(){
-////                @Override
-////                public void run() {
-////                    verbalInstructionIconManager.turnOnCatOverlay();
-////                }
-////            });
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
 
 
         return true;
@@ -976,6 +964,211 @@ public class SugiliteAccessibilityService extends AccessibilityService {
     public VerbalInstructionIconManager getVeralManager(){
         return verbalInstructionIconManager;
     }
+
+    public void dumpNodeRec(XmlSerializer serializer, int index) throws IOException {
+        AccessibilityNodeInfo root = this.getRootInActiveWindow();
+        WindowManager windowManager = (WindowManager) this.getApplication().getSystemService(Context.WINDOW_SERVICE);
+        final Display display = windowManager.getDefaultDisplay();
+        Point outPoint = new Point();
+        display.getRealSize(outPoint);
+        int mRealSizeHeight, mRealSizeWidth;
+        if (outPoint.y > outPoint.x) {
+            mRealSizeHeight = outPoint.y;
+            mRealSizeWidth = outPoint.x;
+        } else {
+            mRealSizeHeight = outPoint.x;
+            mRealSizeWidth = outPoint.y;
+        }
+        dumpNodeRec(root, serializer, index, mRealSizeWidth, mRealSizeHeight);
+
+    }
+
+    private  static Rect getVisibleBoundsInScreen(AccessibilityNodeInfo node, int width, int height) {
+        if (node == null) {
+            return null;
+        }
+        // targeted node's bounds
+        Rect nodeRect = new Rect();
+        node.getBoundsInScreen(nodeRect);
+        Rect displayRect = new Rect();
+        displayRect.top = 0;
+        displayRect.left = 0;
+        displayRect.right = width;
+        displayRect.bottom = height;
+        nodeRect.intersect(displayRect);
+        return nodeRect;
+    }
+
+    private void dumpNodeRec(AccessibilityNodeInfo node, XmlSerializer serializer, int index,
+                             int width, int height) throws IOException {
+        boolean supportsWebAction =
+                node.getActionList().contains(AccessibilityNodeInfo.AccessibilityAction.ACTION_NEXT_HTML_ELEMENT) ||
+                        node.getActionList().contains(AccessibilityNodeInfo.AccessibilityAction.ACTION_PREVIOUS_HTML_ELEMENT);
+        boolean hasClickableSpan = (node.getText()!= null && node.getText() instanceof Spanned);
+        serializer.startTag("", "node");
+        if (!nafExcludedClass(node) && !nafCheck(node))
+            serializer.attribute("", "NAF", Boolean.toString(true));
+        List<String> actions = node.getActionList().stream().map((s) -> Integer.toString(s.getId())).collect(Collectors.toList());
+//        List<String> actions = node.getActionList().stream().map((s) -> s.toString()).collect(Collectors.toList());
+        // Extra Attributes
+        serializer.attribute("", "importantForAccessibility", Boolean.toString(node.isImportantForAccessibility()));
+        serializer.attribute("", "supportsWebAction", Boolean.toString(supportsWebAction));
+        serializer.attribute("", "actionList", String.join("-", actions));
+        serializer.attribute("", "clickableSpan", Boolean.toString(hasClickableSpan));
+        serializer.attribute("", "drawingOrder", Integer.toString(node.getDrawingOrder()));
+        serializer.attribute("", "visible", Boolean.toString(node.isVisibleToUser()));
+        serializer.attribute("", "invalid", Boolean.toString(node.isContentInvalid()));
+        serializer.attribute("", "contextClickable", Boolean.toString(node.isContextClickable()));
+        // Regular Attributes
+        serializer.attribute("", "index", Integer.toString(index));
+        serializer.attribute("", "text", safeCharSeqToString(node.getText()));
+        serializer.attribute("", "resource-id", safeCharSeqToString(node.getViewIdResourceName()));
+        serializer.attribute("", "class", safeCharSeqToString(node.getClassName()));
+        serializer.attribute("", "package", safeCharSeqToString(node.getPackageName()));
+        serializer.attribute("", "content-desc", safeCharSeqToString(node.getContentDescription()));
+        serializer.attribute("", "checkable", Boolean.toString(node.isCheckable()));
+        serializer.attribute("", "checked", Boolean.toString(node.isChecked()));
+        serializer.attribute("", "clickable", Boolean.toString(node.isClickable()));
+        serializer.attribute("", "enabled", Boolean.toString(node.isEnabled()));
+        serializer.attribute("", "focusable", Boolean.toString(node.isFocusable()));
+        serializer.attribute("", "focused", Boolean.toString(node.isFocused()));
+        serializer.attribute("", "scrollable", Boolean.toString(node.isScrollable()));
+        serializer.attribute("", "long-clickable", Boolean.toString(node.isLongClickable()));
+        serializer.attribute("", "password", Boolean.toString(node.isPassword()));
+        serializer.attribute("", "selected", Boolean.toString(node.isSelected()));
+        serializer.attribute("", "bounds", getVisibleBoundsInScreen(node, width, height).toShortString());
+        int count = node.getChildCount();
+        for (int i = 0; i < count; i++) {
+            AccessibilityNodeInfo child = node.getChild(i);
+            if (child != null) {
+                    dumpNodeRec(child, serializer, i, width, height);
+                    child.recycle();
+            }
+        }
+        serializer.endTag("", "node");
+    }
+
+    private boolean nafExcludedClass(AccessibilityNodeInfo node) {
+        String className = safeCharSeqToString(node.getClassName());
+        for(String excludedClassName : NAF_EXCLUDED_CLASSES) {
+            if(className.endsWith(excludedClassName))
+                return true;
+        }
+        return false;
+    }
+
+    private boolean nafCheck(AccessibilityNodeInfo node) {
+        boolean isNaf = node.isClickable() && node.isEnabled()
+                && safeCharSeqToString(node.getContentDescription()).isEmpty()
+                && safeCharSeqToString(node.getText()).isEmpty();
+        if (!isNaf)
+            return true;
+        return childNafCheck(node);
+    }
+
+    private static boolean childNafCheck(AccessibilityNodeInfo node) {
+        int childCount = node.getChildCount();
+        for (int x = 0; x < childCount; x++) {
+            AccessibilityNodeInfo childNode = node.getChild(x);
+            if (childNode == null) {
+                continue;
+            }
+            if (!safeCharSeqToString(childNode.getContentDescription()).isEmpty()
+                    || !safeCharSeqToString(childNode.getText()).isEmpty())
+                return true;
+            if (childNafCheck(childNode))
+                return true;
+        }
+        return false;
+    }
+
+
+    private static String stripInvalidXMLChars(CharSequence cs) {
+        StringBuffer ret = new StringBuffer();
+        char ch;
+        for (int i = 0; i < cs.length(); i++) {
+            ch = cs.charAt(i);
+
+            if((ch >= 0x1 && ch <= 0x8) || (ch >= 0xB && ch <= 0xC) || (ch >= 0xE && ch <= 0x1F) ||
+                    (ch >= 0x7F && ch <= 0x84) || (ch >= 0x86 && ch <= 0x9f) ||
+                    (ch >= 0xFDD0 && ch <= 0xFDDF) || (ch >= 0x1FFFE && ch <= 0x1FFFF) ||
+                    (ch >= 0x2FFFE && ch <= 0x2FFFF) || (ch >= 0x3FFFE && ch <= 0x3FFFF) ||
+                    (ch >= 0x4FFFE && ch <= 0x4FFFF) || (ch >= 0x5FFFE && ch <= 0x5FFFF) ||
+                    (ch >= 0x6FFFE && ch <= 0x6FFFF) || (ch >= 0x7FFFE && ch <= 0x7FFFF) ||
+                    (ch >= 0x8FFFE && ch <= 0x8FFFF) || (ch >= 0x9FFFE && ch <= 0x9FFFF) ||
+                    (ch >= 0xAFFFE && ch <= 0xAFFFF) || (ch >= 0xBFFFE && ch <= 0xBFFFF) ||
+                    (ch >= 0xCFFFE && ch <= 0xCFFFF) || (ch >= 0xDFFFE && ch <= 0xDFFFF) ||
+                    (ch >= 0xEFFFE && ch <= 0xEFFFF) || (ch >= 0xFFFFE && ch <= 0xFFFFF) ||
+                    (ch >= 0x10FFFE && ch <= 0x10FFFF))
+                ret.append(".");
+            else
+                ret.append(ch);
+        }
+        return ret.toString();
+    }
+
+    private static String safeCharSeqToString(CharSequence cs) {
+        if (cs == null)
+            return "";
+        else {
+            return stripInvalidXMLChars(cs);
+        }
+    }
+
+    public void captureLayout(String dirName, String fileName){
+        try {
+            XmlSerializer serializer = Xml.newSerializer();
+            StringWriter stringWriter = new StringWriter();
+            serializer.setOutput(stringWriter);
+            serializer.startDocument("UTF-8", true);
+            serializer.startTag("", "hierarchy");
+            serializer.attribute("", "rotation", "0");
+            dumpNodeRec(serializer, 0);
+            serializer.endTag("", "hierarchy");
+            serializer.endDocument();
+            createFile(dirName, fileName, stringWriter.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void createFile(String dirName, String fileName, String message){
+        java.nio.file.Path outputPath = Paths.get(dirName, fileName);
+        File file = outputPath.toFile();
+        FileWriter myWriter = null;
+        try {
+            myWriter = new FileWriter(file);
+            myWriter.write(message);
+            myWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+//    protected boolean onKeyEvent(KeyEvent event) {
+//        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK || event.getKeyCode() == KeyEvent.KEYCODE_HOME) {
+//            backButtonConfirmationDialog.showDialog();
+////            int operationType = backButtonConfirmationDialog.getOperationType();
+////            System.out.println("operation type is: " + operationType);
+////            switch (operationType){
+////                case 0:
+////                    performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+////                    break;
+////                case 1:
+////                    performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+////                    break;
+////                case 2:
+////
+////                    break;
+////
+////            }
+//        }
+//        return true;
+//
+//    }
+
 }
 
 
