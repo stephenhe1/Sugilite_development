@@ -186,7 +186,7 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                             //delete the script
                             sugiliteScriptDao.delete(scriptName);
                             (new File(sugiliteScriptDao.getContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/"+NewScriptDialog.getPackageName() + "/" + "RECORDER/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
-                            Boolean success=(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
+//                            Boolean success=(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
                             sugiliteData.logUsageData(ScriptUsageLogManager.REMOVE_SCRIPT, scriptName);
 
                         }
@@ -687,7 +687,7 @@ public class LocalScriptDetailActivity extends ScriptDetailActivity implements S
                                 try {
                                     sugiliteScriptDao.delete(scriptName);
                                     (new File(sugiliteScriptDao.getContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/"+NewScriptDialog.getPackageName() + "/" + "RECORDER/" + LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
-                                    Boolean success=(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
+//                                    Boolean success=(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+ LocalScriptDetailActivity.getScript_name().split("\\.")[0]+".jsonl")).delete();
                                 }
                                 catch (Exception e){
                                     e.printStackTrace();

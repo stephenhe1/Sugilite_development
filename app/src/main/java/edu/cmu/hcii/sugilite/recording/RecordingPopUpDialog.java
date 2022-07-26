@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -433,28 +434,27 @@ public class RecordingPopUpDialog implements AbstractSugiliteDialog {
                     }
                 }
                 saveBlock(operationBlock, dialogRootView.getContext());
-                featurePack.setXPathBasedOnNode(featurePack.targetNodeEntity.getEntityValue());
-                featurePack.text = operationBlock.getPlainDescription().split(" ")[3];
-                RecordingUtils.sendNodeInfo(operationBlock.getFeaturePack(), "type");
-                RecordingUtils.writeTestScript(context, NewScriptDialog.getScript_name(), operationBlock.getFeaturePack(), "type");
+//                featurePack.setXPathBasedOnNode(featurePack.targetNodeEntity.getEntityValue());
+//                System.out.println("The XPATH of edit text is: " + featurePack.xPath);
+                featurePack.xPath = featurePack.targetNodeEntity.getEntityValue().getXpath();
+//                AccessibilityNodeInfo parentalNode = featurePack.targetNodeEntity.getEntityValue().getParentalNode();
+//                for (int i=0 ; i<parentalNode.getChildCount(); i++){
+//                    System.out.println("Class name is: " + parentalNode.getChild(i).getClassName());
+//                }
+//                System.out.println(featurePack.targetNodeEntity.getEntityValue().getXpath());
+                featurePack.text = operationBlock.getPlainDescription().split(" ")[3].replaceAll("^\"|\"$", "");
+                RecordingUtils.sendNodeInfo(operationBlock.getFeaturePack(), "type", true);
+                RecordingUtils.writeTestScript(context, "usecase", operationBlock.getFeaturePack(), "type",true);
                 Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
                 if (! Files.exists(outputPath)){
                     outputPath.toFile().mkdirs();
                 }
                 screenshotManager.setDirectoryPath(outputPath.toString() + "/");
-                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_"+ SugiliteRecordingConfirmationDialog.getStep() + ".png", 70);
+                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_"+ SugiliteRecordingConfirmationDialog.getStep() + ".png", 50);
 
                 SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
                 sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_"+SugiliteRecordingConfirmationDialog.getStep()+".xml");
                 SugiliteRecordingConfirmationDialog.setStep(SugiliteRecordingConfirmationDialog.getStep() + 1);
-
-                /*
-                //fill in the text box if the operation is of SET_TEXT type
-                if (operationBlock.getOperation().getOperationType() == SugiliteOperation.SET_TEXT && triggerMode == TRIGGERED_BY_NEW_EVENT) {
-                    //should NOT change the current state in SugiliteData here because this is only one step added to specifically handle text entry recording
-                    sugiliteData.addInstruction(operationBlock);
-                }
-                */
                 if (editCallback != null) {
                     System.out.println("calling callback");
                     editCallback.onClick(null, 0);

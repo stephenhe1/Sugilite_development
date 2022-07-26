@@ -1009,7 +1009,6 @@ public class SugiliteAccessibilityService extends AccessibilityService {
         if (!nafExcludedClass(node) && !nafCheck(node))
             serializer.attribute("", "NAF", Boolean.toString(true));
         List<String> actions = node.getActionList().stream().map((s) -> Integer.toString(s.getId())).collect(Collectors.toList());
-//        List<String> actions = node.getActionList().stream().map((s) -> s.toString()).collect(Collectors.toList());
         // Extra Attributes
         serializer.attribute("", "importantForAccessibility", Boolean.toString(node.isImportantForAccessibility()));
         serializer.attribute("", "supportsWebAction", Boolean.toString(supportsWebAction));
@@ -1146,6 +1145,9 @@ public class SugiliteAccessibilityService extends AccessibilityService {
         }
     }
 
+    public boolean performBackOperation(){
+        return this.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+    }
 
 //    protected boolean onKeyEvent(KeyEvent event) {
 //        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK || event.getKeyCode() == KeyEvent.KEYCODE_HOME) {

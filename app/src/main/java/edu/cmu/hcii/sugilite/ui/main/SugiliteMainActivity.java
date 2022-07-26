@@ -250,11 +250,11 @@ public class SugiliteMainActivity extends AppCompatActivity {
                             public void onClick(DialogInterface dialog, int which) {
                                 try {
                                     sugiliteScriptDao.clear();
-                                    File rootFile2=new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts");
-                                    for (File file : rootFile2.listFiles()){
-                                        if(file.getName().contains(".jsonl"))
-                                            file.delete();
-                                    }
+//                                    File rootFile2=new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts");
+//                                    for (File file : rootFile2.listFiles()){
+//                                        if(file.getName().contains(".jsonl"))
+//                                            file.delete();
+//                                    }
                                     File rootFile3=new File(String.valueOf(sugiliteScriptDao.getContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)));
                                     deleteAllFiles(rootFile3);
 //                                    for (File file : rootFile3.listFiles()){

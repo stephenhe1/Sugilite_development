@@ -5,6 +5,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 
 import java.io.File;
 import java.io.Serializable;
+import java.sql.SQLOutput;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -281,6 +282,10 @@ public class SugiliteAvailableFeaturePack implements Serializable{
         Collections.reverse(nodesList);
         for (Node simpleNode:nodesList){
             int ownIndex=getNodeIndex(simpleNode);
+            System.out.println("ownIndex is: "+ ownIndex);
+            if (null != simpleNode.getParentalNode()){
+                System.out.println("Child count of each node is: " + simpleNode.getParentalNode().getChildCount());
+            }
             if (ownIndex>0) {
                 xpath=xpath+"/"+simpleNode.getClassName() + "[" + ownIndex +"]";
             }
@@ -289,6 +294,38 @@ public class SugiliteAvailableFeaturePack implements Serializable{
             }
         }
         this.xPath=xpath;
+    }
+
+    public String getXpath(Node node) {
+        List<String> names = new ArrayList<>();
+        Node it = node;
+        names.add(0, String.valueOf(it.getClassName()));
+        while(it.getParentalNode()!= null){
+            int count = 0;
+            int length = 0;
+            String itClsName = String.valueOf(it.getClassName());
+            for(int i=0; i<it.getParentalNode().getChildCount(); i++) {
+                AccessibilityNodeInfo child = it.getParentalNode().getChild(i);
+                if (child == null)
+                    continue;
+                String childClsName = String.valueOf(child.getClassName());
+                System.out.println(childClsName);
+                if (!child.isVisibleToUser())
+                    continue;
+                if (itClsName.equals(childClsName))
+                    length++;
+                if (child.equals(it.getThisNode())) {
+                    count = length;
+                }
+
+            }
+            if(length > 1)
+                names.set(0, String.format("%s[%d]", names.get(0), count));
+            it = it.getParent();
+            names.add(0, String.valueOf(it.getClassName()));
+        }
+        String xpath = "/"+String.join("/", names);
+        return xpath;
     }
 
 }

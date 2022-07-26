@@ -1,6 +1,7 @@
 package edu.cmu.hcii.sugilite.recording;
 
 import android.content.Context;
+import android.os.Environment;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,10 +13,11 @@ import java.io.IOException;
 
 import edu.cmu.hcii.sugilite.model.block.util.SugiliteAvailableFeaturePack;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
+import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
 import tech.gusavila92.websocketclient.WebSocketClient;
 
 public class RecordingUtils {
-    public static void sendNodeInfo(SugiliteAvailableFeaturePack sugiliteAvailableFeaturePack, String action){
+    public static void sendNodeInfo(SugiliteAvailableFeaturePack sugiliteAvailableFeaturePack, String action, boolean isTypeCommand){
         //Get the websocket instance
         WebSocketClient webSocketClient= PumiceDemonstrationUtil.getWebSocketClientInst();
         JSONObject targetObject;
@@ -25,6 +27,7 @@ public class RecordingUtils {
             try {
                 command.put("action", action);
                 command.put("target", targetObject);
+                if (isTypeCommand) command.put("text", targetObject.get("text"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -40,10 +43,11 @@ public class RecordingUtils {
 
     }
 
-    public static void writeTestScript(Context context, String fileName, SugiliteAvailableFeaturePack sugiliteAvailableFeaturePack, String action){
+
+    public static void writeTestScript(Context context, String fileName, SugiliteAvailableFeaturePack sugiliteAvailableFeaturePack, String action, boolean isTypeCommand){
         BufferedWriter bw = null;
         try {
-            bw = new BufferedWriter(new FileWriter(new File(context.getFilesDir().getPath()+"/scripts/" + fileName+".jsonl"),true));
+            bw = new BufferedWriter(new FileWriter(new File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/"+ NewScriptDialog.getPackageName() + "/RECORDER/" + fileName+".jsonl"),true));
             JSONObject targetObject;
             if(null != sugiliteAvailableFeaturePack) {
                 targetObject = transferFeatureIntoJSON(sugiliteAvailableFeaturePack);
@@ -51,6 +55,7 @@ public class RecordingUtils {
                 try {
                     command.put("action", action);
                     command.put("target", targetObject);
+                    if (isTypeCommand) command.put("text", targetObject.get("text"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

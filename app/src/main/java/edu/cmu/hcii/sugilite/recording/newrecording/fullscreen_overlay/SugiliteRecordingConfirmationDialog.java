@@ -195,8 +195,8 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
                 screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_"+step + ".png");
                 SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
                 sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_"+step+".xml");
-                RecordingUtils.sendNodeInfo(featurePack, "click");
-                RecordingUtils.writeTestScript(context,NewScriptDialog.getScript_name(),featurePack, "click");
+                RecordingUtils.sendNodeInfo(featurePack, "click",false);
+                RecordingUtils.writeTestScript(context,"usecase",featurePack, "click", false);
                 blockBuildingHelper.saveBlock(block, featurePack);
             } catch (Exception e) {
                 e.printStackTrace();

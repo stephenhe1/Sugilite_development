@@ -1,5 +1,6 @@
 package edu.cmu.hcii.sugilite.ui;
 
+import android.accessibilityservice.AccessibilityService;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -50,6 +51,7 @@ import java.util.Random;
 import edu.cmu.hcii.sugilite.Const;
 import edu.cmu.hcii.sugilite.R;
 import edu.cmu.hcii.sugilite.SugiliteData;
+import edu.cmu.hcii.sugilite.accessibility_service.SugiliteAccessibilityService;
 import edu.cmu.hcii.sugilite.automation.AutomatorUtil;
 import edu.cmu.hcii.sugilite.automation.ServiceStatusManager;
 import edu.cmu.hcii.sugilite.communication.SugiliteBlockJSONProcessor;
@@ -433,8 +435,8 @@ public class StatusIconManager {
 
                     List<String> operationList = new ArrayList<>();
                     if(sugiliteData.getCurrentSystemState() == SugiliteData.PAUSED_FOR_BREAKPOINT_STATE){
-                        operationList.add("Resume Next Step");
-                        operationList.add("Quit Debugging");
+//                        operationList.add("Resume Next Step");
+//                        operationList.add("Quit Debugging");
                     }
                     if(sugiliteData.getCurrentSystemState() == SugiliteData.PAUSED_FOR_DUCK_MENU_IN_REGULAR_EXECUTION_STATE
                             || sugiliteData.getCurrentSystemState() == SugiliteData.PAUSED_FOR_DUCK_MENU_IN_DEBUG_MODE) {
@@ -451,15 +453,10 @@ public class StatusIconManager {
                     }
                     else{
                         if(recordingInProcess){
-//                            operationList.add("View Current Recording");
-//                            operationList.add("Add GO_HOME Operation Block");
-//                            operationList.add("Add Running a Subscript");
-//                            if(Const.KEEP_ALL_TEXT_LABEL_LIST)
-//                                operationList.add("Get a Text Element on the Screen");
-//                            operationList.add("Add a Delay");
                             operationList.add("End Recording");
                             operationList.add("Turn On Overlay");
                             operationList.add("Turn Off Overlay");
+                            operationList.add("Record Back Button Interaction");
                         }
                         else{
 //                            operationList.add("View Last Recording");
@@ -494,19 +491,6 @@ public class StatusIconManager {
                                     if(runningInProgress)
                                         sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
                                     break;
-                                //bring the user to the script list activity
-//                                case "View Last Recording":
-//                                case "View Current Recording":
-//                                    Intent intent = new Intent(context, LocalScriptDetailActivity.class);
-//                                    if(startingBlock != null && startingBlock.getScriptName() != null) {
-//                                        intent.putExtra("scriptName", startingBlock.getScriptName());
-//                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                                        context.startActivity(intent);
-//                                    }
-//                                    PumiceDemonstrationUtil.showSugiliteToast("view current script", Toast.LENGTH_SHORT);
-//                                    if(runningInProgress)
-//                                        sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
-//                                    break;
                                 case "End Recording":
                                     //end recording
                                     PumiceDemonstrationUtil.endRecording(context, sugiliteData, sharedPreferences, sugiliteScriptDao);
@@ -521,6 +505,11 @@ public class StatusIconManager {
                                     break;
                                 case "Turn Off Overlay":
                                     verbalInstructionIconManager.turnOffCatOverlay();
+                                    break;
+                                case "Record Back Button Interaction":
+                                    SugiliteAccessibilityService service = (SugiliteAccessibilityService) context;
+                                    boolean result = service.performBackOperation();
+                                    System.out.println("Result is: " + result);
                                     break;
 
 
