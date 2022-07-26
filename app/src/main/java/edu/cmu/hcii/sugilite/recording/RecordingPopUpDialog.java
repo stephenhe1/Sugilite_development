@@ -434,14 +434,6 @@ public class RecordingPopUpDialog implements AbstractSugiliteDialog {
                     }
                 }
                 saveBlock(operationBlock, dialogRootView.getContext());
-//                featurePack.setXPathBasedOnNode(featurePack.targetNodeEntity.getEntityValue());
-//                System.out.println("The XPATH of edit text is: " + featurePack.xPath);
-                featurePack.xPath = featurePack.targetNodeEntity.getEntityValue().getXpath();
-//                AccessibilityNodeInfo parentalNode = featurePack.targetNodeEntity.getEntityValue().getParentalNode();
-//                for (int i=0 ; i<parentalNode.getChildCount(); i++){
-//                    System.out.println("Class name is: " + parentalNode.getChild(i).getClassName());
-//                }
-//                System.out.println(featurePack.targetNodeEntity.getEntityValue().getXpath());
                 featurePack.text = operationBlock.getPlainDescription().split(" ")[3].replaceAll("^\"|\"$", "");
                 RecordingUtils.sendNodeInfo(operationBlock.getFeaturePack(), "type", true);
                 RecordingUtils.writeTestScript(context, "usecase", operationBlock.getFeaturePack(), "type",true);
@@ -450,10 +442,14 @@ public class RecordingPopUpDialog implements AbstractSugiliteDialog {
                     outputPath.toFile().mkdirs();
                 }
                 screenshotManager.setDirectoryPath(outputPath.toString() + "/");
-                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_"+ SugiliteRecordingConfirmationDialog.getStep() + ".png", 50);
-
-                SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
-                sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_"+SugiliteRecordingConfirmationDialog.getStep()+".xml");
+                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".png", 50);
+                try {
+                    SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
+                    sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".xml");
+                }
+                catch (NullPointerException e){
+                    e.printStackTrace();
+                }
                 SugiliteRecordingConfirmationDialog.setStep(SugiliteRecordingConfirmationDialog.getStep() + 1);
                 if (editCallback != null) {
                     System.out.println("calling callback");

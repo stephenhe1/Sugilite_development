@@ -342,8 +342,13 @@ public class PumiceDemonstrationUtil {
                                 String outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)),NewScriptDialog.getPackageName(),"RECORDER").toString();
                                 sugiliteScreenshotManager.setDirectoryPath(outputPath + "/");
                                 sugiliteData.getScriptHead().screenshotOnEnd = sugiliteScreenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_END.png");
-                                SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
-                                sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_END.xml");
+                                try {
+                                    SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
+                                    sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_END.xml");
+                                }
+                                catch (NullPointerException e){
+                                    e.printStackTrace();
+                                }
                                 try {
                                     endRecordSM.put("action","ENDRECORD");
                                 } catch (JSONException e) {
@@ -389,23 +394,6 @@ public class PumiceDemonstrationUtil {
                             if (!Files.exists(jsonScriptPath)){
                                 jsonScriptPath.toFile().mkdirs();
                             }
-//                            String testScript="";
-//                            try(BufferedReader in = new BufferedReader(new FileReader(new File(sugiliteScriptDao.getContext().getFilesDir().getAbsolutePath()+"/scripts/" + NewScriptDialog.getScript_name()+".jsonl")))){
-//                                String str;
-//                                while ((str=in.readLine()) != null) {
-//                                    testScript = testScript + str + "\n";
-//                                }
-//                            }
-//                            catch (IOException exception){
-//                                exception.printStackTrace();
-//                            }
-//                            try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(jsonScriptPath.toString() + "/" + NewScriptDialog.getScript_name() + ".jsonl")))){
-//                                bw1.write(testScript);
-//                            }
-//                            catch (IOException exception){
-//                                exception.printStackTrace();
-//                            }
-
 
                             sugiliteScriptDao.save(sugiliteData.getScriptHead());
                         }

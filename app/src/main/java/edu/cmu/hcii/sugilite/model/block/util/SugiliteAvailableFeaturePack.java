@@ -1,5 +1,6 @@
 package edu.cmu.hcii.sugilite.model.block.util;
 
+import android.graphics.Rect;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -58,7 +59,7 @@ public class SugiliteAvailableFeaturePack implements Serializable{
         if(node.getBoundsInScreen() != null) {
             this.boundsInScreen = new String(node.getBoundsInScreen());
         }
-        //Add Xpath;
+
         List<Node> nodesList=getParentalNode(node);
         String xpath="/hierarchy";
         Collections.reverse(nodesList);
@@ -72,6 +73,7 @@ public class SugiliteAvailableFeaturePack implements Serializable{
             }
         }
         this.xPath=xpath;
+
 
 
 
@@ -103,14 +105,11 @@ public class SugiliteAvailableFeaturePack implements Serializable{
             }
         }
 
+//        this.xPath=getXpath(targetNodeEntity.getEntityValue());;
+
     }
 
     public SugiliteAvailableFeaturePack(SugiliteAvailableFeaturePack featurePack){
-//        this.packageName = new String(featurePack.packageName);
-//        this.className = new String(featurePack.className);
-//        this.text = new String(featurePack.text);
-//        this.contentDescription = new String(featurePack.contentDescription);
-//        this.viewId = new String(featurePack.viewId);
         this.boundsInParent = new String(featurePack.boundsInParent);
         this.boundsInScreen = new String(featurePack.boundsInScreen);
         this.isEditable = featurePack.isEditable;
@@ -135,6 +134,7 @@ public class SugiliteAvailableFeaturePack implements Serializable{
         if(node.getViewId() != null) {
             this.viewId = new String(node.getViewId());
         }
+//        this.xPath=getXpath(targetNodeEntity.getEntityValue());
 
         List<Node> nodesList=getParentalNode(node);
         String xpath="/hierarchy";
@@ -223,6 +223,7 @@ public class SugiliteAvailableFeaturePack implements Serializable{
                         if(null!=parent.getChild(i)){
                             try {
                                 if(parent.getChild(i).equals(nodeInfo.getThisNode())){
+//                                if(nodeInfo.isSameNode(parent.getChild(i))){
                                     length=count-invisibleNumber;
                                     if (hasMoreThanOneSibling(parent, nodeInfo.getClassName())){
                                         return length+1;
@@ -235,6 +236,7 @@ public class SugiliteAvailableFeaturePack implements Serializable{
                                     count++;
 
                                 }
+
                             }
                             catch (NullPointerException e){
                                 e.printStackTrace();
@@ -303,18 +305,19 @@ public class SugiliteAvailableFeaturePack implements Serializable{
         while(it.getParentalNode()!= null){
             int count = 0;
             int length = 0;
-            String itClsName = String.valueOf(it.getClassName());
+            String itClsName = it.getClassName().toString();
             for(int i=0; i<it.getParentalNode().getChildCount(); i++) {
                 AccessibilityNodeInfo child = it.getParentalNode().getChild(i);
                 if (child == null)
                     continue;
-                String childClsName = String.valueOf(child.getClassName());
-                System.out.println(childClsName);
-                if (!child.isVisibleToUser())
-                    continue;
-                if (itClsName.equals(childClsName))
+                String childClsName = child.getClassName().toString();
+//                if (!child.isVisibleToUser())
+//                    continue;
+                if (itClsName.equals(childClsName)) {
+
                     length++;
-                if (child.equals(it.getThisNode())) {
+                }
+                if (it.isSameNode(child)) {
                     count = length;
                 }
 
@@ -326,6 +329,24 @@ public class SugiliteAvailableFeaturePack implements Serializable{
         }
         String xpath = "/"+String.join("/", names);
         return xpath;
+    }
+
+    public boolean isSameNode(AccessibilityNodeInfo accessibilityNodeInfo){
+        try {
+            Rect boundsInScreen = new Rect();
+            accessibilityNodeInfo.getBoundsInScreen(boundsInScreen);
+            String boundsInScreenOther = boundsInScreen.flattenToString();
+            if (((this.packageName == null && (accessibilityNodeInfo).getPackageName() == null) || this.packageName.equals((accessibilityNodeInfo.getPackageName().toString()))) &&
+                    ((this.className == null && (accessibilityNodeInfo).getClassName() == null) || this.className.equals((accessibilityNodeInfo).getClassName().toString())) &&
+                    ((this.boundsInScreen == null && boundsInScreenOther == null) || this.boundsInScreen.equals(boundsInScreenOther)) &&
+                    ((this.viewId == null && accessibilityNodeInfo.getViewIdResourceName() == null) || this.viewId.equals(accessibilityNodeInfo.getViewIdResourceName())))
+                return true;
+        }
+        catch (NullPointerException e){
+            return false;
+        }
+        return false;
+
     }
 
 }

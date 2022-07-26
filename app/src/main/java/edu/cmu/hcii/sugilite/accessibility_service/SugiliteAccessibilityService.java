@@ -1001,50 +1001,52 @@ public class SugiliteAccessibilityService extends AccessibilityService {
 
     private void dumpNodeRec(AccessibilityNodeInfo node, XmlSerializer serializer, int index,
                              int width, int height) throws IOException {
-        boolean supportsWebAction =
-                node.getActionList().contains(AccessibilityNodeInfo.AccessibilityAction.ACTION_NEXT_HTML_ELEMENT) ||
-                        node.getActionList().contains(AccessibilityNodeInfo.AccessibilityAction.ACTION_PREVIOUS_HTML_ELEMENT);
-        boolean hasClickableSpan = (node.getText()!= null && node.getText() instanceof Spanned);
-        serializer.startTag("", "node");
-        if (!nafExcludedClass(node) && !nafCheck(node))
-            serializer.attribute("", "NAF", Boolean.toString(true));
-        List<String> actions = node.getActionList().stream().map((s) -> Integer.toString(s.getId())).collect(Collectors.toList());
-        // Extra Attributes
-        serializer.attribute("", "importantForAccessibility", Boolean.toString(node.isImportantForAccessibility()));
-        serializer.attribute("", "supportsWebAction", Boolean.toString(supportsWebAction));
-        serializer.attribute("", "actionList", String.join("-", actions));
-        serializer.attribute("", "clickableSpan", Boolean.toString(hasClickableSpan));
-        serializer.attribute("", "drawingOrder", Integer.toString(node.getDrawingOrder()));
-        serializer.attribute("", "visible", Boolean.toString(node.isVisibleToUser()));
-        serializer.attribute("", "invalid", Boolean.toString(node.isContentInvalid()));
-        serializer.attribute("", "contextClickable", Boolean.toString(node.isContextClickable()));
-        // Regular Attributes
-        serializer.attribute("", "index", Integer.toString(index));
-        serializer.attribute("", "text", safeCharSeqToString(node.getText()));
-        serializer.attribute("", "resource-id", safeCharSeqToString(node.getViewIdResourceName()));
-        serializer.attribute("", "class", safeCharSeqToString(node.getClassName()));
-        serializer.attribute("", "package", safeCharSeqToString(node.getPackageName()));
-        serializer.attribute("", "content-desc", safeCharSeqToString(node.getContentDescription()));
-        serializer.attribute("", "checkable", Boolean.toString(node.isCheckable()));
-        serializer.attribute("", "checked", Boolean.toString(node.isChecked()));
-        serializer.attribute("", "clickable", Boolean.toString(node.isClickable()));
-        serializer.attribute("", "enabled", Boolean.toString(node.isEnabled()));
-        serializer.attribute("", "focusable", Boolean.toString(node.isFocusable()));
-        serializer.attribute("", "focused", Boolean.toString(node.isFocused()));
-        serializer.attribute("", "scrollable", Boolean.toString(node.isScrollable()));
-        serializer.attribute("", "long-clickable", Boolean.toString(node.isLongClickable()));
-        serializer.attribute("", "password", Boolean.toString(node.isPassword()));
-        serializer.attribute("", "selected", Boolean.toString(node.isSelected()));
-        serializer.attribute("", "bounds", getVisibleBoundsInScreen(node, width, height).toShortString());
-        int count = node.getChildCount();
-        for (int i = 0; i < count; i++) {
-            AccessibilityNodeInfo child = node.getChild(i);
-            if (child != null) {
+        if (node != null) {
+            boolean supportsWebAction =
+                    node.getActionList().contains(AccessibilityNodeInfo.AccessibilityAction.ACTION_NEXT_HTML_ELEMENT) ||    //AccessibilityNodeInfo.getActionList()' on a null object reference
+                            node.getActionList().contains(AccessibilityNodeInfo.AccessibilityAction.ACTION_PREVIOUS_HTML_ELEMENT);
+            boolean hasClickableSpan = (node.getText() != null && node.getText() instanceof Spanned);
+            serializer.startTag("", "node");
+            if (!nafExcludedClass(node) && !nafCheck(node))
+                serializer.attribute("", "NAF", Boolean.toString(true));
+            List<String> actions = node.getActionList().stream().map((s) -> Integer.toString(s.getId())).collect(Collectors.toList());
+            // Extra Attributes
+            serializer.attribute("", "importantForAccessibility", Boolean.toString(node.isImportantForAccessibility()));
+            serializer.attribute("", "supportsWebAction", Boolean.toString(supportsWebAction));
+            serializer.attribute("", "actionList", String.join("-", actions));
+            serializer.attribute("", "clickableSpan", Boolean.toString(hasClickableSpan));
+            serializer.attribute("", "drawingOrder", Integer.toString(node.getDrawingOrder()));
+            serializer.attribute("", "visible", Boolean.toString(node.isVisibleToUser()));
+            serializer.attribute("", "invalid", Boolean.toString(node.isContentInvalid()));
+            serializer.attribute("", "contextClickable", Boolean.toString(node.isContextClickable()));
+            // Regular Attributes
+            serializer.attribute("", "index", Integer.toString(index));
+            serializer.attribute("", "text", safeCharSeqToString(node.getText()));
+            serializer.attribute("", "resource-id", safeCharSeqToString(node.getViewIdResourceName()));
+            serializer.attribute("", "class", safeCharSeqToString(node.getClassName()));
+            serializer.attribute("", "package", safeCharSeqToString(node.getPackageName()));
+            serializer.attribute("", "content-desc", safeCharSeqToString(node.getContentDescription()));
+            serializer.attribute("", "checkable", Boolean.toString(node.isCheckable()));
+            serializer.attribute("", "checked", Boolean.toString(node.isChecked()));
+            serializer.attribute("", "clickable", Boolean.toString(node.isClickable()));
+            serializer.attribute("", "enabled", Boolean.toString(node.isEnabled()));
+            serializer.attribute("", "focusable", Boolean.toString(node.isFocusable()));
+            serializer.attribute("", "focused", Boolean.toString(node.isFocused()));
+            serializer.attribute("", "scrollable", Boolean.toString(node.isScrollable()));
+            serializer.attribute("", "long-clickable", Boolean.toString(node.isLongClickable()));
+            serializer.attribute("", "password", Boolean.toString(node.isPassword()));
+            serializer.attribute("", "selected", Boolean.toString(node.isSelected()));
+            serializer.attribute("", "bounds", getVisibleBoundsInScreen(node, width, height).toShortString());
+            int count = node.getChildCount();
+            for (int i = 0; i < count; i++) {
+                AccessibilityNodeInfo child = node.getChild(i);
+                if (child != null) {
                     dumpNodeRec(child, serializer, i, width, height);
                     child.recycle();
+                }
             }
+            serializer.endTag("", "node");
         }
-        serializer.endTag("", "node");
     }
 
     private boolean nafExcludedClass(AccessibilityNodeInfo node) {
@@ -1149,27 +1151,6 @@ public class SugiliteAccessibilityService extends AccessibilityService {
         return this.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
     }
 
-//    protected boolean onKeyEvent(KeyEvent event) {
-//        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK || event.getKeyCode() == KeyEvent.KEYCODE_HOME) {
-//            backButtonConfirmationDialog.showDialog();
-////            int operationType = backButtonConfirmationDialog.getOperationType();
-////            System.out.println("operation type is: " + operationType);
-////            switch (operationType){
-////                case 0:
-////                    performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
-////                    break;
-////                case 1:
-////                    performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
-////                    break;
-////                case 2:
-////
-////                    break;
-////
-////            }
-//        }
-//        return true;
-//
-//    }
 
 }
 

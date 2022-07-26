@@ -71,20 +71,9 @@ public class TextChangedEventHandler {
                 featurePack.serializableUISnapshot = aggregatedFeaturePack.serializableUISnapshot;
                 featurePack.targetNodeEntity = aggregatedFeaturePack.targetNodeEntity;
             }
-            aggregatedFeaturePack = featurePack;
-            if (aggregatedFeaturePack.screenshot == null) {
-//                Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
-//                if (! Files.exists(outputPath)){
-//                    outputPath.toFile().mkdirs();
-//                }
-//                screenshotManager.setDirectoryPath(outputPath.toString() + "/");
-//                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_"+ SugiliteRecordingConfirmationDialog.getStep() + ".png");
-//                SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
-//                sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_"+SugiliteRecordingConfirmationDialog.getStep()+".xml");
-//                SugiliteRecordingConfirmationDialog.setStep(SugiliteRecordingConfirmationDialog.getStep() + 1);
-//                screenshotManager.setDirectoryPath(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/"+ NewScriptDialog.getPackageName() + "/RECORDER/");
-//                aggregatedFeaturePack.screenshot = screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, screenshotManager.getFileNameFromDate(), 0);
-            }
+            this.aggregatedFeaturePack = featurePack;
+//            aggregatedFeaturePack.xPath = aggregatedFeaturePack.getXpath(aggregatedFeaturePack.targetNodeEntity.getEntityValue());
+            aggregatedFeaturePack.setXPathBasedOnNode(aggregatedFeaturePack.targetNodeEntity.getEntityValue());
             lastAvailableAlternatives = availableAlternatives;
         }
         else {
@@ -96,6 +85,11 @@ public class TextChangedEventHandler {
                     flush();
                 }
             };
+            featurePack.afterText = featurePack.text;
+            if(featurePack.beforeText != null) {
+                featurePack.text = featurePack.beforeText;
+            }
+            this.aggregatedFeaturePack = featurePack;
             uiThreadHandler.post(flush);
 
             featurePack.afterText = featurePack.text;
@@ -103,26 +97,13 @@ public class TextChangedEventHandler {
                 featurePack.text = featurePack.beforeText;
             }
             aggregatedFeaturePack = featurePack;
-            if (aggregatedFeaturePack.screenshot == null) {
-//                Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
-//                if (! Files.exists(outputPath)){
-//                    outputPath.toFile().mkdirs();
-//                }
-//                screenshotManager.setDirectoryPath(outputPath.toString() + "/");
-//                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_"+ SugiliteRecordingConfirmationDialog.getStep() + ".png");
-//                SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
-//                sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_"+SugiliteRecordingConfirmationDialog.getStep()+".xml");
-//                SugiliteRecordingConfirmationDialog.setStep(SugiliteRecordingConfirmationDialog.getStep() + 1);
-//                screenshotManager.setDirectoryPath(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/"+NewScriptDialog.getPackageName() + "/RECORDER/");
-//                aggregatedFeaturePack.screenshot = screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, screenshotManager.getFileNameFromDate(), 0);
-            }
+
             lastAvailableAlternatives = availableAlternatives;
         }
 
     }
 
     public void flush(){
-        //TODO: show a recording popup for the text entry
         System.out.println("text changed event flushed");
         if(aggregatedFeaturePack != null) {
             System.out.println("text changed event flushed successfully");
@@ -142,6 +123,7 @@ public class TextChangedEventHandler {
             aggregatedFeaturePack = null;
         }
     }
+
 
     private boolean belongsToTheSameSession(SugiliteAvailableFeaturePack earlierSession, SugiliteAvailableFeaturePack laterSession){
         if(earlierSession == null) {
