@@ -200,8 +200,8 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
                 catch (NullPointerException e){
                     e.printStackTrace();
                 }
-                RecordingUtils.sendNodeInfo(featurePack, "click",false);
-                RecordingUtils.writeTestScript(context,"usecase",featurePack, "click", false);
+                RecordingUtils.sendNodeInfo(featurePack, "click",Const.CLICK_COMMAND);
+                RecordingUtils.writeTestScript(context,"usecase",featurePack, "click", Const.CLICK_COMMAND);
                 blockBuildingHelper.saveBlock(block, featurePack);
             } catch (Exception e) {
                 e.printStackTrace();

@@ -435,8 +435,8 @@ public class RecordingPopUpDialog implements AbstractSugiliteDialog {
                 }
                 saveBlock(operationBlock, dialogRootView.getContext());
                 featurePack.text = operationBlock.getPlainDescription().split(" ")[3].replaceAll("^\"|\"$", "");
-                RecordingUtils.sendNodeInfo(operationBlock.getFeaturePack(), "type", true);
-                RecordingUtils.writeTestScript(context, "usecase", operationBlock.getFeaturePack(), "type",true);
+                RecordingUtils.sendNodeInfo(operationBlock.getFeaturePack(), "type", Const.TYPE_COMMAND);
+                RecordingUtils.writeTestScript(context, "usecase", operationBlock.getFeaturePack(), "type",Const.TYPE_COMMAND);
                 Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
                 if (! Files.exists(outputPath)){
                     outputPath.toFile().mkdirs();

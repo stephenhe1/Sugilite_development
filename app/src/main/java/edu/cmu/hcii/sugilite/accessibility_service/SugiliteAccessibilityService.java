@@ -1154,6 +1154,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
         }
     }
 
+
     public boolean performBackOperation(){
         return performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
     }

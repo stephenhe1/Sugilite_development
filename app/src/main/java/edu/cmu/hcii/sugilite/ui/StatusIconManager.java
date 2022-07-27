@@ -57,6 +57,7 @@ import edu.cmu.hcii.sugilite.automation.ServiceStatusManager;
 import edu.cmu.hcii.sugilite.communication.SugiliteBlockJSONProcessor;
 import edu.cmu.hcii.sugilite.model.operation.SugiliteSpecialOperation;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
+import edu.cmu.hcii.sugilite.recording.RecordingUtils;
 import edu.cmu.hcii.sugilite.recording.SugiliteScreenshotManager;
 import edu.cmu.hcii.sugilite.dao.SugiliteScriptDao;
 import edu.cmu.hcii.sugilite.dao.SugiliteScriptFileDao;
@@ -71,6 +72,7 @@ import edu.cmu.hcii.sugilite.model.block.util.UIElementMatchingFilter;
 import edu.cmu.hcii.sugilite.model.operation.SugiliteOperation;
 import edu.cmu.hcii.sugilite.model.variable.VariableHelper;
 import edu.cmu.hcii.sugilite.recording.ReadableDescriptionGenerator;
+import edu.cmu.hcii.sugilite.recording.newrecording.fullscreen_overlay.SugiliteRecordingConfirmationDialog;
 import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
 import edu.cmu.hcii.sugilite.ui.dialog.SelectElementWithTextDialog;
 import edu.cmu.hcii.sugilite.ui.main.SugiliteMainActivity;
@@ -438,11 +440,11 @@ public class StatusIconManager {
 //                        operationList.add("Resume Next Step");
 //                        operationList.add("Quit Debugging");
                     }
-                    if(sugiliteData.getCurrentSystemState() == SugiliteData.PAUSED_FOR_DUCK_MENU_IN_REGULAR_EXECUTION_STATE
-                            || sugiliteData.getCurrentSystemState() == SugiliteData.PAUSED_FOR_DUCK_MENU_IN_DEBUG_MODE) {
-                        operationList.add("Resume Running");
-                        operationList.add("Clear Instruction Queue");
-                    }
+//                    if(sugiliteData.getCurrentSystemState() == SugiliteData.PAUSED_FOR_DUCK_MENU_IN_REGULAR_EXECUTION_STATE
+//                            || sugiliteData.getCurrentSystemState() == SugiliteData.PAUSED_FOR_DUCK_MENU_IN_DEBUG_MODE) {
+//                        operationList.add("Resume Running");
+//                        operationList.add("Clear Instruction Queue");
+//                    }
                     operationList.add("View Script List");
 
 
@@ -507,9 +509,32 @@ public class StatusIconManager {
                                     verbalInstructionIconManager.turnOffCatOverlay();
                                     break;
                                 case "Record Back Button Interaction":
-                                    System.out.println(SugiliteAccessibilityService.getInstance().performBackOperation());
-                                    System.out.println("Get the result");
+                                    Toast.makeText(context, "Performing the action back", Toast.LENGTH_SHORT).show();
+                                    Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
+                                    if (! Files.exists(outputPath)){
+                                        outputPath.toFile().mkdirs();
+                                    }
+                                    screenshotManager.setDirectoryPath(outputPath.toString() + "/");
+                                    screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".png", 100);
+                                    try {
+                                        SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
+                                        sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".xml");
+                                    }
+                                    catch (NullPointerException e){
+                                        e.printStackTrace();
+                                    }
+                                    RecordingUtils.sendNodeInfo(null, "back", Const.BACK_COMMAND);
+                                    RecordingUtils.writeTestScript(context, "usecase", null, "back",Const.BACK_COMMAND);
+                                    SugiliteRecordingConfirmationDialog.setStep(SugiliteRecordingConfirmationDialog.getStep() + 1);
+                                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            SugiliteAccessibilityService.getInstance().performBackOperation();
+
+                                        }
+                                    },1000);
                                     break;
+
 
 
 //                                case "Resume Last Recording":
@@ -595,15 +620,15 @@ public class StatusIconManager {
                                     context.startActivity(first_activity_intent);
 
                                     break;
-                                case "Clear Instruction Queue":
-                                    sugiliteData.clearInstructionQueue();
-                                    sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
-                                    if(storedQueue != null)
-                                        storedQueue.clear();
-                                    break;
-                                case "Resume Running":
-                                    dialog.dismiss();
-                                    break;
+//                                case "Clear Instruction Queue":
+//                                    sugiliteData.clearInstructionQueue();
+//                                    sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
+//                                    if(storedQueue != null)
+//                                        storedQueue.clear();
+//                                    break;
+//                                case "Resume Running":
+//                                    dialog.dismiss();
+//                                    break;
                                 case "Add GO_HOME Operation Block":
                                     //insert a GO_HOME opertion block AND go home
                                     SugiliteOperationBlock operationBlock = new SugiliteOperationBlock();

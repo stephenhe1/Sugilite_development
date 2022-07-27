@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -206,14 +207,22 @@ public class PumiceDemonstrationUtil {
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            while(isCleared == false && clearFailed == false){
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-
-                                    }
-                                },100);
-                            }
+//                            PackageManager packageManager = context.getPackageManager();
+//                            PackageInfo p = null;
+//                            try {
+//                                p = packageManager.getPackageInfo(packageName, 0);
+//                                clearApplicationData(new File(p.applicationInfo.dataDir));
+//                            } catch (PackageManager.NameNotFoundException e) {
+//                                e.printStackTrace();
+//                            }
+//                            while(isCleared == false && clearFailed == false){
+//                                new Handler().postDelayed(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//
+//                                    }
+//                                },100);
+//                            }
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -247,7 +256,7 @@ public class PumiceDemonstrationUtil {
                                         verbalInstructionIconManager.turnOnCatOverlay();
                                     }
                                 }
-                            },2000);
+                            },0);
 
 
                         }
@@ -750,6 +759,7 @@ public class PumiceDemonstrationUtil {
         }
 
     }
+
 
 
 

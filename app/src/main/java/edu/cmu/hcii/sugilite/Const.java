@@ -122,5 +122,9 @@ public class Const {
 
     public static final String[] UI_UPLOAD_PACKAGE_BLACKLIST = {"com.google.android.inputmethod.pinyin", "com.google.android.inputmethod.latin", "com.menny.android.anysoftkeyboard"};
 
+    public static final int CLICK_COMMAND = 0;
+    public static final int TYPE_COMMAND = 1;
+    public static final int BACK_COMMAND =2;
+
 
 }

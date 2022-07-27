@@ -14,23 +14,35 @@ import java.io.IOException;
 import edu.cmu.hcii.sugilite.model.block.util.SugiliteAvailableFeaturePack;
 import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.ui.dialog.NewScriptDialog;
+import edu.cmu.hcii.sugilite.Const;
 import tech.gusavila92.websocketclient.WebSocketClient;
 
 public class RecordingUtils {
-    public static void sendNodeInfo(SugiliteAvailableFeaturePack sugiliteAvailableFeaturePack, String action, boolean isTypeCommand){
+    public static void sendNodeInfo(SugiliteAvailableFeaturePack sugiliteAvailableFeaturePack, String action, int commandType){
         //Get the websocket instance
         WebSocketClient webSocketClient= PumiceDemonstrationUtil.getWebSocketClientInst();
         JSONObject targetObject;
+        JSONObject command = new JSONObject();
         if(null != sugiliteAvailableFeaturePack) {
             targetObject = transferFeatureIntoJSON(sugiliteAvailableFeaturePack);
-            JSONObject command = new JSONObject();
             try {
                 command.put("action", action);
                 command.put("target", targetObject);
-                if (isTypeCommand) command.put("text", targetObject.get("text"));
+                if (commandType == Const.TYPE_COMMAND)
+                    command.put("text", targetObject.get("text"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+        else{
+            if (commandType == Const.BACK_COMMAND){
+                try {
+                    command.put("action",action);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
             JSONObject sendCommandSM = new JSONObject();
             try {
                 sendCommandSM.put("action", "SENDCOMMAND");
@@ -39,27 +51,36 @@ public class RecordingUtils {
                 e.printStackTrace();
             }
             webSocketClient.send(String.valueOf(sendCommandSM));
-        }
 
     }
 
 
-    public static void writeTestScript(Context context, String fileName, SugiliteAvailableFeaturePack sugiliteAvailableFeaturePack, String action, boolean isTypeCommand){
+    public static void writeTestScript(Context context, String fileName, SugiliteAvailableFeaturePack sugiliteAvailableFeaturePack, String action, int commandType){
         BufferedWriter bw = null;
         try {
             bw = new BufferedWriter(new FileWriter(new File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/"+ NewScriptDialog.getPackageName() + "/RECORDER/" + fileName+".jsonl"),true));
             JSONObject targetObject;
+            JSONObject command = new JSONObject();
             if(null != sugiliteAvailableFeaturePack) {
                 targetObject = transferFeatureIntoJSON(sugiliteAvailableFeaturePack);
-                JSONObject command = new JSONObject();
                 try {
                     command.put("action", action);
                     command.put("target", targetObject);
-                    if (isTypeCommand) command.put("text", targetObject.get("text"));
+                    if (commandType == Const.TYPE_COMMAND) command.put("text", targetObject.get("text"));
+                    bw.write(command.toString()+"\n");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                bw.write(command.toString()+"\n");
+            }
+            else{
+                if (commandType == Const.BACK_COMMAND){
+                    try {
+                        command.put("action",action);
+                        bw.write(command.toString()+"\n");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
