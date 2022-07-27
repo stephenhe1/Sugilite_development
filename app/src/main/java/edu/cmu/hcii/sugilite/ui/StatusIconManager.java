@@ -507,9 +507,8 @@ public class StatusIconManager {
                                     verbalInstructionIconManager.turnOffCatOverlay();
                                     break;
                                 case "Record Back Button Interaction":
-                                    SugiliteAccessibilityService service = (SugiliteAccessibilityService) context;
-                                    boolean result = service.performBackOperation();
-                                    System.out.println("Result is: " + result);
+                                    System.out.println(SugiliteAccessibilityService.getInstance().performBackOperation());
+                                    System.out.println("Get the result");
                                     break;
 
 

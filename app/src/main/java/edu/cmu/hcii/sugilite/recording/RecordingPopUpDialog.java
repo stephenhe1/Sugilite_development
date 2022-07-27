@@ -442,7 +442,7 @@ public class RecordingPopUpDialog implements AbstractSugiliteDialog {
                     outputPath.toFile().mkdirs();
                 }
                 screenshotManager.setDirectoryPath(outputPath.toString() + "/");
-                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".png", 50);
+                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".png", 20);
                 try {
                     SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
                     sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".xml");

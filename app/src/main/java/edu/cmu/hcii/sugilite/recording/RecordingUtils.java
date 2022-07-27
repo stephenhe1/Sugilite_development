@@ -117,6 +117,13 @@ public class RecordingUtils {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            try{
+                targetObject.put("bounds",sugiliteAvailableFeaturePack.boundsInScreen);
+            }
+            catch (JSONException e){
+                e.printStackTrace();
+            }
         }
         return targetObject;
     }

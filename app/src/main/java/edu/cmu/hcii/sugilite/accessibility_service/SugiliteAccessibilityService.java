@@ -90,7 +90,7 @@ import org.xmlpull.v1.XmlSerializer;
 public class SugiliteAccessibilityService extends AccessibilityService {
 
     protected static final String TAG = SugiliteAccessibilityService.class.getSimpleName();
-
+    private static SugiliteAccessibilityService instance;
     private WindowManager windowManager;
     private SharedPreferences sharedPreferences;
     private Automator automator;
@@ -277,6 +277,7 @@ public class SugiliteAccessibilityService extends AccessibilityService {
     @Override
     public void onServiceConnected() {
         super.onServiceConnected();
+        instance = this;
         Log.d(TAG, "inside onServiceCreated");
 
     }
@@ -891,6 +892,12 @@ public class SugiliteAccessibilityService extends AccessibilityService {
     }
 
     @Override
+    public boolean onUnbind(Intent intent) {
+        instance = null;
+        return super.onUnbind(intent);
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         PumiceDemonstrationUtil.showSugiliteToast("Sugilite Accessibility Service Stopped", Toast.LENGTH_SHORT);
@@ -1148,7 +1155,11 @@ public class SugiliteAccessibilityService extends AccessibilityService {
     }
 
     public boolean performBackOperation(){
-        return this.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+        return performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK);
+    }
+
+    public static SugiliteAccessibilityService getInstance(){
+        return instance;
     }
 
 

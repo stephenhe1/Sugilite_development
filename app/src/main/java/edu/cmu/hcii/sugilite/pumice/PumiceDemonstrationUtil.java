@@ -63,6 +63,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -115,6 +116,8 @@ public class PumiceDemonstrationUtil {
      */
 
     private static WebSocketClient webSocketClient=null;
+    private static boolean isCleared = false;
+    private static boolean clearFailed = false;
 
     public static void initiateDemonstration(Context context, ServiceStatusManager serviceStatusManager, SharedPreferences sharedPreferences, String scriptName, SugiliteData sugiliteData, Runnable afterRecordingCallback, SugiliteScriptDao sugiliteScriptDao, VerbalInstructionIconManager verbalInstructionIconManager){
         if(!serviceStatusManager.isRunning()){
@@ -200,39 +203,65 @@ public class PumiceDemonstrationUtil {
                         e.printStackTrace();
                     }
                     webSocketClient.send(String.valueOf(startRecordSM));
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            while(isCleared == false && clearFailed == false){
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+
+                                    }
+                                },100);
+                            }
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    isCleared = false;
+                                    clearFailed = false;
+                                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                                    editor.putString("scriptName", scriptName);
+                                    editor.putBoolean("recording_in_process", true);
+                                    editor.commit();
+
+                                    //set the system state
+                                    sugiliteData.setCurrentSystemState(SugiliteData.RECORDING_STATE);
+
+
+                                    //set the active script to the newly created script
+                                    sugiliteData.initiateScriptRecording(PumiceDemonstrationUtil.addScriptExtension(scriptName), afterRecordingCallback); //add the end recording callback
+                                    sugiliteData.initiatedExternally = false;
+
+                                    //save the newly created script to DB
+                                    try {
+                                        sugiliteScriptDao.save(sugiliteData.getScriptHead());
+                                        sugiliteScriptDao.commitSave(null);
+                                    }
+                                    catch (Exception e){
+                                        e.printStackTrace();
+                                    }
+
+                                    context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packageName));  //Start the specified application
+                                    //turn on the cat overlay to prepare for demonstration
+                                    if(verbalInstructionIconManager != null){
+                                        verbalInstructionIconManager.turnOnCatOverlay();
+                                    }
+                                }
+                            },2000);
+
+
+                        }
+                    },500);
+                    //start demonstration
+
+
                 }
             },1500);
 
 
-            //start demonstration
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString("scriptName", scriptName);
-            editor.putBoolean("recording_in_process", true);
-            editor.commit();
-
-            //set the system state
-            sugiliteData.setCurrentSystemState(SugiliteData.RECORDING_STATE);
 
 
-            //set the active script to the newly created script
-            sugiliteData.initiateScriptRecording(PumiceDemonstrationUtil.addScriptExtension(scriptName), afterRecordingCallback); //add the end recording callback
-            sugiliteData.initiatedExternally = false;
 
-            //save the newly created script to DB
-            try {
-                sugiliteScriptDao.save(sugiliteData.getScriptHead());
-                sugiliteScriptDao.commitSave(null);
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-
-            context.startActivity(context.getPackageManager().getLaunchIntentForPackage(packageName));  //Start the specified application
-
-            //turn on the cat overlay to prepare for demonstration
-            if(verbalInstructionIconManager != null){
-                verbalInstructionIconManager.turnOnCatOverlay();
-            }
 
         }
     }
@@ -601,6 +630,12 @@ public class PumiceDemonstrationUtil {
 
                 @Override
                 public void onTextReceived(String message) {
+                    if (message.equals("cleared")){
+                        isCleared = true;
+                    }
+                    else if (message.equals("clear failed")){
+                        clearFailed = true;
+                    }
 
                 }
 

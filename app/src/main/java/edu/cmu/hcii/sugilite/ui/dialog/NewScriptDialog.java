@@ -14,10 +14,12 @@ import android.content.pm.PackageManager;
 import android.graphics.LightingColorFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.EditTextPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -53,6 +55,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * @author toby
@@ -135,11 +140,8 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
                         }
                         packageName = applicationInfos.get(index).packageName;
                         serverAddress = PreferenceManager.getDefaultSharedPreferences(context).getString("remote_server_address", "ws://10.0.2.2:8765/");
-//                        try {
-//                            Runtime.getRuntime().exec("pm clear com.colpit.diamondcoming.isavemoney");
-//                        } catch (IOException exception) {
-//                            exception.printStackTrace();
-//                        }
+
+
                         PumiceDemonstrationUtil.initiateDemonstration(context, serviceStatusManager, sharedPreferences, scriptName, sugiliteData, null, sugiliteScriptDao, verbalInstructionIconManager, packageName);
 
                         if(positiveCallback != null) {
