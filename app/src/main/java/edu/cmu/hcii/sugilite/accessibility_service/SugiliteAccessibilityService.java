@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import edu.cmu.hcii.sugilite.Const;
@@ -927,13 +928,26 @@ public class SugiliteAccessibilityService extends AccessibilityService {
 
     }
 
-    public boolean performTap(int x, int y, int startTime, int duration) {
+    // This atomic boolean helps us to inform different part of code that an action is performing.
+    // When performTap is invoked, actionInProgress should be set to true and if actionInProgress is
+    // true no other action should be performed. Then, once the performTap is finished (either
+    // onCompleted or onCancelled) actionInProgress will be set to false.
+    public static AtomicBoolean actionInProgress = new AtomicBoolean(false);
 
+    public boolean performTap(int x, int y, int startTime, int duration) {
         if (x < 0 || y < 0)
             return false;
 
-
         verbalInstructionIconManager.turnOffCatOverlay();
+        Runnable afterActionPerformedRunnable = new Runnable() {
+            // Once the action is performed, this runnable will be called with a little delay to
+            // turn on the overlay.
+            @Override
+            public void run() {
+                actionInProgress.set(false);
+                verbalInstructionIconManager.turnOnCatOverlay();
+            }
+        };
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -947,23 +961,18 @@ public class SugiliteAccessibilityService extends AccessibilityService {
                     public void onCompleted(GestureDescription gestureDescription) {
                         System.out.println("The gesture completed");
                         super.onCompleted(gestureDescription);
+                        new Handler(Looper.getMainLooper()).postDelayed(afterActionPerformedRunnable,200);
                     }
 
                     @Override
                     public void onCancelled(GestureDescription gestureDescription) {
                         System.out.println("The gesture has been cancelled");
                         super.onCancelled(gestureDescription);
+                        new Handler(Looper.getMainLooper()).postDelayed(afterActionPerformedRunnable,200);
                     }
                 }, null);
             }
-        },2000);
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                verbalInstructionIconManager.turnOnCatOverlay();
-            }
-        },2000);
-
+        },1000);
 
         return true;
     }
