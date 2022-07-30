@@ -516,8 +516,16 @@ public class Automator {
 ////                }
 //                return nodeToAction.performAction(AccessibilityNodeInfo.ACTION_CLICK);
 //            }
+            synchronized (serviceContext){
+                // This block of code is shyncronized over a single object (SugiliteAccessibilityService object)
+                // and check if any other action is performing, if no action is performing, set actionInProgress to
+                // true and perform the action.
+                if (SugiliteAccessibilityService.actionInProgress.get())
+                    return false;
+                SugiliteAccessibilityService.actionInProgress.set(true);
+                return serviceContext.performTap(rect.centerX(),rect.centerY(),0,40);
+            }
 
-            return serviceContext.performTap(rect.centerX(),rect.centerY(),0,40);
 
 
 
