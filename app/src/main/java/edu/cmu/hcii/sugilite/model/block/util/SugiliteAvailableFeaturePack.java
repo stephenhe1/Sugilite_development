@@ -9,6 +9,7 @@ import java.io.Serializable;
 import java.sql.SQLOutput;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -57,7 +58,14 @@ public class SugiliteAvailableFeaturePack implements Serializable{
             this.boundsInParent = new String(node.getBoundsInParent());
         }
         if(node.getBoundsInScreen() != null) {
-            this.boundsInScreen = new String(node.getBoundsInScreen());
+            List<String> bounds = Arrays.asList(new String(node.getBoundsInScreen()).split(" "));
+            String boundsFormat = "";
+            for (int i = 0; i< bounds.size(); i++){
+                if ((i+1) % 2 == 0){
+                    boundsFormat = boundsFormat + "[" + String.join(",", bounds.subList(i-1, i+1)) + "]";
+                }
+            }
+            this.boundsInScreen =boundsFormat;
         }
 
         List<Node> nodesList=getParentalNode(node);
@@ -111,7 +119,6 @@ public class SugiliteAvailableFeaturePack implements Serializable{
 
     public SugiliteAvailableFeaturePack(SugiliteAvailableFeaturePack featurePack){
         this.boundsInParent = new String(featurePack.boundsInParent);
-        this.boundsInScreen = new String(featurePack.boundsInScreen);
         this.isEditable = featurePack.isEditable;
         this.time = featurePack.time;
         this.eventType = featurePack.eventType;
@@ -133,6 +140,16 @@ public class SugiliteAvailableFeaturePack implements Serializable{
         }
         if(node.getViewId() != null) {
             this.viewId = new String(node.getViewId());
+        }
+        if(node.getBoundsInScreen() != null) {
+            List<String> bounds = Arrays.asList(new String(node.getBoundsInScreen()).split(" "));
+            String boundsFormat = "";
+            for (int i = 0; i< bounds.size(); i++){
+                if ((i+1) % 2 == 0){
+                    boundsFormat = boundsFormat + "[" + String.join(",", bounds.subList(i-1, i+1)) + "]";
+                }
+            }
+            this.boundsInScreen =boundsFormat;
         }
 //        this.xPath=getXpath(targetNodeEntity.getEntityValue());
 

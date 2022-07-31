@@ -434,23 +434,13 @@ public class RecordingPopUpDialog implements AbstractSugiliteDialog {
                     }
                 }
                 saveBlock(operationBlock, dialogRootView.getContext());
-                featurePack.text = operationBlock.getPlainDescription().split(" ")[3].replaceAll("^\"|\"$", "");
-                RecordingUtils.sendNodeInfo(operationBlock.getFeaturePack(), "type", Const.TYPE_COMMAND);
-                RecordingUtils.writeTestScript(context, "usecase", operationBlock.getFeaturePack(), "type",Const.TYPE_COMMAND);
                 Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
                 if (! Files.exists(outputPath)){
                     outputPath.toFile().mkdirs();
                 }
-                screenshotManager.setDirectoryPath(outputPath.toString() + "/");
-                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".png", 20);
-                try {
-                    SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
-                    sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".xml");
-                }
-                catch (NullPointerException e){
-                    e.printStackTrace();
-                }
-                SugiliteRecordingConfirmationDialog.setStep(SugiliteRecordingConfirmationDialog.getStep() + 1);
+                featurePack.text = operationBlock.getPlainDescription().split(" ")[3].replaceAll("^\"|\"$", "");
+                RecordingUtils.sendNodeInfo(operationBlock.getFeaturePack(), "type", Const.TYPE_COMMAND);
+                RecordingUtils.writeTestScript(context, "usecase", operationBlock.getFeaturePack(), "type",Const.TYPE_COMMAND);
                 if (editCallback != null) {
                     System.out.println("calling callback");
                     editCallback.onClick(null, 0);

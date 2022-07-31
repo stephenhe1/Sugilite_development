@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
 import android.text.Html;
 import android.text.SpannableStringBuilder;
@@ -17,6 +18,7 @@ import android.text.Spanned;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -144,7 +146,6 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
             public void onClick(DialogInterface dialog, int which) {
                 //save the block
                 positiveButtonOnClick();
-                step++;
             }
         })
                 .setNegativeButton("Skip", new DialogInterface.OnClickListener() {
@@ -183,81 +184,86 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
     }
 
     private void positiveButtonOnClick() {
-        dialog.dismiss();
-        if (sharedPreferences.getBoolean("recording_in_process", false)) {
-            try {
-//                takeScreenShot(getActivity(context).getWindow().getDecorView().getRootView(),NewScriptDialog.getScript_name());
-                Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
-                if (! Files.exists(outputPath)){
-                    outputPath.toFile().mkdirs();
-                }
-                screenshotManager.setDirectoryPath(outputPath.toString() + "/");
-                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_" + step + ".png");
-                try {
-                    SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
-                    sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_" + step + ".xml");
-                }
-                catch (NullPointerException e){
-                    e.printStackTrace();
-                }
-                RecordingUtils.sendNodeInfo(featurePack, "click",Const.CLICK_COMMAND);
-                RecordingUtils.writeTestScript(context,"usecase",featurePack, "click", Const.CLICK_COMMAND);
-                blockBuildingHelper.saveBlock(block, featurePack);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        clickUnderlyingButtonRunnable.run();
-
-        //
-        if (block != null && block.getOperation() instanceof SugiliteLoadVariableOperation) {
-            if (sugiliteData.currentPumiceValueDemonstrationType != null && sugiliteData.valueDemonstrationVariableName != null) {
-                //value demonstration
-                SharedPreferences.Editor prefEditor = sharedPreferences.edit();
-                prefEditor.putBoolean("recording_in_process", false);
-                prefEditor.apply();
-                new Thread(new Runnable() {
-                    @Override
-                    public void run()
-                    {
-                        //commit the script
-                        try {
-                            sugiliteScriptDao.commitSave(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //call the after recording callback
-                                    if (sugiliteData.getScriptHead() != null && sugiliteData.afterRecordingCallback != null){
-                                        //call the endRecordingCallback
-                                        Runnable r = sugiliteData.afterRecordingCallback;
-                                        sugiliteData.afterRecordingCallback = null;
-                                        r.run();
-                                    }
-                                }
-                            });
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(final DialogInterface arg0) {
+                if (sharedPreferences.getBoolean("recording_in_process", false)) {
+                    try {
+                        Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
+                        if (! Files.exists(outputPath)){
+                            outputPath.toFile().mkdirs();
                         }
-                        catch (Exception e){
+                        screenshotManager.setDirectoryPath(outputPath.toString() + "/");
+                        screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_" + step + ".png");
+                        try {
+                            SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
+                            sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_" + step + ".xml");
+                        }
+                        catch (NullPointerException e){
                             e.printStackTrace();
                         }
+                        step++;
+                        RecordingUtils.sendNodeInfo(featurePack, "click",Const.CLICK_COMMAND);
+                        RecordingUtils.writeTestScript(context,"usecase",featurePack, "click", Const.CLICK_COMMAND);
+                        blockBuildingHelper.saveBlock(block, featurePack);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                }).start();
-
-
-
-
-                //turn off the recording overlay if any
-                if(sugiliteData.verbalInstructionIconManager != null){
-                    sugiliteData.verbalInstructionIconManager.turnOffCatOverlay();
                 }
+                clickUnderlyingButtonRunnable.run();
 
-                //reset the valueDemonstrationVariableName
-                sugiliteData.valueDemonstrationVariableName = "";
+                //
+                if (block != null && block.getOperation() instanceof SugiliteLoadVariableOperation) {
+                    if (sugiliteData.currentPumiceValueDemonstrationType != null && sugiliteData.valueDemonstrationVariableName != null) {
+                        //value demonstration
+                        SharedPreferences.Editor prefEditor = sharedPreferences.edit();
+                        prefEditor.putBoolean("recording_in_process", false);
+                        prefEditor.apply();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run()
+                            {
+                                //commit the script
+                                try {
+                                    sugiliteScriptDao.commitSave(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //call the after recording callback
+                                            if (sugiliteData.getScriptHead() != null && sugiliteData.afterRecordingCallback != null){
+                                                //call the endRecordingCallback
+                                                Runnable r = sugiliteData.afterRecordingCallback;
+                                                sugiliteData.afterRecordingCallback = null;
+                                                r.run();
+                                            }
+                                        }
+                                    });
+                                }
+                                catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                            }
+                        }).start();
 
 
-                sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
-                PumiceDemonstrationUtil.showSugiliteToast("end recording", Toast.LENGTH_SHORT);
 
+
+                        //turn off the recording overlay if any
+                        if(sugiliteData.verbalInstructionIconManager != null){
+                            sugiliteData.verbalInstructionIconManager.turnOffCatOverlay();
+                        }
+
+                        //reset the valueDemonstrationVariableName
+                        sugiliteData.valueDemonstrationVariableName = "";
+
+
+                        sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
+                        PumiceDemonstrationUtil.showSugiliteToast("end recording", Toast.LENGTH_SHORT);
+
+                    }
+                }
             }
-        }
+        });
+        dialog.dismiss();
     }
 
     private void skipButtonOnClick() {

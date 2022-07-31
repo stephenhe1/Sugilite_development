@@ -653,34 +653,6 @@ public class FullScreenRecordingOverlayManager {
                     public synchronized void run() {
                         //obtain event1
                         if (event1 != null && event2 != null) {
-                            /*
-                            MotionEvent.PointerProperties[] pointerProperties1 = new MotionEvent.PointerProperties[event1.getPointerCount()];
-                            MotionEvent.PointerCoords[] pointerCoordses1 = new MotionEvent.PointerCoords[event1.getPointerCount()];
-                            for (int i = 0; i < event1.getPointerCount(); i++) {
-                                pointerProperties1[i] = new MotionEvent.PointerProperties();
-                                pointerCoordses1[i] = new MotionEvent.PointerCoords();
-                                event1.getPointerProperties(i, pointerProperties1[i]);
-                                event1.getPointerCoords(i, pointerCoordses1[i]);
-                            }
-                            MotionEvent motionEvent1 = MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
-                                    event1.getAction(), event1.getPointerCount(), pointerProperties1, pointerCoordses1, event1.getMetaState(),
-                                    event1.getButtonState(), event1.getXPrecision(), event1.getYPrecision(), event1.getDeviceId(), event1.getEdgeFlags(), event1.getSource(), event1.getFlags());
-                            System.out.println("EVENT1: " + motionEvent1.toString());
-
-                            //obtain event2
-                            MotionEvent.PointerProperties[] pointerProperties2 = new MotionEvent.PointerProperties[event2.getPointerCount()];
-                            MotionEvent.PointerCoords[] pointerCoordses2 = new MotionEvent.PointerCoords[event2.getPointerCount()];
-                            for (int i = 0; i < event2.getPointerCount(); i++) {
-                                pointerProperties2[i] = new MotionEvent.PointerProperties();
-                                pointerCoordses2[i] = new MotionEvent.PointerCoords();
-                                event2.getPointerProperties(i, pointerProperties2[i]);
-                                event2.getPointerCoords(i, pointerCoordses2[i]);
-                            }
-                            MotionEvent motionEvent2 = MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
-                                    event2.getAction(), event2.getPointerCount(), pointerProperties2, pointerCoordses2, event2.getMetaState(),
-                                    event2.getButtonState(), event2.getXPrecision(), event2.getYPrecision(), event2.getDeviceId(), event2.getEdgeFlags(), event2.getSource(), event2.getFlags());
-                            System.out.println("EVENT2: " + motionEvent2.toString());
-                            */
 
                             int x1 = (int) event1.getRawX();
                             int y1 = (int) event1.getRawY();

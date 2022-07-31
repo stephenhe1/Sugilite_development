@@ -18,10 +18,12 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.text.Html;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -105,6 +107,8 @@ public class StatusIconManager {
     private Queue<SugiliteBlock> storedQueue;
     private VerbalInstructionIconManager verbalInstructionIconManager = null;
     private Dialog duckDialog = null;
+    private Dialog confirmDialog = null;
+    private Dialog captureDialog = null;
 
     //rotation degree for the cat
     int rotation = 0;
@@ -459,6 +463,7 @@ public class StatusIconManager {
                             operationList.add("Turn On Overlay");
                             operationList.add("Turn Off Overlay");
                             operationList.add("Record Back Button Interaction");
+                            operationList.add("Capture UI Snapshot");
                         }
                         else{
 //                            operationList.add("View Last Recording");
@@ -509,30 +514,72 @@ public class StatusIconManager {
                                     verbalInstructionIconManager.turnOffCatOverlay();
                                     break;
                                 case "Record Back Button Interaction":
-                                    Toast.makeText(context, "Performing the action back", Toast.LENGTH_SHORT).show();
-                                    Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
-                                    if (! Files.exists(outputPath)){
-                                        outputPath.toFile().mkdirs();
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                                    builder.setTitle("Save Operation Confirmation");
+                                    View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_confirmation_popup_spoken, null);
+                                    TextView confirmationPromptTextView = (TextView) dialogView.findViewById(R.id.text_confirmation_prompt);
+                                    if(confirmationPromptTextView != null){
+                                        SpannableStringBuilder text = new SpannableStringBuilder();
+                                        text.append("Are you sure you want to record the back operation?");
+                                        confirmationPromptTextView.setText(text);
                                     }
-                                    screenshotManager.setDirectoryPath(outputPath.toString() + "/");
-                                    screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".png", 100);
-                                    try {
-                                        SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
-                                        sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".xml");
-                                    }
-                                    catch (NullPointerException e){
-                                        e.printStackTrace();
-                                    }
-                                    RecordingUtils.sendNodeInfo(null, "back", Const.BACK_COMMAND);
-                                    RecordingUtils.writeTestScript(context, "usecase", null, "back",Const.BACK_COMMAND);
-                                    SugiliteRecordingConfirmationDialog.setStep(SugiliteRecordingConfirmationDialog.getStep() + 1);
-                                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                    builder.setView(dialogView);
+                                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                         @Override
-                                        public void run() {
-                                            SugiliteAccessibilityService.getInstance().performBackOperation();
-
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            positiveButtonOnClick();
                                         }
-                                    },1000);
+                                    })
+                                            .setNegativeButton("Skip", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    Toast.makeText(context, "Performing the action back", Toast.LENGTH_SHORT).show();
+                                                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            SugiliteAccessibilityService.getInstance().performBackOperation();
+
+                                                        }
+                                                    },1000);
+                                                }
+                                            })
+                                            .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                    confirmDialog = builder.create();
+                                    confirmDialog.getWindow().setType(OVERLAY_TYPE);
+                                    confirmDialog.show();
+
+                                    break;
+                                case "Capture UI Snapshot":
+                                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
+                                    dialogBuilder.setTitle("Capture UI Snapshot Confirmation");
+                                    View captureView = LayoutInflater.from(context).inflate(R.layout.dialog_confirmation_popup_spoken, null);
+                                    TextView confirmationTextView = (TextView) captureView.findViewById(R.id.text_confirmation_prompt);
+                                    if(confirmationTextView != null){
+                                        SpannableStringBuilder text = new SpannableStringBuilder();
+                                        text.append("Are you sure you want to capture the UI Snaptshot of the current screen?");
+                                        confirmationTextView.setText(text);
+                                    }
+                                    dialogBuilder.setView(captureView);
+                                    dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            positiveButtonForCapturing();
+                                        }
+                                    })
+                                            .setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    dialog.dismiss();
+                                                }
+                                            });
+                                    captureDialog = dialogBuilder.create();
+                                    captureDialog.getWindow().setType(OVERLAY_TYPE);
+                                    captureDialog.show();
                                     break;
 
 
@@ -582,36 +629,7 @@ public class StatusIconManager {
                                     //step 3: remove the duck and the status view
                                     removeStatusIcon();
 
-//                                    try(BufferedReader in = new BufferedReader(new FileReader(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name().split("\\.")[0]+"_xpath.txt")))){
-//                                        String testScript="";
-//                                        String str;
-//                                        for(SugiliteBlock block:sugiliteData.getScriptHead().getFollowingBlocks()){
-//                                            if ((str=in.readLine())!=null){
-//                                                testScript=testScript+block+str+"\n";
-//                                            }
-//                                        }
-//                                        System.out.println(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name()+".txt");
-//                                        try(BufferedWriter bw = new BufferedWriter(new FileWriter(new File(sugiliteScriptDao.getContext().getFilesDir().getPath()+"/scripts/"+NewScriptDialog.getScript_name()+".txt")))){
-//                                            bw.write(testScript);
-//                                        }
-//                                        Path path= Paths.get(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/");
-//                                        if (!Files.exists(path)){
-//                                            File file=path.toFile();
-//                                            file.mkdir();
-//                                            File file1=new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts");
-//                                            file1.mkdir();
-//                                        }
-//                                        System.out.println("Whether directory exists or not: "+Files.exists(path));
-//                                        try(BufferedWriter bw1 = new BufferedWriter(new FileWriter(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/edu.cmu.hcii.sugilite/scripts/"+NewScriptDialog.getScript_name()+".txt")))){
-//                                            bw1.write(testScript);
-//                                        }
-//                                        catch (IOException exception){
-//                                            exception.printStackTrace();
-//                                        }
-//                                    }
-//                                    catch (IOException exception){
-//                                        exception.printStackTrace();
-//                                    }
+
 
                                     //step 4: kill Sugilite app
                                     Intent first_activity_intent = new Intent(context, SugiliteMainActivity.class);
@@ -965,5 +983,61 @@ public class StatusIconManager {
         openMainActivity.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         context.startActivity(openMainActivity);
         //}
+    }
+
+    private void positiveButtonOnClick() {
+        confirmDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                Toast.makeText(context, "Performing the action back", Toast.LENGTH_SHORT).show();
+                Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
+                if (! Files.exists(outputPath)){
+                    outputPath.toFile().mkdirs();
+                }
+                screenshotManager.setDirectoryPath(outputPath.toString() + "/");
+                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".png", 100);
+                try {
+                    SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
+                    sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".xml");
+                }
+                catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+                RecordingUtils.sendNodeInfo(null, "back", Const.BACK_COMMAND);
+                RecordingUtils.writeTestScript(context, "usecase", null, "back",Const.BACK_COMMAND);
+                SugiliteRecordingConfirmationDialog.setStep(SugiliteRecordingConfirmationDialog.getStep() + 1);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        SugiliteAccessibilityService.getInstance().performBackOperation();
+
+                    }
+                },1000);
+            }
+        });
+        confirmDialog.dismiss();
+    }
+
+    private void positiveButtonForCapturing(){
+        captureDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                Path outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)), NewScriptDialog.getPackageName(), "RECORDER");
+                if (! Files.exists(outputPath)){
+                    outputPath.toFile().mkdirs();
+                }
+                screenshotManager.setDirectoryPath(outputPath.toString() + "/");
+                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".png", 20);
+                try {
+                    SugiliteAccessibilityService.getInstance().captureLayout(outputPath.toString(), "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".xml");
+                }
+                catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+                SugiliteRecordingConfirmationDialog.setStep(SugiliteRecordingConfirmationDialog.getStep() + 1);
+            }
+        });
+        captureDialog.dismiss();
     }
 }
