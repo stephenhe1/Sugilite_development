@@ -95,8 +95,10 @@ public class Const {
     public static final String SCRIPT_CONDITIONAL_COLOR_3 = "#10b29a";
     public static final String SCRIPT_PLACEHOLDER_COLOR = "#999999";
 
-    public static int RECORDING_OVERLAY_COLOR = 0x20FFFF00;
-    public static int RECORDING_OVERLAY_COLOR_STOP = 0x20FF0000;
+//    public static int RECORDING_OVERLAY_COLOR = 0x20FFFF00;
+    public static int RECORDING_OVERLAY_COLOR = 0x20FEFE62;
+//    public static int RECORDING_OVERLAY_COLOR_STOP = 0x20FF0000;
+    public static int RECORDING_OVERLAY_COLOR_STOP = 0x20D35FB7;
 
     public static int PREVIEW_OVERLAY_COLOR = 0xB0000000;
     public static int MUL_ZEROS = 0xFF000000;

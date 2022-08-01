@@ -17,7 +17,6 @@ import android.speech.tts.TextToSpeech;
 import android.util.DisplayMetrics;
 import android.view.GestureDetector;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -37,7 +36,6 @@ import edu.cmu.hcii.sugilite.Const;
 import edu.cmu.hcii.sugilite.model.Node;
 import edu.cmu.hcii.sugilite.accessibility_service.SugiliteAccessibilityService;
 import edu.cmu.hcii.sugilite.SugiliteData;
-import edu.cmu.hcii.sugilite.model.block.util.SugiliteAvailableFeaturePack;
 import edu.cmu.hcii.sugilite.model.block.SugiliteOperationBlock;
 import edu.cmu.hcii.sugilite.model.operation.unary.SugiliteClickOperation;
 import edu.cmu.hcii.sugilite.model.operation.unary.SugiliteLongClickOperation;
@@ -47,12 +45,10 @@ import edu.cmu.hcii.sugilite.pumice.PumiceDemonstrationUtil;
 import edu.cmu.hcii.sugilite.recording.ReadableDescriptionGenerator;
 import edu.cmu.hcii.sugilite.recording.SugiliteScreenshotManager;
 import edu.cmu.hcii.sugilite.recording.TextChangedEventHandler;
-import edu.cmu.hcii.sugilite.verbal_instruction_demo.study.SugiliteStudyHandler;
 import edu.cmu.hcii.sugilite.verbal_instruction_demo.util.NavigationBarUtil;
 
 import static edu.cmu.hcii.sugilite.Const.OVERLAY_TYPE;
 
-import org.apache.lucene.geo.Line;
 
 /**
  * @author toby
@@ -215,10 +211,8 @@ public class FullScreenRecordingOverlayManager {
         return layoutParams;
     }
 
-    /**
-     * set view to be not touchble (so it will pass through touch events)
-     */
-    private void setPassThroughOnTouchListener() {
+
+    public void setPassThroughOnTouchListener() {
         overlay.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -233,10 +227,10 @@ public class FullScreenRecordingOverlayManager {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
-    private void setOverlayOnTouchListener(final boolean toConsumeEvent) {
+
+    public void setOverlayOnTouchListener(final boolean toConsumeEvent) {
         try {
             overlayCurrentFlag = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
             windowManager.updateViewLayout(overlay, updateLayoutParams(overlayCurrentFlag, overlayCurrentWidth, overlayCurrentHeight));
@@ -478,44 +472,6 @@ public class FullScreenRecordingOverlayManager {
         } else {
             List<SugiliteEntity<Node>> matchedNodeEntities = getMatchedNodesFromCoordinate(x, y, uiSnapshot, false, false);
             node=matchedNodeEntities.get(0);
-//            if (matchedNodeEntities.size() > 1) {
-//                if (matchedNodeEntities.get(0).getEntityValue().getClickable()) {
-//                    node = matchedNodeEntities.get(0);
-//                } else if (matchedNodeEntities.get(0).getEntityValue().getClickable() == false && (null != matchedNodeEntities.get(0).getEntityValue().getText() || null != matchedNodeEntities.get(0).getEntityValue().getContentDescription())) {
-//                    node = matchedNodeEntities.get(0);
-//                } else {
-//                    int i = 0;
-//                    int k = 0;
-//                    while (!matchedNodeEntities.get(i).getEntityValue().getClickable()) {
-////                        System.out.println("The node info is: "+ matchedNodeEntities.get(i).getEntityValue().);
-//                        if (i + 1 >= matchedNodeEntities.size()) {
-//                            break;
-//                        }
-//                        i++;
-//                    }
-//
-//                    if (i >= matchedNodeEntities.size()) {
-//                        int innerIndex = 0;
-//                        while (true) {
-//                            if (innerIndex >= matchedNodeEntities.size()) {
-//                                break;
-//                            }
-//                            if (null != matchedNodeEntities.get(innerIndex).getEntityValue().getText() || null != matchedNodeEntities.get(innerIndex).getEntityValue().getContentDescription()) {
-//                                k = innerIndex;
-//                                break;
-//                            }
-//                            innerIndex++;
-//                        }
-//                        node = matchedNodeEntities.get(k);
-//                    } else {
-//                        node = matchedNodeEntities.get(i);
-//                    }
-//
-//
-//                }
-//            } else {
-//                node = matchedNodeEntities.get(0);
-//            }
             if (node != null) {
                 if (sugiliteAccessibilityService.getSugiliteStudyHandler().isToRecordNextOperation()) {
                     //save a study packet
@@ -546,9 +502,6 @@ public class FullScreenRecordingOverlayManager {
                     }
                 }
 
-
-//            PumiceDemonstrationUtil.showSugiliteToast("No node matched!", Toast.LENGTH_SHORT);
-//            System.out.println("No node matched!");
             }
         }
     }

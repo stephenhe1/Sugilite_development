@@ -207,22 +207,6 @@ public class PumiceDemonstrationUtil {
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                         @Override
                         public void run() {
-//                            PackageManager packageManager = context.getPackageManager();
-//                            PackageInfo p = null;
-//                            try {
-//                                p = packageManager.getPackageInfo(packageName, 0);
-//                                clearApplicationData(new File(p.applicationInfo.dataDir));
-//                            } catch (PackageManager.NameNotFoundException e) {
-//                                e.printStackTrace();
-//                            }
-//                            while(isCleared == false && clearFailed == false){
-//                                new Handler().postDelayed(new Runnable() {
-//                                    @Override
-//                                    public void run() {
-//
-//                                    }
-//                                },100);
-//                            }
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
@@ -379,10 +363,10 @@ public class PumiceDemonstrationUtil {
                                 sugiliteData.getScriptHead().uiSnapshotOnEnd = new SerializableUISnapshot(latestUISnapshot);
                                 String outputPath = Paths.get(String.valueOf(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)),NewScriptDialog.getPackageName(),"RECORDER").toString();
                                 sugiliteScreenshotManager.setDirectoryPath(outputPath + "/");
-                                sugiliteData.getScriptHead().screenshotOnEnd = sugiliteScreenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_END.png");
+                                sugiliteData.getScriptHead().screenshotOnEnd = sugiliteScreenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_END.png", 100);
                                 try {
                                     SugiliteAccessibilityService sugiliteAccessibilityService = (SugiliteAccessibilityService) context;
-                                    sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_END.xml");
+                                    sugiliteAccessibilityService.captureLayout(outputPath.toString(), "S_END.xml", 100);
                                 }
                                 catch (NullPointerException e){
                                     e.printStackTrace();

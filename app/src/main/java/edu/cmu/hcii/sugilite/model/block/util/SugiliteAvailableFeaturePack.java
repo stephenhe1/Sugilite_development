@@ -315,55 +315,55 @@ public class SugiliteAvailableFeaturePack implements Serializable{
         this.xPath=xpath;
     }
 
-    public String getXpath(Node node) {
-        List<String> names = new ArrayList<>();
-        Node it = node;
-        names.add(0, String.valueOf(it.getClassName()));
-        while(it.getParentalNode()!= null){
-            int count = 0;
-            int length = 0;
-            String itClsName = it.getClassName().toString();
-            for(int i=0; i<it.getParentalNode().getChildCount(); i++) {
-                AccessibilityNodeInfo child = it.getParentalNode().getChild(i);
-                if (child == null)
-                    continue;
-                String childClsName = child.getClassName().toString();
-//                if (!child.isVisibleToUser())
+//    public String getXpath(Node node) {
+//        List<String> names = new ArrayList<>();
+//        Node it = node;
+//        names.add(0, String.valueOf(it.getClassName()));
+//        while(it.getParentalNode()!= null){
+//            int count = 0;
+//            int length = 0;
+//            String itClsName = it.getClassName().toString();
+//            for(int i=0; i<it.getParentalNode().getChildCount(); i++) {
+//                AccessibilityNodeInfo child = it.getParentalNode().getChild(i);
+//                if (child == null)
 //                    continue;
-                if (itClsName.equals(childClsName)) {
-
-                    length++;
-                }
-                if (it.isSameNode(child)) {
-                    count = length;
-                }
-
-            }
-            if(length > 1)
-                names.set(0, String.format("%s[%d]", names.get(0), count));
-            it = it.getParent();
-            names.add(0, String.valueOf(it.getClassName()));
-        }
-        String xpath = "/"+String.join("/", names);
-        return xpath;
-    }
-
-    public boolean isSameNode(AccessibilityNodeInfo accessibilityNodeInfo){
-        try {
-            Rect boundsInScreen = new Rect();
-            accessibilityNodeInfo.getBoundsInScreen(boundsInScreen);
-            String boundsInScreenOther = boundsInScreen.flattenToString();
-            if (((this.packageName == null && (accessibilityNodeInfo).getPackageName() == null) || this.packageName.equals((accessibilityNodeInfo.getPackageName().toString()))) &&
-                    ((this.className == null && (accessibilityNodeInfo).getClassName() == null) || this.className.equals((accessibilityNodeInfo).getClassName().toString())) &&
-                    ((this.boundsInScreen == null && boundsInScreenOther == null) || this.boundsInScreen.equals(boundsInScreenOther)) &&
-                    ((this.viewId == null && accessibilityNodeInfo.getViewIdResourceName() == null) || this.viewId.equals(accessibilityNodeInfo.getViewIdResourceName())))
-                return true;
-        }
-        catch (NullPointerException e){
-            return false;
-        }
-        return false;
-
-    }
+//                String childClsName = child.getClassName().toString();
+////                if (!child.isVisibleToUser())
+////                    continue;
+//                if (itClsName.equals(childClsName)) {
+//
+//                    length++;
+//                }
+//                if (it.isSameNode(child)) {
+//                    count = length;
+//                }
+//
+//            }
+//            if(length > 1)
+//                names.set(0, String.format("%s[%d]", names.get(0), count));
+//            it = it.getParent();
+//            names.add(0, String.valueOf(it.getClassName()));
+//        }
+//        String xpath = "/"+String.join("/", names);
+//        return xpath;
+//    }
+//
+//    public boolean isSameNode(AccessibilityNodeInfo accessibilityNodeInfo){
+//        try {
+//            Rect boundsInScreen = new Rect();
+//            accessibilityNodeInfo.getBoundsInScreen(boundsInScreen);
+//            String boundsInScreenOther = boundsInScreen.flattenToString();
+//            if (((this.packageName == null && (accessibilityNodeInfo).getPackageName() == null) || this.packageName.equals((accessibilityNodeInfo.getPackageName().toString()))) &&
+//                    ((this.className == null && (accessibilityNodeInfo).getClassName() == null) || this.className.equals((accessibilityNodeInfo).getClassName().toString())) &&
+//                    ((this.boundsInScreen == null && boundsInScreenOther == null) || this.boundsInScreen.equals(boundsInScreenOther)) &&
+//                    ((this.viewId == null && accessibilityNodeInfo.getViewIdResourceName() == null) || this.viewId.equals(accessibilityNodeInfo.getViewIdResourceName())))
+//                return true;
+//        }
+//        catch (NullPointerException e){
+//            return false;
+//        }
+//        return false;
+//
+//    }
 
 }

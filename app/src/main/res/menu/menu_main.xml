@@ -3,20 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".ui.main.SugiliteMainActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="1" app:showAsAction="never" />
-    <item android:id="@+id/clear_automation_queue" android:title="Stop All Executions"
-    android:orderInCategory="2" app:showAsAction="never" />
+<!--    <item android:id="@+id/clear_automation_queue" android:title="Stop All Executions"-->
+<!--    android:orderInCategory="2" app:showAsAction="never" />-->
     <item android:id="@+id/clear_script_list" android:title="Delete All Scripts"
-        android:orderInCategory="3" app:showAsAction="never" />
-    <item android:id="@+id/clear_trigger_list" android:title="Delete All Triggers"
-        android:orderInCategory="4" app:showAsAction="never" />
-    <item android:id="@+id/upload_scripts" android:title="Upload Study Scripts"
-        android:orderInCategory="5" app:showAsAction="never" />
-    <item android:id="@+id/test_feature" android:title="Test Feature"
-        android:orderInCategory="6" app:showAsAction="never" />
-    <item android:id="@+id/clear_hash_cache" android:title="Clear Hash Cache"
-        android:orderInCategory="7" app:showAsAction="never" />
-    <item android:id="@+id/launch_pumice" android:title="Launch Pumice"
-          android:orderInCategory="8" app:showAsAction="never" />
+        android:orderInCategory="2" app:showAsAction="never" />
+<!--    <item android:id="@+id/clear_trigger_list" android:title="Delete All Triggers"-->
+<!--        android:orderInCategory="4" app:showAsAction="never" />-->
+<!--    <item android:id="@+id/upload_scripts" android:title="Upload Study Scripts"-->
+<!--        android:orderInCategory="5" app:showAsAction="never" />-->
+<!--    <item android:id="@+id/test_feature" android:title="Test Feature"-->
+<!--        android:orderInCategory="6" app:showAsAction="never" />-->
+<!--    <item android:id="@+id/clear_hash_cache" android:title="Clear Hash Cache"-->
+<!--        android:orderInCategory="7" app:showAsAction="never" />-->
+<!--    <item android:id="@+id/launch_pumice" android:title="Launch Pumice"-->
+<!--          android:orderInCategory="8" app:showAsAction="never" />-->
 
 
 

@@ -235,6 +235,7 @@ public class SugiliteScreenshotManager {
                                 media.setData(contentUri);
                             }
                         } catch (IOException e) {
+                            Log.e("SugiliteScreenshotManager", "Error when capturing the screenshot");
                             e.printStackTrace();
                         }
                     }

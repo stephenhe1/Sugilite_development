@@ -108,51 +108,6 @@ public class Node implements Serializable {
         }
         this.thisNode=nodeInfo;
 
-//        List<String> names = new ArrayList<>();
-//        Node it = this;
-//        names.add(0, String.valueOf(it.getClassName()));
-//        while(it.getParentalNode()!= null){
-//            int count = 0;
-//            int length = 0;
-//            String itClsName = String.valueOf(it.getClassName());
-//            for(int i=0; i<it.getParentalNode().getChildCount(); i++) {
-//                AccessibilityNodeInfo child = it.getParentalNode().getChild(i);
-//                if (child == null)
-//                    continue;
-//                String childClsName = String.valueOf(child.getClassName());
-//                if (!child.isVisibleToUser())
-//                    continue;
-//
-//                if (itClsName.equals(childClsName)){
-//                    length++;
-//                    if (null != it && it.getViewIdResourceName() != null){
-//                        if (it.getViewIdResourceName().equals("com.colpit.diamondcoming.isavemoney:id/amount")){
-//                            System.out.println("child class name is: "+ child.getClassName());
-//                            System.out.println(length);
-//                            System.out.println(count);
-//                        }
-//                    }
-//                }
-//
-//
-//                if (it.getThisNode().equals(child)) {
-//                    count = length;
-////                    System.out.println("The count is: " + count);
-//                }
-////                if (it.isSameNode(child)){
-////                    count = length;
-////                }
-//
-//
-//            }
-//            if(length > 1)
-//                names.set(0, String.format("%s[%d]", names.get(0), count));
-//            it = it.getParent();
-//            names.add(0, String.valueOf(it.getClassName()));
-//        }
-//        this.xpath = "/"+String.join("/", names);
-//
-
     }
 
     public String getText(){

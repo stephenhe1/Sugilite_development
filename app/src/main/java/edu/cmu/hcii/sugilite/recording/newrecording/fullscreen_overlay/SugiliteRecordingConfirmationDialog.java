@@ -206,6 +206,9 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
                         RecordingUtils.sendNodeInfo(featurePack, "click",Const.CLICK_COMMAND);
                         RecordingUtils.writeTestScript(context,"usecase",featurePack, "click", Const.CLICK_COMMAND);
                         blockBuildingHelper.saveBlock(block, featurePack);
+                        SharedPreferences.Editor prefEditor = sharedPreferences.edit();
+                        prefEditor.putBoolean("performing_action",true);
+                        prefEditor.apply();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -261,6 +264,7 @@ public class SugiliteRecordingConfirmationDialog extends SugiliteDialogManager {
 
                     }
                 }
+//                stopASRandTTS();
             }
         });
         dialog.dismiss();

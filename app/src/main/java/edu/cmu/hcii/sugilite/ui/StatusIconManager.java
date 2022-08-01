@@ -249,7 +249,11 @@ public class StatusIconManager {
                 boolean recordingInProcess = sharedPreferences.getBoolean("recording_in_process", false);
                 boolean trackingInProcess = sharedPreferences.getBoolean("tracking_in_process", false);
                 boolean broadcastingInProcess = sharedPreferences.getBoolean("broadcasting_enabled", false);
-                if(recordingInProcess)
+                boolean performingAction = sharedPreferences.getBoolean("performing_action",false);
+                if (recordingInProcess == true && performingAction == true) {
+                    statusIcon.setImageResource(R.mipmap.duck_icon_playing);
+                }
+                else if(recordingInProcess)
                     statusIcon.setImageResource(R.mipmap.duck_icon_recording);
                 else if(sugiliteData.getInstructionQueueSize() > 0) {
                     nextBlock = sugiliteData.peekInstructionQueue();
@@ -1028,9 +1032,9 @@ public class StatusIconManager {
                     outputPath.toFile().mkdirs();
                 }
                 screenshotManager.setDirectoryPath(outputPath.toString() + "/");
-                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".png", 20);
+                screenshotManager.takeScreenshot(SugiliteScreenshotManager.DIRECTORY_PATH, "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".png", 200);
                 try {
-                    SugiliteAccessibilityService.getInstance().captureLayout(outputPath.toString(), "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".xml");
+                    SugiliteAccessibilityService.getInstance().captureLayout(outputPath.toString(), "S_" + SugiliteRecordingConfirmationDialog.getStep() + ".xml", 200);
                 }
                 catch (NullPointerException e){
                     e.printStackTrace();

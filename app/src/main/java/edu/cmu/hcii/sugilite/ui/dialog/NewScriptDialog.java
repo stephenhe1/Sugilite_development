@@ -75,7 +75,7 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
     private SharedPreferences sharedPreferences;
     private SugiliteData sugiliteData;
     private AlertDialog dialog;
-    private TextToSpeech tts;
+//    private TextToSpeech tts;
     private SugiliteDialogSimpleState askingForScriptNameState = new SugiliteDialogSimpleState("ASKING_FOR_SCRIPT_NAME", this, true);
     private SugiliteDialogSimpleState askingForScriptNameConfirmationState = new SugiliteDialogSimpleState("ASKING_FOR_SCRIPT_NAME_CONFIRMATION", this, true);
     private VerbalInstructionIconManager verbalInstructionIconManager;
@@ -93,7 +93,7 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
     public NewScriptDialog(Context context, SugiliteScriptDao sugiliteScriptDao, ServiceStatusManager serviceStatusManager,
                            SharedPreferences sharedPreferences, SugiliteData sugiliteData, boolean isSystemAlert, final Dialog.OnClickListener positiveCallback, final Dialog.OnClickListener negativeCallback){
         super(context, sugiliteData, sugiliteData.getTTS());
-        this.tts = sugiliteData.getTTS();
+//        this.tts = sugiliteData.getTTS();
         this.context = context;
         this.sugiliteScriptDao = sugiliteScriptDao;
         this.serviceStatusManager = serviceStatusManager;
@@ -171,11 +171,11 @@ public class NewScriptDialog extends SugiliteDialogManager implements AbstractSu
         dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialogInterface) {
-                if(tts != null) {
-                    if (isListening() || tts.isSpeaking()) {
-                        stopASRandTTS();
-                    }
-                }
+//                if(tts != null) {
+//                    if (isListening() || tts.isSpeaking()) {
+//                        stopASRandTTS();
+//                    }
+//                }
                 onDestroy();
             }
         });

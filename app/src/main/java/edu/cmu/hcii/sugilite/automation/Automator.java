@@ -1,26 +1,17 @@
 package edu.cmu.hcii.sugilite.automation;
 
-import android.accessibilityservice.AccessibilityService;
-import android.accessibilityservice.GestureDescription;
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
+
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Path;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.text.Html;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 
@@ -34,7 +25,6 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.cmu.hcii.sugilite.Const;
-import edu.cmu.hcii.sugilite.R;
 import edu.cmu.hcii.sugilite.model.Node;
 import edu.cmu.hcii.sugilite.accessibility_service.SugiliteAccessibilityService;
 import edu.cmu.hcii.sugilite.SugiliteData;
@@ -69,9 +59,6 @@ import edu.cmu.hcii.sugilite.ui.BoundingBoxManager;
 import edu.cmu.hcii.sugilite.ui.StatusIconManager;
 
 import android.speech.tts.TextToSpeech;
-import android.widget.PopupMenu;
-import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import static edu.cmu.hcii.sugilite.Const.DEBUG_DELAY;
@@ -531,36 +518,16 @@ public class Automator {
                     return false;
                 SugiliteAccessibilityService.actionInProgress.set(true);
 
-//                new Handler(Looper.getMainLooper()).post(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//                        builder.setTitle("Save Operation Confirmation");
-//
-//                        View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_confirmation_popup_spoken, null);
-//                        TextView confirmationPromptTextView = (TextView) dialogView.findViewById(R.id.text_confirmation_prompt);
-//                        if(confirmationPromptTextView != null){
-//                            SpannableStringBuilder text = new SpannableStringBuilder();
-//                            text.append("Are you sure you want to record the operation: ");
-//                            confirmationPromptTextView.setText(text);
-//                        }
-//                        builder.setView(dialogView);
-//                        Dialog dialog = builder.create();
-//                        dialog.getWindow().setType(OVERLAY_TYPE);
-//                        dialog.show();
-//                    }
-//                });
-
-//                View barView = LayoutInflater.from(context).inflate(R.layout.loading_spinner, null);
-//                ProgressBar pgsBar = (ProgressBar) barView.findViewById(R.id.pBar);
-//                pgsBar.setVisibility(barView.VISIBLE);
-//                View progressOverlay;
-//
-//                progressOverlay = LayoutInflater.from(context).inflate(R.layout.loading_spinner, null);
-//
-//                animateView(progressOverlay, View.VISIBLE, 0.4f, 200);
 
                 boolean result = serviceContext.performTap(rect.centerX(),rect.centerY(),0,40);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        SharedPreferences.Editor prefEditor = sharedPreferences.edit();
+                        prefEditor.putBoolean("performing_action",false);
+                        prefEditor.apply();
+                    }
+                },800);
                 return result;
             }
 
@@ -748,22 +715,8 @@ public class Automator {
         }
     }
 
-    private void animateView(final View view, final int toVisibility, float toAlpha, int duration) {
-        boolean show = toVisibility == View.VISIBLE;
-        if (show) {
-            view.setAlpha(0);
-        }
-        view.setVisibility(View.VISIBLE);
-        view.animate()
-                .setDuration(duration)
-                .alpha(show ? toAlpha : 0)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        view.setVisibility(toVisibility);
-                    }
-                });
-    }
+
+
 
 
 

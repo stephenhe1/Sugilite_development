@@ -938,15 +938,22 @@ public class SugiliteAccessibilityService extends AccessibilityService {
     public boolean performTap(int x, int y, int startTime, int duration) {
         if (x < 0 || y < 0)
             return false;
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+                                                     @Override
+                                                     public void run() {
+                                                         recordingOverlayManager.setPassThroughOnTouchListener();
+                                                     }
+                                                 });
 
-        verbalInstructionIconManager.turnOffCatOverlay();
+//        verbalInstructionIconManager.turnOffCatOverlay();
         Runnable afterActionPerformedRunnable = new Runnable() {
             // Once the action is performed, this runnable will be called with a little delay to
             // turn on the overlay.
             @Override
             public void run() {
                 actionInProgress.set(false);
-                verbalInstructionIconManager.turnOnCatOverlay();
+                recordingOverlayManager.setOverlayOnTouchListener(true);
+//                verbalInstructionIconManager.turnOnCatOverlay();
             }
         };
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -1148,6 +1155,29 @@ public class SugiliteAccessibilityService extends AccessibilityService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void captureLayout(String dirName, String fileName, int delay){
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    XmlSerializer serializer = Xml.newSerializer();
+                    StringWriter stringWriter = new StringWriter();
+                    serializer.setOutput(stringWriter);
+                    serializer.startDocument("UTF-8", true);
+                    serializer.startTag("", "hierarchy");
+                    serializer.attribute("", "rotation", "0");
+                    dumpNodeRec(serializer, 0);
+                    serializer.endTag("", "hierarchy");
+                    serializer.endDocument();
+                    createFile(dirName, fileName, stringWriter.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        },delay);
+
     }
 
 

@@ -39,6 +39,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -439,6 +440,14 @@ public class RecordingPopUpDialog implements AbstractSugiliteDialog {
                     outputPath.toFile().mkdirs();
                 }
                 featurePack.text = operationBlock.getPlainDescription().split(" ")[3].replaceAll("^\"|\"$", "");
+                List<String> bounds = Arrays.asList(new String(featurePack.boundsInScreen).split(" "));
+                String boundsFormat = "";
+                for (int i = 0; i< bounds.size(); i++){
+                    if ((i+1) % 2 == 0){
+                        boundsFormat = boundsFormat + "[" + String.join(",", bounds.subList(i-1, i+1)) + "]";
+                    }
+                }
+                featurePack.boundsInScreen = boundsFormat;
                 RecordingUtils.sendNodeInfo(operationBlock.getFeaturePack(), "type", Const.TYPE_COMMAND);
                 RecordingUtils.writeTestScript(context, "usecase", operationBlock.getFeaturePack(), "type",Const.TYPE_COMMAND);
                 if (editCallback != null) {

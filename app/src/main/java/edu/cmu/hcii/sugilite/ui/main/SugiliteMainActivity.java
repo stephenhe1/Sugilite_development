@@ -134,18 +134,18 @@ public class SugiliteMainActivity extends AppCompatActivity {
 
         // Set Tab Icon and Titles
         this.scriptListTab = actionBar.newTab().setText("Local Scripts");
-        this.triggerListTab = actionBar.newTab().setText("Triggers");
-        this.remoteScriptListTab = actionBar.newTab().setText("Remote Scripts");
+//        this.triggerListTab = actionBar.newTab().setText("Triggers");
+//        this.remoteScriptListTab = actionBar.newTab().setText("Remote Scripts");
 
         // Set Tab Listeners
         scriptListTab.setTabListener(new TabListener(fragmentScriptListTab));
-        triggerListTab.setTabListener(new TabListener(fragmentTriggerListTab));
-        remoteScriptListTab.setTabListener(new TabListener(fragmentRemoteScriptListTab));
+//        triggerListTab.setTabListener(new TabListener(fragmentTriggerListTab));
+//        remoteScriptListTab.setTabListener(new TabListener(fragmentRemoteScriptListTab));
 
         // Add tabs to actionbar
         actionBar.addTab(scriptListTab);
-        actionBar.addTab(triggerListTab);
-        actionBar.addTab(remoteScriptListTab);
+//        actionBar.addTab(triggerListTab);
+//        actionBar.addTab(remoteScriptListTab);
 
         // switch to the active tab
         String activeTab = null;
@@ -157,15 +157,15 @@ public class SugiliteMainActivity extends AppCompatActivity {
         }
         if (activeTab != null) {
             switch (activeTab) {
-                case "remote_scripts":
-                    remoteScriptListTab.select();
-                    break;
+//                case "remote_scripts":
+//                    remoteScriptListTab.select();
+//                    break;
                 case "local_scripts":
                     scriptListTab.select();
                     break;
-                case "triggers":
-                    triggerListTab.select();
-                    break;
+//                case "triggers":
+//                    triggerListTab.select();
+//                    break;
             }
         }
 
@@ -217,28 +217,28 @@ public class SugiliteMainActivity extends AppCompatActivity {
             return true;
         }
 
-        if (id == R.id.clear_automation_queue) {
-            int count = sugiliteData.getInstructionQueueSize();
-            new AlertDialog.Builder(this)
-                    .setTitle("Confirm Clear Instruction Queue")
-                    .setMessage("Are you sure to cleared " + count + " operations from the automation queue?")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            sugiliteData.clearInstructionQueue();
-                            //set the system state back to DEFAULT_STATE
-                            sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-            return true;
-        }
+//        if (id == R.id.clear_automation_queue) {
+//            int count = sugiliteData.getInstructionQueueSize();
+//            new AlertDialog.Builder(this)
+//                    .setTitle("Confirm Clear Instruction Queue")
+//                    .setMessage("Are you sure to cleared " + count + " operations from the automation queue?")
+//                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            sugiliteData.clearInstructionQueue();
+//                            //set the system state back to DEFAULT_STATE
+//                            sugiliteData.setCurrentSystemState(SugiliteData.DEFAULT_STATE);
+//                        }
+//                    })
+//                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            dialog.dismiss();
+//                        }
+//                    })
+//                    .setIcon(android.R.drawable.ic_dialog_alert)
+//                    .show();
+//            return true;
+//        }
 
         if (id == R.id.clear_script_list) {
             try {
@@ -292,97 +292,97 @@ public class SugiliteMainActivity extends AppCompatActivity {
             return true;
         }
 
-        if(id == R.id.clear_trigger_list){
-            int count = (int)sugiliteTriggerDao.size();
-            new AlertDialog.Builder(this)
-                    .setTitle("Confirm Clearing Trigger List")
-                    .setMessage("Are you sure to clear " + count + " triggers?")
-                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            sugiliteTriggerDao.clear();
-                            if(fragmentTriggerListTab != null && fragmentTriggerListTab instanceof  FragmentTriggerListTab)
-                                ((FragmentTriggerListTab)fragmentTriggerListTab).setUpTriggerList();
-                        }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            if(fragmentTriggerListTab != null && fragmentTriggerListTab instanceof  FragmentTriggerListTab)
-                                ((FragmentTriggerListTab)fragmentTriggerListTab).setUpTriggerList();
-                            dialog.dismiss();
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-            return true;
-        }
+//        if(id == R.id.clear_trigger_list){
+//            int count = (int)sugiliteTriggerDao.size();
+//            new AlertDialog.Builder(this)
+//                    .setTitle("Confirm Clearing Trigger List")
+//                    .setMessage("Are you sure to clear " + count + " triggers?")
+//                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            sugiliteTriggerDao.clear();
+//                            if(fragmentTriggerListTab != null && fragmentTriggerListTab instanceof  FragmentTriggerListTab)
+//                                ((FragmentTriggerListTab)fragmentTriggerListTab).setUpTriggerList();
+//                        }
+//                    })
+//                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            if(fragmentTriggerListTab != null && fragmentTriggerListTab instanceof  FragmentTriggerListTab)
+//                                ((FragmentTriggerListTab)fragmentTriggerListTab).setUpTriggerList();
+//                            dialog.dismiss();
+//                        }
+//                    })
+//                    .setIcon(android.R.drawable.ic_dialog_alert)
+//                    .show();
+//            return true;
+//        }
 
-        if (id == R.id.clear_hash_cache) {
-            int size = SugiliteData.getScreenStringSaltedHashMap().size();
-            SugiliteData.getScreenStringSaltedHashMap().clear();
-            PumiceDemonstrationUtil.showSugiliteAlertDialog(String.format("Cleared %d entries in the hash cache!", size));
-        }
+//        if (id == R.id.clear_hash_cache) {
+//            int size = SugiliteData.getScreenStringSaltedHashMap().size();
+//            SugiliteData.getScreenStringSaltedHashMap().clear();
+//            PumiceDemonstrationUtil.showSugiliteAlertDialog(String.format("Cleared %d entries in the hash cache!", size));
+//        }
+//
+//        if(id == R.id.upload_scripts){
+//            //progress dialog for loading the script
+//            new Thread(new Runnable() {
+//                @Override
+//                public void run()
+//                {
+//                    List<SugiliteStartingBlock> scripts = null;
+//                    int uploadJSONCount = 0, uploadFileCount = 0;
+//                    try {
+//                        scripts = sugiliteScriptDao.getAllScripts();
+//                        if(scripts != null && uploadManager != null){
+//                            //upload JSON first
+//                            for(SugiliteStartingBlock script : scripts) {
+//                                uploadManager.uploadScriptJSON(script);
+//                                uploadJSONCount ++;
+//                                if (sugiliteScriptDao instanceof SugiliteScriptFileDao) {
+//                                    //upload script file only if SugiliteScriptFileDao is in use
+//                                    String scriptPath = ((SugiliteScriptFileDao) sugiliteScriptDao).getScriptPath(script.getScriptName());
+//                                    uploadManager.uploadScript(scriptPath, script.getCreatedTime());
+//                                    uploadFileCount ++;
+//                                }
+//
+//                            }
+//                            String directoryPath = context.getFilesDir().getPath().toString();
+//
+//                            //start uploading the usage log
+//                            File usageLog = new File(directoryPath + "/" + StudyConst.SCRIPT_USAGE_LOG_FILE_NAME);
+//                            if(usageLog.exists()) {
+//                                uploadManager.uploadScript(usageLog.getPath(), Calendar.getInstance().getTimeInMillis());
+//                                System.out.println("USAGE LOG UPLOADED");
+//                            }
+//                            else {
+//                                System.out.println("usage log doesn't exist!");
+//                            }
+//                            //finish uploading the usage log
+//                        }
+//                    }
+//                    catch (Exception e){
+//                        e.printStackTrace();
+//                    }
+//                    final int finalJSONCount = uploadJSONCount, finalFileCount = uploadFileCount;
+//                }
+//            }).start();
+//            return true;
+//        }
 
-        if(id == R.id.upload_scripts){
-            //progress dialog for loading the script
-            new Thread(new Runnable() {
-                @Override
-                public void run()
-                {
-                    List<SugiliteStartingBlock> scripts = null;
-                    int uploadJSONCount = 0, uploadFileCount = 0;
-                    try {
-                        scripts = sugiliteScriptDao.getAllScripts();
-                        if(scripts != null && uploadManager != null){
-                            //upload JSON first
-                            for(SugiliteStartingBlock script : scripts) {
-                                uploadManager.uploadScriptJSON(script);
-                                uploadJSONCount ++;
-                                if (sugiliteScriptDao instanceof SugiliteScriptFileDao) {
-                                    //upload script file only if SugiliteScriptFileDao is in use
-                                    String scriptPath = ((SugiliteScriptFileDao) sugiliteScriptDao).getScriptPath(script.getScriptName());
-                                    uploadManager.uploadScript(scriptPath, script.getCreatedTime());
-                                    uploadFileCount ++;
-                                }
-
-                            }
-                            String directoryPath = context.getFilesDir().getPath().toString();
-
-                            //start uploading the usage log
-                            File usageLog = new File(directoryPath + "/" + StudyConst.SCRIPT_USAGE_LOG_FILE_NAME);
-                            if(usageLog.exists()) {
-                                uploadManager.uploadScript(usageLog.getPath(), Calendar.getInstance().getTimeInMillis());
-                                System.out.println("USAGE LOG UPLOADED");
-                            }
-                            else {
-                                System.out.println("usage log doesn't exist!");
-                            }
-                            //finish uploading the usage log
-                        }
-                    }
-                    catch (Exception e){
-                        e.printStackTrace();
-                    }
-                    final int finalJSONCount = uploadJSONCount, finalFileCount = uploadFileCount;
-                }
-            }).start();
-            return true;
-        }
-
-        if(id == R.id.test_feature){
-            SoviteSetTextParameterDialog soviteSetTextParameterDialog = new SoviteSetTextParameterDialog(context, sugiliteData, new VariableValue<>("parameter1", "chicken sandwich"), "can you help me order a chicken sandwich from KFC", null, null, null, false);
-            //SoviteSetTextParameterDialog soviteSetTextParameterDialog = new SoviteSetTextParameterDialog(context, new Variable("parameter1"),"world", "hello world");
-            soviteSetTextParameterDialog.show();
-            //new ScriptUsageLogManager(context).clearLog();
-            return true;
-        }
-        if(id == R.id.launch_pumice){
-            //launch pumice
-            Intent intent = new Intent(this, PumiceDialogActivity.class);
-            startActivity(intent);
-            return true;
-
-        }
+//        if(id == R.id.test_feature){
+//            SoviteSetTextParameterDialog soviteSetTextParameterDialog = new SoviteSetTextParameterDialog(context, sugiliteData, new VariableValue<>("parameter1", "chicken sandwich"), "can you help me order a chicken sandwich from KFC", null, null, null, false);
+//            //SoviteSetTextParameterDialog soviteSetTextParameterDialog = new SoviteSetTextParameterDialog(context, new Variable("parameter1"),"world", "hello world");
+//            soviteSetTextParameterDialog.show();
+//            //new ScriptUsageLogManager(context).clearLog();
+//            return true;
+//        }
+//        if(id == R.id.launch_pumice){
+//            //launch pumice
+//            Intent intent = new Intent(this, PumiceDialogActivity.class);
+//            startActivity(intent);
+//            return true;
+//
+//        }
         return super.onOptionsItemSelected(item);
     }
 

@@ -46,11 +46,11 @@ public abstract class SugiliteDialogManager implements SugiliteVoiceInterface {
     }
     public SugiliteDialogManager(Context context, SugiliteData sugiliteData, TextToSpeech tts) {
         this.context = context;
-        if (Const.SELECTED_SPEECH_RECOGNITION_TYPE == Const.SpeechRecognitionType.ANDROID) {
-            this.sugiliteVoiceRecognitionListener = new SugiliteAndroidAPIVoiceRecognitionListener(context, this, tts);
-        } else if (Const.SELECTED_SPEECH_RECOGNITION_TYPE == Const.SpeechRecognitionType.GOOGLE_CLOUD) {
-            this.sugiliteVoiceRecognitionListener = new SugiliteGoogleCloudVoiceRecognitionListener(context, sugiliteData, this, tts);
-        }
+//        if (Const.SELECTED_SPEECH_RECOGNITION_TYPE == Const.SpeechRecognitionType.ANDROID) {
+//            this.sugiliteVoiceRecognitionListener = new SugiliteAndroidAPIVoiceRecognitionListener(context, this, tts);
+//        } else if (Const.SELECTED_SPEECH_RECOGNITION_TYPE == Const.SpeechRecognitionType.GOOGLE_CLOUD) {
+//            this.sugiliteVoiceRecognitionListener = new SugiliteGoogleCloudVoiceRecognitionListener(context, sugiliteData, this, tts);
+//        }
         initDrawables();
     }
 
@@ -98,8 +98,8 @@ public abstract class SugiliteDialogManager implements SugiliteVoiceInterface {
      * stop both ASR listening and TTS speaking
      */
     public void stopASRandTTS() {
-        stopListening();
-        sugiliteVoiceRecognitionListener.stopTTS();
+//        stopListening();
+//        sugiliteVoiceRecognitionListener.stopTTS();
     }
 
     /**
